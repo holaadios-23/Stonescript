@@ -1,0 +1,78 @@
+// Script para rastrear y mostrar tiempos de derrota de jefes
+// Sigue estrictamente las Reglas de Oro de Stonescript.
+
+// --- Variables Globales ---
+var bstime
+var display_timer
+var msg
+var fid
+var killed
+var m
+var s
+var f
+var name
+var is_mid
+
+// --- Inicialización y Reseteo (Regla 9) ---
+?loc.begin | loc.loop
+  bstime = -1
+  display_timer = 0
+  msg = ""
+  killed = false
+
+// --- Lógica Principal (se ejecuta cada frame) ---
+
+?!(foe = null)
+  fid = foe.id
+  killed = false
+
+  // Detección por HP y Fase Técnica
+  ?foe.hp <= 0
+    // 1. Dysangelos Final
+    ?fid = "dysangelos_perfected"
+      killed = true
+    // 2. Xiloalgia (Poena o estrellas bajas)
+    :?fid = "poena"
+      killed = true
+    :?fid = "xiloalgia" & loc.stars <= 5
+      killed = true
+    // 3. Hongo Enojado: Trigger específico al matar a Morel
+    :?fid = "mushroom_boss_fat" | fid = "morel"
+      killed = true
+    // 4. Pallas Fase 2
+    :?fid = "pallas" & foe = phase2
+      killed = true
+    // 5. Filtro genérico para otros jefes
+    :?foe = boss
+      ?loc.id = "rocky_plateau" | loc.id = "deadwood" | loc.id = "fungus_forest" | loc.id = "undead_crypt"
+        is_mid = fid = "dysangelos_bearer" | fid = "dysangelos_elementalist"
+        is_mid = is_mid | fid = "angry_mushroom" | fid = "mushroom_boss" | fid = "mushroom_boss_skinny"
+        ?!(is_mid)
+          killed = true
+
+  // Al detectar la muerte, guardamos el bstime una sola vez
+  ?killed & bstime = -1
+    bstime = totaltime
+    display_timer = 300
+    
+    // Cálculos de tiempo (Regla 6: Asignación separada)
+    m = bstime / 1800
+    s = bstime / 30
+    s = s % 60
+    f = bstime % 30
+    
+    // Formateo de nombre
+    name = fid
+    ?fid = "dysangelos_perfected"
+      name = "Dysangelos"
+    :?fid = "mushroom_boss_fat" | fid = "morel"
+      name = "Morel & Enoki"
+    :?fid = "poena"
+      name = "Xiloalgia"
+    
+    msg = name + " - " + m + "m " + s + "s " + f + "f"
+
+// Renderizado Simple (Sin caja)
+?display_timer > 0
+  display_timer--
+  >`1,1,#FFFF00,@msg@

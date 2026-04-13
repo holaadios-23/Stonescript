@@ -1,0 +1,40 @@
+// Modulo especifico para Morel - Speedrun
+
+// --- Variables ---
+var bstime
+var display_timer
+var msg
+var fid
+var m
+var s
+var f
+var name
+
+// --- Inicializacion (Regla 9) ---
+?loc.begin | loc.loop
+  bstime = -1
+  display_timer = 0
+  msg = ""
+
+// --- Logica de Deteccion ---
+?!(foe = null)
+  fid = foe.id
+  ?foe.hp <= 0
+    ?fid = "mushroom_boss_fat" | fid = "morel"
+      ?bstime = -1
+        bstime = totaltime
+        display_timer = 300
+        name = "Morel & Enoki"
+
+// --- Procesamiento de Tiempo ---
+?!(bstime = -1)
+  m = bstime / 1800
+  s = bstime / 30
+  s = s % 60
+  f = bstime % 30
+  msg = name + " - " + m + "m " + s + "s " + f + "f"
+
+// --- Renderizado (Regla 4) ---
+?display_timer > 0
+  display_timer--
+  >`1,1,#FFFF00,@msg@
