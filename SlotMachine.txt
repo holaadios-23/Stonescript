@@ -262,6 +262,7 @@ var sym = ["7", "$", "B", "C", "X"]
 
 // Referencias UI
 var pnl_main
+var pnl_reels
 var txt_reels
 var txt_stats
 var btn_spin
@@ -342,6 +343,13 @@ func CheckPrize()
   pnl_main.color = "#440000"
   pnl_main.style = 1
 
+  // Panel para los carretes (Nuevo panel interno)
+  pnl_reels = ui.AddPanel()
+  pnl_reels.w = 3
+  pnl_reels.h = 3
+  pnl_reels.color = "#ffffff"
+  pnl_main.Add(pnl_reels)
+
   // Texto de los carretes
   txt_reels = ui.AddText()
   txt_reels.y = -2
@@ -386,7 +394,7 @@ func CheckPrize()
   btn_reset.w = 16
   btn_reset.h = 3
   btn_reset.x = 0
-  //btn_reset.visible = true
+  btn_reset.visible = false
   btn_reset.SetPressed(DoReset)
   pnl_main.Add(btn_reset)
 
@@ -423,7 +431,7 @@ func CheckPrize()
     btn_reset.visible = false
   
   // MODO EDICIÓN: Forzamos visibilidad para ajustar posición
-  btn_reset.visible = true
+  //btn_reset.visible = true
 
   // Lógica de animación
   ?spinning
@@ -446,7 +454,7 @@ func CheckPrize()
   // Construir visualización de carretes
   //los carretes seran representado por paneles o talvez usar un draw.Box() para que se vean mejor
   var visual
-  visual = sym[r1] + " " + sym[r2] + " " + sym[r3]
+  visual = sym[r1] + "#" + sym[r2] + "#" + sym[r3]
   txt_reels.text = visual
 
   // Actualizar estado de las palancas (Rule 6)
@@ -467,14 +475,3 @@ func CheckPrize()
   var cur_bal
   cur_bal = balance
   txt_stats.text = "##########" + s_bal + cur_bal + "\n###########" + result_msg
-
-  //caja que rodea los carretes
-  /*ejemplo:
-   __. __
-  |7!7! 7|
-   --' --
-
-   los lados de la caja seran reprentada por "!" la parte superir por . y la parte inferior por '
-   el resto es el panel
-  */  
-  draw.Box(8, 12, 3, 3, "#d3caca", -1)
