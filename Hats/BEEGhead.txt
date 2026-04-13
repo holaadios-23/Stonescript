@@ -1,0 +1,118 @@
+/*
+BEEGhead v2
+Original code by Icynx.001
+Updated by Telos6857 for more facial
+expressions and small head version
+*/
+var BEEGhead = ［ascii
+###_.—._
+#.´     `.
+/         \
+|         |
+\         /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/     │ │ \
+|     │ │ |
+\         /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/    .  . \
+|   / \/ \|
+\         /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/         \
+|      / /|
+\     / / /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/   U     \
+| /\  O O |
+\ `´      /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/ │ │     \
+| │ │     |
+\         /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/ .  .    \
+|/ \/ \   |
+\         /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/         \
+|\ \      |
+\ \ \     /
+#`·_   _·´
+####'•'
+asciiend,ascii
+###_.—._
+#.´     `.
+/     U   \
+| O O  /\ |
+\      `´ /
+#`·_   _·´
+####'•'
+asciiend,ascii
+#.-´¯`-.
+/`.     \
+|  `·   |
+\  ,'`-·;
+#`-;.·-´
+asciiend,ascii
+#.-´¯`-.
+/     .´\
+|   ·´  |
+:·-´'.  /
+#`-·.;-´
+asciiend］
+
+?bighead
+ ?face = ＂(   )＂
+  >h-5,-5,@BEEGhead[0]@
+ :?player.direction = 1
+   ?face = ＂( '')＂
+    >h-5,-5,@BEEGhead[1]@
+   :?face = ＂( ^^)＂
+     >h-5,-5,@BEEGhead[2]@
+   :?face = ＂( ,,)＂
+     >h-5,-5,@BEEGhead[3]@
+   :?face = ＂('°°)＂
+     >h-5,-5,@BEEGhead[4]@
+ :?player.direction = -1
+   ?face = ＂( '')＂
+    >h-5,-5,@BEEGhead[5]@
+   :?face = ＂( ^^)＂
+     >h-5,-5,@BEEGhead[6]@
+   :?face = ＂( ,,)＂
+     >h-5,-5,@BEEGhead[7]@
+   :?face = ＂('°°)＂
+     >h-5,-5,@BEEGhead[8]@
+:
+ ?player.direction = 1
+  >h-4,-3,@BEEGhead[9]@
+ :
+  >h-4,-3,@BEEGhead[10]@

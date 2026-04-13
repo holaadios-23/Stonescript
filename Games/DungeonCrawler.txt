@@ -1,0 +1,1904 @@
+/*DungeonCrawler
+Version 1.1.4
+By CitrionDragon
+
+Changelog:
+Version 1.1.4
+-Added Damage flashes for both Player and Foes
+-Unsynced timers for Foe movement
+-Added Move Cooldown
+-Added "Webbed" Debuff, triples Move Cooldown. Inflicted by Spiders.
+-Added Facial Expressions on 3x5 zoom
+-Now only runs in Waterfall
+Version 1.1.3
+-Fixed Stats not initially showing (For real this time)
+-Fixed Foe Health starting value
+Version 1.1.2
+-Added Pause Button
+-Fixed Stats not initially showing
+Version 1.1.1
+-Readded Floor count stat
+-Balanced Foe Health/Damage gain per floor
+-Exponential Foe Strength is now added every 5 floors instead of 10
+-Doubled points needed for levels
+Version 1.1.0
+-Revamped UI
+-Added New Foes (Fast Bat, Miniboss Skele)
+-Added Sounds
+-Changed Middle Zoom to 2x3 instead of 2x2
+Version 1.0.0
+-Initial Release
+
+Uses MapGenV3 for Map Generation.
+Also has pathfinding for foes.
+
+Melee attack damages all sides.
+Chests give Multipliers in addition to more points, worth going for to get powerful!
+The more points you have the higher your level.
+Level determines how much damage you deal, you also gain hp on level up.
+Try to get the highest score you can!
+
+I may improve the game in the future, adding new weapons, loot, upgrades, etc.
+*/
+
+//-≈-≈-≈<Map Generator v3>≈-≈-≈-\\
+
+//0 room,1 width,2 height
+var room1=[
+[
+[["◘"]]
+],
+1,1]
+
+var room2=[
+[
+[["┌"],["┐"]],
+[["└"],["┘"]]
+],
+2,2]
+
+var testrooms=[room1]
+
+//0◘,1┌,2¯,3┐,4| ,5#,6 |,7└,8_,9┘,10[,11],12┌┐,13└┘
+//Tile Width:10 Tile Height:6
+var Tiles=[
+ascii
+██████████
+█        █
+█        █
+█        █
+█        █
+██████████
+asciiend,
+ascii
+██████████
+█         
+█         
+█         
+█         
+█         
+asciiend,
+ascii
+██████████
+          
+          
+          
+          
+          
+asciiend,
+ascii
+██████████
+         █
+         █
+         █
+         █
+         █
+asciiend,
+ascii
+█         
+█         
+█         
+█         
+█         
+█         
+asciiend,
+ascii
+          
+          
+          
+          
+          
+          
+asciiend,
+ascii
+         █
+         █
+         █
+         █
+         █
+         █
+asciiend,
+ascii
+█         
+█         
+█         
+█         
+█         
+██████████
+asciiend,
+ascii
+          
+          
+          
+          
+          
+██████████
+asciiend,
+ascii
+         █
+         █
+         █
+         █
+         █
+██████████
+asciiend,
+ascii
+██████████
+█         
+█         
+█         
+█         
+██████████
+asciiend,
+ascii
+██████████
+         █
+         █
+         █
+         █
+██████████
+asciiend,
+ascii
+██████████
+█        █
+█        █
+█        █
+█        █
+█        █
+asciiend,
+ascii
+█        █
+█        █
+█        █
+█        █
+█        █
+██████████
+asciiend
+]
+
+//0+1 -
+//0 X axis 2x2,1 Y axis 4x2
+var Doors=[
+ascii
+#██#
+#██#
+asciiend,
+ascii
+████
+████
+asciiend
+]
+
+//Generational Array
+//20X22 tiles,
+//-9 to 10 X, -10 to 11 Y
+//GA[Row/Y][Collumn/X]
+var GA=[
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],["◘","P"],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+]
+
+//Stores the data about generated connections
+//0 - type,1 ↑↓→← direction,2 starting X,3 starting Y
+//Only one type for now, more can be added later
+var Connections=[]
+
+//0 X,1 Y,2 Directions,3 Room Type
+var TileInfo=[[0,0,["N","E","S","W"],"Start"]]
+var BannedTiles=[]
+
+var storedrooms
+var roomcount
+var generating
+var saving
+var displaying
+var completed
+
+//Serves as the full map data, to be interpreted later
+var MapPanel
+var MapCanvas=[0,1,2,3,4,5,6,7,8,9]
+var mcount=0
+
+//
+var north=10
+var south=10
+var east=9
+var west=9
+
+//Converts normal coords to array coords (0,0 normal is 9,10 array)
+
+func CoordToArray(coord,axis)
+  ?axis="x"
+    return coord+9
+  :?axis="y"
+    return coord+10
+
+func CopyArray(array)
+  var copied=[]
+  for e : array
+    copied.Add(e)
+  return copied
+
+func SortArray(array)
+  var count=array.Count()
+  var sorted=[]
+  var lowest
+  var index
+  for c = 0..count-1
+    lowest=999
+    for n = 0..array.Count()-1
+      ?lowest>array[n]
+        lowest=array[n]
+        index=n
+    sorted.Add(array[index])
+    array.RemoveAt(index)
+  return sorted
+
+func BanTiles()
+  for tile = 0..TileInfo.Count()-1
+    ?TileInfo[tile][2].Count()>0
+      var remove=[]
+      for direction = 0..TileInfo[tile][2].Count()-1
+        ?TileInfo[tile][2][direction]="N"
+          ?TileInfo[tile][1]-1<-10
+            remove.Add("N")
+          :?GA[CoordToArray(TileInfo[tile][1],"Y")-1][CoordToArray(TileInfo[tile][0],"X")].Count()>0
+            remove.Add("N")
+        ?TileInfo[tile][2][direction]="E"
+          ?TileInfo[tile][0]+1>10
+            remove.Add("E")
+          :?GA[CoordToArray(TileInfo[tile][1],"Y")][CoordToArray(TileInfo[tile][0],"X")+1].Count()>0
+            remove.Add("E")
+        ?TileInfo[tile][2][direction]="S"
+          ?TileInfo[tile][1]+1>11
+            remove.Add("S")
+          :?GA[CoordToArray(TileInfo[tile][1],"Y")+1][CoordToArray(TileInfo[tile][0],"X")].Count()>0
+            remove.Add("S")
+        ?TileInfo[tile][2][direction]="W"
+          ?TileInfo[tile][0]-1<-9
+            remove.Add("W")
+          :?GA[CoordToArray(TileInfo[tile][1],"Y")][CoordToArray(TileInfo[tile][0],"X")-1].Count()>0
+            remove.Add("W")
+      ?remove.Count()>0
+        for r : remove
+          TileInfo[tile][2].RemoveAt(TileInfo[tile][2].IndexOf(r))
+    ?TileInfo[tile][2].Count()=0&BannedTiles.IndexOf(tile)<0
+      BannedTiles.Add(tile)
+  ?BannedTiles.Count()>1
+    BannedTiles=SortArray(BannedTiles)
+
+func GenerateFloor(rooms)
+  GA=[
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],["◘","Start"],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
+[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+]
+  TileInfo=[[0,0,["N","E","S","W"]]]
+  Connections.Clear()
+  BannedTiles.Clear()
+  roomcount=11+rng%(50-11+1)
+  storedrooms=CopyArray(rooms)
+  FloorArray.Clear()
+  roompnl.Clear()
+  showarray.Clear()
+  Enemies.Clear()
+  currentc=0
+  Points+=100*PointsMult
+  FloorNmbr++
+  LoadingScreen()
+  completed=false
+  generating=true
+  paused=true
+
+func GenerateRooms()
+  ?generating//&roomcount>0
+    BanTiles()
+    ?TileInfo.Count()-BannedTiles.Count()<=0
+      generating=false
+      saving=true
+      continue
+    var StartTile=rng%(TileInfo.Count()-BannedTiles.Count())
+    ?BannedTiles.Count()>0
+      for ban = 0..BannedTiles.Count()-1
+        ?StartTile>=BannedTiles[ban]
+          StartTile++
+    var Direction=TileInfo[StartTile][2][rng%TileInfo[StartTile][2].Count()]
+    var Room=storedrooms[rng%storedrooms.Count()]
+    ?Direction="N"
+      GA[CoordToArray(TileInfo[StartTile][1],"Y")-1][CoordToArray(TileInfo[StartTile][0],"X")].Add(Room[0][0][0][0])
+      TileInfo.Add([TileInfo[StartTile][0],TileInfo[StartTile][1]-1,["N","E","W"]])
+      Connections.Add(["-","↑",TileInfo[StartTile][0],TileInfo[StartTile][1]])
+    :?Direction="E"
+      GA[CoordToArray(TileInfo[StartTile][1],"Y")][CoordToArray(TileInfo[StartTile][0],"X")+1].Add(Room[0][0][0][0])
+      TileInfo.Add([TileInfo[StartTile][0]+1,TileInfo[StartTile][1],["N","E","S"]])
+      Connections.Add(["-","→",TileInfo[StartTile][0],TileInfo[StartTile][1]])
+    :?Direction="S"
+      GA[CoordToArray(TileInfo[StartTile][1],"Y")+1][CoordToArray(TileInfo[StartTile][0],"X")].Add(Room[0][0][0][0])
+      TileInfo.Add([TileInfo[StartTile][0],TileInfo[StartTile][1]+1,["E","S","W"]])
+      Connections.Add(["-","↓",TileInfo[StartTile][0],TileInfo[StartTile][1]])
+    :?Direction="W"
+      GA[CoordToArray(TileInfo[StartTile][1],"Y")][CoordToArray(TileInfo[StartTile][0],"X")-1].Add(Room[0][0][0][0])
+      TileInfo.Add([TileInfo[StartTile][0]-1,TileInfo[StartTile][1],["N","S","W"]])
+      Connections.Add(["-","←",TileInfo[StartTile][0],TileInfo[StartTile][1]])
+    TileInfo[StartTile][2].RemoveAt(TileInfo[StartTile][2].IndexOf(Direction))
+    roomcount--
+    ?roomcount<=0
+      GenerateMods()
+      generating=false
+      LoadText.text="Saving Data..."
+      saving=true
+  :?saving
+    ToCanvas()
+  :?displaying
+    CreateMap()
+
+func GenerateMods()
+  var ExitTile=rng%(TileInfo.Count()-1)
+  ExitTile++
+  GA[CoordToArray(TileInfo[ExitTile][1],"Y")][CoordToArray(TileInfo[ExitTile][0],"X")].Add("Exit")
+  var Chests=3+rng%(9-3+1)
+  var ChestTiles=[ExitTile]
+  var Tile
+  for C = 0..Chests-1
+    Tile=rng%(TileInfo.Count()-1-ChestTiles.Count())
+    Tile++
+    for ban = 0..ChestTiles.Count()-1
+      ?Tile>=ChestTiles[ban]
+        Tile++
+    GA[CoordToArray(TileInfo[Tile][1],"Y")][CoordToArray(TileInfo[Tile][0],"X")].Add("Chest")
+    ChestTiles.Add(Tile)
+
+func ToCanvas()
+  for m = 0..MapCanvas.Count()-1
+    MapCanvas[m].Set("X")
+  var tile
+  var ccount
+  var rcount
+  var datapos
+  var celldata
+  var x
+  var y
+  for r = 0..21
+    for c = 0..19
+      ?GA[r][c].Count()>0
+        ?north>r
+          north=r
+        ?south<r
+          south=r
+        ?east<c
+          east=c
+        ?west>c
+          west=c
+        ?GA[r][c][0]="◘"
+          tile=Tiles[0]
+        ccount=0
+        rcount=0
+        datapos=0
+        for cellcount = 0..(10*6)-1
+          celldata=string.Sub(tile,datapos,1)
+          ?celldata="█"
+            x=c*10+ccount
+            y=r*6+rcount
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27,"█")
+          :?celldata=" "
+            x=c*10+ccount
+            y=r*6+rcount
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27," ")
+          datapos=datapos+1
+          ccount++
+          ?ccount>9
+            ccount=0
+            rcount++
+            datapos=datapos+2
+        ?GA[r][c].Count()>=2
+          ?GA[r][c][1]="Start"
+            x=c*10+4
+            y=r*6+3
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27,#cyan,"ʘ")
+          :?GA[r][c][1]="Exit"
+            x=c*10+4
+            y=r*6+3
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27,#green,"≡")
+            x=c*10+5
+            y=r*6+2
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27,#red,"♀")
+          :?GA[r][c][1]="Chest"
+            x=c*10+4
+            y=r*6+3
+            MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27,#yellow,"⚿")
+  ?Connections.Count()>0
+    for c = 0..Connections.Count()-1
+      ?Connections[c][1]="↑"|Connections[c][1]="↓"
+        tile=Doors[1]
+      :?Connections[c][1]="→"|Connections[c][1]="←"
+        tile=Doors[0]
+      ccount=0
+      rcount=0
+      datapos=0
+      for cellcount = 0..(4*2)-1
+        celldata=string.Sub(tile,datapos,1)
+        ?celldata="█"
+          ?Connections[c][1]="↑"
+            x=CoordToArray(Connections[c][2],"X")*10+ccount+3
+            y=CoordToArray(Connections[c][3],"Y")*6+rcount-1
+          :?Connections[c][1]="→"
+            x=CoordToArray(Connections[c][2],"X")*10+ccount+8
+            y=CoordToArray(Connections[c][3],"Y")*6+rcount+2
+          :?Connections[c][1]="↓"
+            x=CoordToArray(Connections[c][2],"X")*10+ccount+3
+            y=CoordToArray(Connections[c][3],"Y")*6+rcount+5
+          :?Connections[c][1]="←"
+            x=CoordToArray(Connections[c][2],"X")*10+ccount-2
+            y=CoordToArray(Connections[c][3],"Y")*6+rcount+2
+          MapCanvas[(y/27)*2+(x/100)].Set(x%100,y%27," ")
+        datapos=datapos+1
+        ccount++
+        ?ccount>3
+          ccount=0
+          rcount++
+          datapos=datapos+2
+  LoadText.text="Interpreting Data..."
+  saving=false
+  displaying=true
+
+//-≈-≈-≈<Main Game>≈-≈-≈-\\
+
+//-~-~<Ascii Art>~-~-\\
+var titleasci1=ascii
+    ____                                   
+   / __ \__  ______  ____  ___  ____  ____ 
+  / / / / / / / __ \/ __ `/ _ \/ __ \/ __ \
+ / /_/ / /_/ / / / / /_/ /  __/ /_/ / / / /
+/_____/\__,_/_/ /_/\__, /\___/\____/_/ /_/ 
+  / ____/____ ___ /____/  __/¯/__   ____   
+ / /   /¯___/ __ `/ | /| / / / _ \/¯___/   
+/ /   / /  / /_/ /| |/ |/ / /  __/ /       
+\  ¯¯/ /   \  , / |  /|  / /\   / /        
+ ¯¯¯¯ ¯     ¯¯ ¯   ¯¯  ¯¯ ¯  ¯¯¯ ¯
+asciiend
+
+var titleasci2=ascii
+#,
+//,
+asciiend
+
+var you=ascii
+ .-.
+(o o)
+ `-´
+%%
+ .-.
+(- -)
+ `-´
+%%
+ .-.
+(ò ó)
+ `-´
+%%
+ .-.
+(^ ^)
+ `-´
+%%
+ .-.
+(> <)
+ `-´
+%%
+ .-.
+(T T)
+ `-´
+asciiend
+
+var spider=ascii
+
+##,-,
+/∞|¯\
+%%
+
+##,-,
+(∞/<\
+%%
+
+##,-,
+<∞|/>
+%%
+
+##,-,
+/∞(|)
+%%
+
+##,-,
+|∞<(|
+%%
+
+##,-,
+/∞|<\
+asciiend
+
+var bat=ascii
+#
+##,,
+#,"-\
+#|,#|;
+%%
+#
+##,,
+.'"-`.
+\####/
+%%
+#
+\_,,_/.
+#`"-`'
+%%
+_####__
+`\,,/.'
+##"-'
+%%
+#
+\_,,_/.
+#`"-`'
+%%
+#
+##,,
+.'"-`.
+\####/
+asciiend
+
+var skele=ascii
+#_{)
+''¯)
+##/(
+%%
+#_{)
+''¯)
+##(V
+%%
+#_{)
+''¯)
+##<|
+%%
+#_{)
+''¯)
+##/|
+asciiend
+
+var wall=ascii
+█████
+█████
+█████
+asciiend
+
+var empty=ascii
+     
+     
+     
+asciiend
+
+var stairs=ascii
+─╖╖╖╖
+ ║║║║
+─╜╜╜╜
+asciiend
+
+var step=ascii
+╖
+║
+╜
+asciiend
+
+var chest=ascii
+ ___
+┼┬☆┬┼
+└┴─┴┘
+asciiend
+
+var you2=ascii
+.-.
+'-'
+asciiend
+
+var spider2=ascii
+ _
+∞,;
+asciiend
+
+var bat2=ascii
+_ _
+`"´
+asciiend
+
+var skele2=ascii
+_{)
+>´\
+asciiend
+
+var wall2=ascii
+███
+███
+asciiend
+
+var empty2=ascii
+   
+   
+asciiend
+
+var stairs2=ascii
+╖╖╖
+╜╜╜
+asciiend
+
+var step2=ascii
+╖
+╜
+asciiend
+
+var chest2=ascii
+.=.
+└─┘
+asciiend
+
+var you3=ascii
+ʘ
+asciiend
+
+var spider3=ascii
+楽
+asciiend
+
+var bat3=ascii
+W
+asciiend
+
+var skele3=ascii
+♀
+asciiend
+
+var wall3=ascii
+█
+asciiend
+
+var empty3=ascii
+ 
+asciiend
+
+var stairs3=ascii
+≡
+asciiend
+
+var chest3=ascii
+⚿
+asciiend
+
+var Loading1=ascii
+% {repeat:1}
+#
+###.____.
+###|\  /|
+###] )( [
+###|/.:\|
+###'¯¯¯¯'
+%%
+#####,
+####/|`-._,
+###/ | ,-/
+##/-´.| /
+#´¯`-:|/
+######´
+%%
+########.
+####_.-/\
+#_.__.´  \
+##\:.,´¯¯-´
+###\/.-´
+###´
+%%
+###.
+###/\-._
+##/:.`.__._
+#`-¯¯`.  /
+####`-.\/
+########`
+%%
+######,
+#,_.-:|\
+##\-.'| \
+###\ | `-\
+####\|.-´¯`
+#####`
+%%
+#
+###.____.
+###|\:'/|
+###] )( [
+###|/  \|
+###'¯¯¯¯'
+%%
+#
+###.____.
+###|\:./|
+###] )( [
+###|/  \|
+###'¯¯¯¯'
+%%
+#
+###.____.
+###|\../|
+###] )( [
+###|/' \|
+###'¯¯¯¯'
+%%
+#
+###.____.
+###|\. /|
+###] )( [
+###|/.'\|
+###'¯¯¯¯'
+%%
+#
+###.____.
+###|\  /|
+###] )( [
+###|/..\|
+###'¯¯¯¯'
+asciiend
+
+var Loading2=ascii
+% {repeat:1}
+#
+#
+####\  /
+#### )( 
+####/.:\
+%%
+#
+#####|
+#### | ,-
+###-´.| 
+#####:|
+%%
+#
+#######/
+###__.´  
+###:.,´¯¯
+####/
+%%
+#
+####\
+###:.`.__
+###¯¯`.  
+#######\
+%%
+#
+#####:|
+###-.'| 
+#### | `-
+#####|
+%%
+#
+#
+####\:'/
+#### )( 
+####/  \
+%%
+#
+#
+####\:./
+#### )( 
+####/  \
+%%
+#
+#
+####\../
+#### )( 
+####/' \
+%%
+#
+#
+####\. /
+#### )( 
+####/.'\
+%%
+#
+#
+####\  /
+#### )( 
+####/..\
+asciiend
+
+var Loading3=ascii
+% {repeat:1}
+#
+#
+#
+#
+#####.:
+%%
+#
+#
+#
+#####.
+#####:
+%%
+#
+#
+#
+###:.
+%%
+#
+#
+###:.
+%%
+#
+#####:
+#####'
+%%
+#
+#
+#####:'
+%%
+#
+#
+#####:.
+%%
+#
+#
+#####..
+#
+#####'
+%%
+#
+#
+#####.
+#
+#####.'
+%%
+#
+#
+#
+#
+#####..
+asciiend
+
+var pauseasci=ascii
+█ █
+▀ ▀
+asciiend
+
+//-~-~<Arrays>~-~-\\
+var FloorArray=[]
+var showarray=[]
+var Enemies=[]
+var HitFoe=[]
+var Nodes=[]
+var RemoveArray=[]
+var MoveBtns=[0,1,2,3]
+//0 Name,1 Time
+var Effects=[["Webbed",0]]
+
+//-~-~<UI Components>~-~-\\
+var roompnl
+var camera
+var cameraback
+var You
+var genbtn
+var Back
+var RetryBtn
+var LoadingAnim1
+var LoadingAnim2
+var LoadingAnim3
+var LoadBack
+var LoadText
+var LoadPnl
+var TitlePnl
+var Title1
+var Title2
+var PlayBtn
+var StatTxt
+var LeaveBtn
+var PauseBtn
+var PausePnl
+var PauseAnim
+
+//-~-~<Other Variables>~-~-\\
+var totalc
+var currentc
+var zoom=3
+var playerC=0
+var playerR=0
+var spawnPerc=25
+var paused=true
+var Health=20
+var HealMult=1.0
+var Level=1
+var OldLevel=1
+var DamageMult=1.0
+var Points=-100
+var PointsMult=1.0
+var MeleeBtn
+var AttackCD=0
+var FloorNmbr=0
+var ShowHitTimer=0
+var HighScore=0
+var MoveCD=0
+var Slowed=false
+var FacialTimer=0
+
+func CreateMap()
+  totalc=(east*10+9)-(west*10)
+  for c = 0..4
+    FloorArray.Add([]) //Add columns
+    showarray.Add([])
+    for r = 0..(south*6+5)-(north*6)
+      FloorArray[currentc].Add([[],[],[]]) //Add Rows
+      var x
+      x=currentc+(west*10)
+      var y
+      y=r+(north*6)
+      var celldata
+      celldata=MapCanvas[(y/27)*2+(x/100)].Get(x%100,y%27)
+      ?celldata="X"
+        showarray[currentc].Add(CreateCell(currentc,r,empty))
+        FloorArray[currentc][r][0].Add("empty")
+      :?celldata="█"
+        showarray[currentc].Add(CreateCell(currentc,r,wall))
+        FloorArray[currentc][r][0].Add("wall")
+      :?celldata=" "
+        ?rng%1000<spawnPerc
+          //0 Foe Ascii,1 Foe X,2 Foe Y,3 Engaged?,4 Move Timer,5 Health,6 Foe Type
+          ?rng%2=0
+            Enemies.Add([CreateFoe(currentc,r,spider),currentc,r,false,rng%45+1,(FloorNmbr*5)*(1+(FloorNmbr/5)),"Spider"])
+          :
+            Enemies.Add([CreateFoe(currentc,r,bat),currentc,r,false,rng%15+1,((FloorNmbr*5)*(1+(FloorNmbr/5)))/2,"Bat"])
+          FloorArray[currentc][r][0].Add("foe")
+        :
+          FloorArray[currentc][r][0].Add("empty")
+        showarray[currentc].Add(CreateCell(currentc,r,empty))
+      :?celldata="⚿"
+        showarray[currentc].Add(CreateCell(currentc,r,chest))
+        FloorArray[currentc][r][0].Add("chest")
+      :?celldata="ʘ"
+        playerC=currentc
+        playerR=r
+        showarray[currentc].Add(CreateCell(currentc,r,empty))
+        You=CreateYou(currentc,r)
+        FloorArray[currentc][r][0].Add("you")
+      :?celldata="♀"
+        Enemies.Add([CreateFoe(currentc,r,skele),currentc,r,false,60,((FloorNmbr*5)*(1+(FloorNmbr/5)))*2,"Skele"])
+        FloorArray[currentc][r][0].Add("foe")
+        showarray[currentc].Add(CreateCell(currentc,r,empty))
+      :?celldata="≡"
+        showarray[currentc].Add(CreateCell(currentc,r,stairs))
+        FloorArray[currentc][r][0].Add("exit")
+    currentc++
+  ?totalc<=currentc
+    LoadPnl.Recycle()
+    displaying=false
+    completed=true
+    paused=false
+
+func CreateYou(c,r)
+  var cell=ui.AddAnim(you)
+  cell.anchor=top_left
+  cell.dock=top_left
+  ?zoom=3
+    cell.x=c*5
+    cell.y=r*3
+    roompnl.x=(-cell.x)+2
+    roompnl.y=(-cell.y)+1
+  :?zoom=2
+    cell.x=c*3
+    cell.y=r*2
+    cell.Load(you2)
+    roompnl.x=(-cell.x)+3
+    roompnl.y=(-cell.y)+2
+  :
+    cell.x=c*zoom
+    cell.y=r*zoom
+    cell.Load(you3)
+    roompnl.x=-cell.x+4
+    roompnl.y=-cell.y+2
+  cell.color=#cyan
+  roompnl.Add(cell)
+  return cell
+
+func CreateFoe(c,r,type)
+  var cell=ui.AddAnim(type)
+  cell.anchor=top_left
+  cell.dock=top_left
+  ?type=bat
+    cell.pivotX=1
+    cell.pivotY=1
+  ?zoom=3
+    cell.x=c*5
+    cell.y=r*3
+  :?zoom=2
+    cell.x=c*3
+    cell.y=r*2
+  :
+    cell.x=c*zoom
+    cell.y=r*zoom
+  cell.color=#red
+  cell.loop=true
+  cell.Play()
+  roompnl.Add(cell)
+  return cell
+
+func CreateCell(c,r,type)
+  var cell=ui.AddAnim(type)
+  cell.anchor=top_left
+  cell.dock=top_left
+  ?zoom=3
+    cell.x=c*5
+    cell.y=r*3
+  :?zoom=2
+    cell.x=c*3
+    cell.y=r*2
+  :
+    cell.x=c*zoom
+    cell.y=r*zoom
+  ?type=wall|type=wall2|type=wall3
+    cell.color=#808080
+  :?type=chest|type=chest2|type=chest3
+    cell.color=#yellow
+  :?type=stairs
+    var cell2=cell.AddLayer(step)
+    cell2.color=#a9a9a9
+    cell2.pivotX=-2
+    var cell3=cell.AddLayer(step)
+    cell3.color=#808080
+    cell3.pivotX=-3
+    var cell4=cell.AddLayer(step)
+    cell4.color=#565656
+    cell4.pivotX=-4
+  :?type=stairs2
+    var cell2=cell.AddLayer(step2)
+    cell2.color=#a9a9a9
+    cell2.pivotX=-1
+    var cell3=cell.AddLayer(step2)
+    cell3.color=#808080
+    cell3.pivotX=-2
+  roompnl.Add(cell,0)
+  return cell
+
+func LootChest(c,r)
+  var random=rng
+  play treasure_open
+  ?random%3=0
+    PointsMult+=0.1
+  :?random%3=1
+    DamageMult+=0.2
+  :
+    HealMult+=0.25
+    Health+=5*HealMult
+  Points+=50*PointsMult
+  ?zoom=3
+    showarray[c][r].Load(empty)
+  :?zoom=2
+    showarray[c][r].Load(empty2)
+  :
+    showarray[c][r].Load(empty3)
+
+func MoveYou(direction)
+  ?paused|MoveCD>0
+    return
+  ?direction="North"
+    ?FloorArray[playerC][playerR-1][0][0]="empty"|FloorArray[playerC][playerR-1][0][0]="chest"
+      ?FloorArray[playerC][playerR-1][0][0]="chest"
+        LootChest(playerC,playerR-1)
+      FloorArray[playerC][playerR][0][0]="empty"
+      playerR--
+      FloorArray[playerC][playerR][0][0]="you"
+    :?FloorArray[playerC][playerR-1][0][0]="exit"
+      You.Recycle()
+      GenerateFloor(testrooms)
+  :?direction="East"
+    ?FloorArray[playerC+1][playerR][0][0]="empty"|FloorArray[playerC+1][playerR][0][0]="chest"
+      ?FloorArray[playerC+1][playerR][0][0]="chest"
+        LootChest(playerC+1,playerR)
+      FloorArray[playerC][playerR][0][0]="empty"
+      playerC++
+      FloorArray[playerC][playerR][0][0]="you"
+    :?FloorArray[playerC+1][playerR][0][0]="exit"
+      You.Recycle()
+      GenerateFloor(testrooms)
+  :?direction="South"
+    ?FloorArray[playerC][playerR+1][0][0]="empty"|FloorArray[playerC][playerR+1][0][0]="chest"
+      ?FloorArray[playerC][playerR+1][0][0]="chest"
+        LootChest(playerC,playerR+1)
+      FloorArray[playerC][playerR][0][0]="empty"
+      playerR++
+      FloorArray[playerC][playerR][0][0]="you"
+    :?FloorArray[playerC][playerR+1][0][0]="exit"
+      You.Recycle()
+      GenerateFloor(testrooms)
+  :?direction="West"
+    ?FloorArray[playerC-1][playerR][0][0]="empty"|FloorArray[playerC-1][playerR][0][0]="chest"
+      ?FloorArray[playerC-1][playerR][0][0]="chest"
+        LootChest(playerC-1,playerR)
+      FloorArray[playerC][playerR][0][0]="empty"
+      playerC--
+      FloorArray[playerC][playerR][0][0]="you"
+    :?FloorArray[playerC-1][playerR][0][0]="exit"
+      You.Recycle()
+      GenerateFloor(testrooms)
+  MoveCD=10
+  ?Slowed
+    MoveCD+=20
+  ?zoom=3
+    You.x=playerC*5
+    You.y=playerR*3
+  :?zoom=2
+    You.x=playerC*3
+    You.y=playerR*2
+  :
+    You.x=playerC*zoom
+    You.y=playerR*zoom
+  ?zoom=3
+    roompnl.x=(-You.x)+2
+    roompnl.y=(-You.y)+1
+  :?zoom=2
+    roompnl.x=(-You.x)+3
+    roompnl.y=(-You.y)+2
+  :
+    roompnl.x=-You.x+4
+    roompnl.y=-You.y+2
+
+//These are the Nodes that Pathfinding Uses
+func CreateNodeArray()
+  var NodeArray=[]
+  for c = 0..10
+    NodeArray.Add([])
+    for r = 0..10
+      //0 X,1 Y,2 Connection X,3 Connection Y,4 G(Dist from Start),5 H(Dist to Target),6 G+H,7 Obstacle?
+      NodeArray[c].Add([c,r,-1,-1,-1,-1,-2,false])
+  return NodeArray
+
+func Pathfind(startNodeCoords,targetNodeCoords)
+  var startNode=Nodes[startNodeCoords[0]][startNodeCoords[1]]
+  var targetNode=Nodes[targetNodeCoords[0]][targetNodeCoords[1]]
+  var toSearch = [startNode]
+  var processed = []
+  var current
+  startNode[4]=0
+  startNode[5]=math.Abs(startNode[0]-targetNode[0])+math.Abs(startNode[1]-targetNode[1])
+  startNode[6]=startNode[5]
+  startNode[7]=false
+
+  for l = 0..99
+    ?toSearch.Count()>0
+      current = toSearch[0]
+      for t : toSearch
+        ?t[6]<current[6] | 
+        ^t[6]=current[6] & 
+        ^t[5]<current[5]
+          current=t
+    
+      processed.Add(current)
+      toSearch.RemoveAt(toSearch.IndexOf(current))
+    
+      ?current=targetNode
+        var currentPathTile=targetNode
+        var path = []
+        for w = 0..99
+          ?currentPathTile!startNode
+            path.Add(currentPathTile)
+            currentPathTile=Nodes[currentPathTile[2]][currentPathTile[3]]
+          :
+            break
+        return path
+      
+      for d = 0..3
+        var neighbor
+        //North
+        ?d=0&current[1]>0
+          neighbor=Nodes[current[0]][current[1]-1]
+        //East
+        :?d=1&current[0]<Nodes.Count()-1
+          neighbor=Nodes[current[0]+1][current[1]]
+        //South
+        :?d=2&current[1]<Nodes[current[0]].Count()-1
+          neighbor=Nodes[current[0]][current[1]+1]
+        //West
+        :?d=3&current[0]>0
+          neighbor=Nodes[current[0]-1][current[1]]
+        :
+          continue
+        ?processed.Contains(neighbor)|neighbor[7]=true
+          continue
+    
+        var inSearch
+        inSearch = toSearch.Contains(current)
+    
+        var costToNeighbor
+        costToNeighbor = current[4] + 1
+
+        ? !inSearch | costToNeighbor < neighbor[4]
+          neighbor[2]=current[0]
+          neighbor[3]=current[1]
+          neighbor[4]=costToNeighbor
+          neighbor[6]=neighbor[4]+neighbor[5]
+
+          ? !inSearch
+            neighbor[5]=math.Abs(neighbor[0]-targetNode[0])+math.Abs(neighbor[1]-targetNode[1])
+            neighbor[6]=neighbor[4]+neighbor[5]
+            toSearch.Add(neighbor)
+    :
+       return false
+
+func MoveFoe(Enemy)
+  ?math.Abs(Enemy[1]-playerC)+math.Abs(Enemy[2]-playerR)<=1
+    ?Enemy[6]="Spider"
+      play spider_attack
+      Health-=(1+FloorNmbr)*(1+(FloorNmbr/5))
+      //Apply Webbed
+      Effects[0][1]=150
+      Slowed=true
+    :?Enemy[6]="Bat"
+      play bat_attack
+      Health-=((1+FloorNmbr)*(1+(FloorNmbr/5)))/2.0
+    :?Enemy[6]="Skele"
+      play skeletimmy_attack
+      Health-=((1+FloorNmbr)*(1+(FloorNmbr/5)))*2
+    cameraback.color=#red
+    ShowHitTimer=2
+    ?zoom=3
+      You.frame=4
+      FacialTimer=15
+    return
+  ?math.Abs(Enemy[1]-playerC)<=5&math.Abs(Enemy[2]-playerR)<=5
+    ?Enemy[6]="Spider"
+      play spider_walk
+    :?Enemy[6]="Bat"
+      play bat_wing
+    :?Enemy[6]="Skele"
+      play skeletony_walk
+    for c = 0..10
+      for r = 0..10
+        //0 X,1 Y,2 Connection X,3 Connection Y,4 G(Dist from Start),5 H(Dist to Target),6 G+H,7 Obstacle?
+        ?Enemy[1]-c+5>0 & Enemy[1]-c+5<FloorArray.Count()
+          ?Enemy[2]-r+5>0 & Enemy[2]-r+5<FloorArray[Enemy[1]-c+5].Count()
+            ?FloorArray[Enemy[1]-c+5][Enemy[2]-r+5][0][0]="empty"|FloorArray[Enemy[1]-c+5][Enemy[2]-r+5][0][0]="you"
+              Nodes[c][r]=[c,r,-1,-1,-1,-1,-2,false]
+              continue
+        Nodes[c][r]=[c,r,-1,-1,-1,-1,-2,true]
+    var targetX=5+Enemy[1]-playerC
+    var targetY=5+Enemy[2]-playerR
+    var Path=Pathfind([5,5],[targetX,targetY])
+    ?Path
+      var Node=Path[Path.Count()-1]
+      //North
+      ?Nodes[5][5][1]<Node[1]
+        ?FloorArray[Enemy[1]][Enemy[2]-1][0][0]="empty"
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+          Enemy[2]=Enemy[2]-1
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+      //East
+      :?Nodes[5][5][0]>Node[0]
+        ?FloorArray[Enemy[1]+1][Enemy[2]][0][0]="empty"
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+          Enemy[1]=Enemy[1]+1
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+      //South
+      :?Nodes[5][5][1]>Node[1]
+        ?FloorArray[Enemy[1]][Enemy[2]+1][0][0]="empty"
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+          Enemy[2]=Enemy[2]+1
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+      //West
+      :?Nodes[5][5][0]<Node[0]
+        ?FloorArray[Enemy[1]-1][Enemy[2]][0][0]="empty"
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+          Enemy[1]=Enemy[1]-1
+          FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+      ?zoom=3
+        Enemy[0].x=Enemy[1]*5
+        Enemy[0].y=Enemy[2]*3
+      :?zoom=2
+        Enemy[0].x=Enemy[1]*3
+        Enemy[0].y=Enemy[2]*2
+      :
+        Enemy[0].x=Enemy[1]*zoom
+        Enemy[0].y=Enemy[2]*zoom
+  :
+    Enemy[3]=false
+
+func FoeController()
+  var random=rng
+  ?Enemies.Count()>0&!paused
+    for Enemy : Enemies
+      ?Enemy[5]<=0
+        ?Enemy[6]="Spider"
+          play spider_death
+        :?Enemy[6]="Bat"
+          play bat_death
+        :?Enemy[6]="Skele"
+          play skeletimmy_death
+          random=rng
+          ?random%3=0
+            PointsMult+=0.1
+          :?random%3=1
+            DamageMult+=0.2
+          :
+            HealMult+=0.25
+            Health+=5*HealMult
+          Points+=25*PointsMult
+        Points+=25*PointsMult
+        Enemy[0].Recycle()
+        RemoveArray.Add(Enemy)
+        ?zoom=3
+          You.frame=3
+          FacialTimer=15
+        continue
+      ?math.Abs(Enemy[1]-playerC)<=2&math.Abs(Enemy[2]-playerR)<=2
+        Enemy[3]=true
+      :?math.Abs(Enemy[1]-playerC)>5&math.Abs(Enemy[2]-playerR)>5
+        Enemy[3]=false
+      Enemy[4]=Enemy[4]-1
+      ?Enemy[4]<=0
+        ?Enemy[3]
+          MoveFoe(Enemy)
+        :
+          var direction
+          direction=rng%8
+          //North
+          ?direction=0
+            ?FloorArray[Enemy[1]][Enemy[2]-1][0][0]="empty"
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+              Enemy[2]=Enemy[2]-1
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+          //East
+          :?direction=1
+            ?FloorArray[Enemy[1]+1][Enemy[2]][0][0]="empty"
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+              Enemy[1]=Enemy[1]+1
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+          //South
+          :?direction=2
+            ?FloorArray[Enemy[1]][Enemy[2]+1][0][0]="empty"
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+              Enemy[2]=Enemy[2]+1
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+          //West
+          :?direction=3
+            ?FloorArray[Enemy[1]-1][Enemy[2]][0][0]="empty"
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="empty"
+              Enemy[1]=Enemy[1]-1
+              FloorArray[Enemy[1]][Enemy[2]][0][0]="foe"
+          ?zoom=3
+            Enemy[0].x=Enemy[1]*5
+            Enemy[0].y=Enemy[2]*3
+          :?zoom=2
+            Enemy[0].x=Enemy[1]*3
+            Enemy[0].y=Enemy[2]*2
+          :
+            Enemy[0].x=Enemy[1]*zoom
+            Enemy[0].y=Enemy[2]*zoom
+        ?Enemy[6]="Spider"
+          Enemy[4]=45
+        :?Enemy[6]="Bat"
+          Enemy[4]=30
+        :?Enemy[6]="Skele"
+          Enemy[4]=60
+    ?RemoveArray.Count()>0
+      for R : RemoveArray
+          FloorArray[R[1]][R[2]][0][0]="empty"
+        Enemies.RemoveAt(Enemies.IndexOf(R))
+      RemoveArray.Clear()
+
+func Attack(btn)
+  ?paused|AttackCD>0
+    return
+  ?btn=MeleeBtn
+    play cult_guard_attack
+    for d = 0..3
+      //North
+      ?d=0&playerR>0
+        ?FloorArray[playerC][playerR-1][0][0]="foe"
+          for Enemy : Enemies
+            ?Enemy[1]=playerC&Enemy[2]=playerR-1
+              Enemy[5]=Enemy[5]-(Level*DamageMult)
+              Enemy[0].color=#white
+              HitFoe.Add(Enemy[0])
+              break
+      //East
+      ?d=1&playerC<FloorArray.Count()-1
+        ?FloorArray[playerC+1][playerR][0][0]="foe"
+          for Enemy : Enemies
+            ?Enemy[1]=playerC+1&Enemy[2]=playerR
+              Enemy[5]=Enemy[5]-(Level*DamageMult)
+              Enemy[0].color=#white
+              HitFoe.Add(Enemy[0])
+              break
+      //South
+      ?d=2&playerR<FloorArray[playerC].Count()-1
+        ?FloorArray[playerC][playerR+1][0][0]="foe"
+          for Enemy : Enemies
+            ?Enemy[1]=playerC&Enemy[2]=playerR+1
+              Enemy[5]=Enemy[5]-(Level*DamageMult)
+              Enemy[0].color=#white
+              HitFoe.Add(Enemy[0])
+              break
+      //West
+      ?d=3&playerC>0
+        ?FloorArray[playerC-1][playerR][0][0]="foe"
+          for Enemy : Enemies
+            ?Enemy[1]=playerC-1&Enemy[2]=playerR
+              Enemy[5]=Enemy[5]-(Level*DamageMult)
+              Enemy[0].color=#white
+              HitFoe.Add(Enemy[0])
+              break
+  ?zoom=3
+    You.frame=2
+    FacialTimer=15
+  AttackCD=30
+
+func Zoom()
+  zoom++
+  ?zoom>3
+    zoom=1
+  for c = 0..FloorArray.Count()-1
+    for r = 0..FloorArray[c].Count()-1
+      ?zoom=3
+        showarray[c][r].x=c*5
+        showarray[c][r].y=r*3
+        ?FloorArray[c][r][0][0]="wall"
+          showarray[c][r].Load(wall)
+        :?FloorArray[c][r][0][0]="empty"|FloorArray[c][r][0][0]="foe"
+          showarray[c][r].Load(empty)
+        :?FloorArray[c][r][0][0]="chest"
+          showarray[c][r].Load(chest)
+        :?FloorArray[c][r][0][0]="you"
+          showarray[c][r].Load(empty)
+          You.Load(you)
+          You.x=c*5
+          You.y=r*3
+        :?FloorArray[c][r][0][0]="exit"
+          showarray[c][r].Recycle()
+          showarray[c][r]=CreateCell(c,r,stairs)
+      :?zoom=2
+        showarray[c][r].x=c*3
+        showarray[c][r].y=r*2
+        ?FloorArray[c][r][0][0]="wall"
+          showarray[c][r].Load(wall2)
+        :?FloorArray[c][r][0][0]="empty"|FloorArray[c][r][0][0]="foe"
+          showarray[c][r].Load(empty2)
+        :?FloorArray[c][r][0][0]="chest"
+          showarray[c][r].Load(chest2)
+        :?FloorArray[c][r][0][0]="you"
+          showarray[c][r].Load(empty2)
+          You.Load(you2)
+          You.x=c*3
+          You.y=r*2
+        :?FloorArray[c][r][0][0]="exit"
+          showarray[c][r].Recycle()
+          showarray[c][r]=CreateCell(c,r,stairs2)
+      :
+        showarray[c][r].x=c*zoom
+        showarray[c][r].y=r*zoom
+        ?FloorArray[c][r][0][0]="wall"
+          showarray[c][r].Load(wall3)
+        :?FloorArray[c][r][0][0]="empty"|FloorArray[c][r][0][0]="foe"
+          showarray[c][r].Load(empty3)
+        :?FloorArray[c][r][0][0]="chest"
+          showarray[c][r].Load(chest3)
+        :?FloorArray[c][r][0][0]="you"
+          showarray[c][r].Load(empty3)
+          You.Load(you3)
+          You.x=c*zoom
+          You.y=r*zoom
+        :?FloorArray[c][r][0][0]="exit"
+          showarray[c][r].Recycle()
+          showarray[c][r]=CreateCell(c,r,stairs3)
+  ?Enemies.Count()>0
+    for f = 0..Enemies.Count()-1
+      Enemies[f][0].pivotX=0
+      Enemies[f][0].pivotY=0
+      ?zoom=3
+        Enemies[f][0].x=Enemies[f][1]*5
+        Enemies[f][0].y=Enemies[f][2]*3
+        ?Enemies[f][6]="Spider"
+          Enemies[f][0].Load(spider)
+        :?Enemies[f][6]="Bat"
+          Enemies[f][0].Load(bat)
+          Enemies[f][0].pivotX=1
+          Enemies[f][0].pivotY=1
+        :?Enemies[f][6]="Skele"
+          Enemies[f][0].Load(skele)
+      :?zoom=2
+        Enemies[f][0].x=Enemies[f][1]*3
+        Enemies[f][0].y=Enemies[f][2]*2
+        ?Enemies[f][6]="Spider"
+          Enemies[f][0].Load(spider2)
+        :?Enemies[f][6]="Bat"
+          Enemies[f][0].Load(bat2)
+        :?Enemies[f][6]="Skele"
+          Enemies[f][0].Load(skele2)
+      :
+        Enemies[f][0].x=Enemies[f][1]*zoom
+        Enemies[f][0].y=Enemies[f][2]*zoom
+        ?Enemies[f][6]="Spider"
+          Enemies[f][0].Load(spider3)
+        :?Enemies[f][6]="Bat"
+          Enemies[f][0].Load(bat3)
+        :?Enemies[f][6]="Skele"
+          Enemies[f][0].Load(skele3)
+  ?zoom=3
+    roompnl.x=(-You.x)+2
+    roompnl.y=(-You.y)+1
+  :?zoom=2
+    roompnl.x=(-You.x)+3
+    roompnl.y=(-You.y)+2
+  :
+    roompnl.x=-You.x+4
+    roompnl.y=-You.y+2
+
+func MapGenV3()
+  Zoom()
+
+func Retry()
+  RetryBtn.Recycle()
+  FloorNmbr=0
+  HealMult=1.0
+  DamageMult=1.0
+  PointsMult=1.0
+  GenerateFloor(testrooms)
+  Health=20
+  Points=0
+  OldLevel=1
+
+func GameOver()
+  RetryBtn=ui.AddButton()
+  RetryBtn.text="Retry?"
+  RetryBtn.y=3
+  RetryBtn.SetPressed(Retry)
+
+func LoadingScreen()
+  LoadPnl=ui.AddPanel()
+  LoadBack=ui.AddCanvas()
+  LoadBack.w=screen.w
+  LoadBack.h=screen.h
+  LoadBack.Set(" ")
+  LoadPnl.Add(LoadBack)
+  LoadingAnim1=ui.AddAnim(Loading1)
+  LoadingAnim1.color=#733a00
+  LoadingAnim2=LoadingAnim1.AddLayer(Loading2)
+  LoadingAnim2.color=#a9a9a9
+  LoadingAnim3=LoadingAnim1.AddLayer(Loading3)
+  LoadingAnim3.color=#cyan
+  LoadingAnim1.loop=true
+  LoadingAnim1.Play()
+  LoadPnl.Add(LoadingAnim1)
+  LoadText=ui.AddText("Generating...")
+  LoadText.w=20
+  LoadText.align=center
+  LoadText.y=5
+  LoadPnl.Add(LoadText)
+
+func TitleScreen()
+  TitlePnl=ui.AddPanel()
+  TitlePnl.style=ui.AddStyle("#########")
+  Title1=ui.AddAnim(titleasci1)
+  Title1.anchor=top_center
+  Title1.dock=top_center
+  Title1.y=-5
+  Title2=Title1.AddLayer(titleasci2)
+  Title2.pivotX=-3
+  Title2.pivotY=-6
+  Title2.color=#808080
+  TitlePnl.Add(Title1)
+  PlayBtn=ui.AddButton()
+  Title1.anchor=bottom_center
+  Title1.dock=bottom_center
+  PlayBtn.y=2
+  PlayBtn.text="Play"
+  PlayBtn.SetPressed(Start)
+  TitlePnl.Add(PlayBtn)
+
+func Start()
+  TitlePnl.Recycle()
+  cameraback.visible=true
+  PauseBtn=ui.AddButton()
+  PauseBtn.anchor=top_left
+  PauseBtn.dock=top_left
+  PauseBtn.w=9
+  PauseBtn.h=3
+  PauseBtn.y=5
+  PauseBtn.text="Pause"
+  PauseBtn.SetPressed(PauseGame)
+  genbtn=ui.AddButton()
+  genbtn.anchor=bottom_left
+  genbtn.dock=bottom_left
+  genbtn.w=9
+  genbtn.h=5
+  genbtn.y=-5
+  genbtn.text="Zoom"
+  genbtn.SetPressed(Zoom)
+  MeleeBtn=ui.AddButton()
+  MeleeBtn.anchor=bottom_right
+  MeleeBtn.dock=bottom_right
+  MeleeBtn.x=0
+  MeleeBtn.w=17
+  MeleeBtn.h=7
+  MeleeBtn.bcolor=#8c2222
+  MeleeBtn.text="Melee"
+  MeleeBtn.tcolor=#red
+  MeleeBtn.SetPressed(Attack)
+  for b = 0..2
+    ?b=2
+      b=3
+    MoveBtns[b]=ui.AddButton()
+    MoveBtns[b].anchor=bottom_left
+    MoveBtns[b].dock=bottom_left
+    MoveBtns[b].w=9
+    MoveBtns[b].h=5
+    ?b<2
+      MoveBtns[b].x=b*9
+    :
+      MoveBtns[b].x=2*9
+    MoveBtns[b].SetPressed(Move)
+  MoveBtns[2]=ui.AddButton()
+  MoveBtns[2].anchor=bottom_left
+  MoveBtns[2].dock=bottom_left
+  MoveBtns[2].w=9
+  MoveBtns[2].h=5
+  MoveBtns[2].x=9
+  MoveBtns[2].y=-5
+  MoveBtns[2].SetPressed(Move)
+  MoveBtns[0].text="←"
+  MoveBtns[1].text="↓"
+  MoveBtns[2].text="↑"
+  MoveBtns[3].text="→"
+  StatTxt=ui.AddText("Stats\n[color=#red]Health:"+Health
+^+"\nHeal Mult:"+HealMult+"\nHealing:"+(5*HealMult)
+^+"[/color]\n[color=#cyan]Level:"+Level
+^+"\nDamage Mult:"+DamageMult+"\nDamage:"+(Level*DamageMult)
+^+"[/color]\n[color=#magenta]Points:"+Points
+^+"\nPoints Mult:"+PointsMult+"[/color]"
+^+"\n[color=#yellow]Floor:"+FloorNmbr+"[/color]")
+  StatTxt.anchor=top_right
+  StatTxt.dock=top_right
+  StatTxt.w=17
+  StatTxt.h=15
+  StatTxt.y=4
+  GenerateFloor(testrooms)
+
+func Move(btn)
+  ?btn=MoveBtns[0]
+    MoveYou("West")
+  :?btn=MoveBtns[1]
+    MoveYou("South")
+  :?btn=MoveBtns[2]
+    MoveYou("North")
+  :?btn=MoveBtns[3]
+    MoveYou("East")
+
+func PauseGame()
+  paused=!paused
+  PauseAnim.visible=paused
+?loc=waterfall
+  ?loc.begin
+    disable banner
+    music.Play(undead_crypt_0)
+    HighScore=Storage.Get("HighScore",0)
+    Nodes=CreateNodeArray()
+    MapPanel=ui.AddPanel()
+    MapPanel.anchor=top_left
+    MapPanel.dock=top_left
+    MapPanel.x=-50
+    MapPanel.y=-50
+    for m = 0..MapCanvas.Count()-1
+      MapCanvas[m]=ui.AddCanvas()
+      MapCanvas[m].anchor=top_left
+      MapCanvas[m].dock=top_left
+      MapCanvas[m].w=100
+      MapCanvas[m].h=27
+      MapCanvas[m].y=mcount*27
+      ?m%2=0
+        MapCanvas[m].x=0
+      :
+        MapCanvas[m].x=100
+        mcount++
+      MapCanvas[m].Set(" ")
+      MapPanel.Add(MapCanvas[m])
+    Back=ui.AddCanvas()
+    Back.w=screen.w
+    Back.h=screen.h
+    cameraback=ui.AddPanel()
+    cameraback.w=53
+    cameraback.h=19
+    cameraback.visible=false
+    Back.Set(" ")
+    roompnl=ui.AddPanel()
+    //roompnl.anchor=top_left
+    //roompnl.dock=top_left
+    roompnl.x=0
+    roompnl.y=0
+    roompnl.style=ui.AddStyle("#########")
+    camera=ui.AddPanel()
+    camera.w=51
+    camera.h=17
+    camera.style=ui.AddStyle("#########")
+    camera.clip=true
+    camera.Add(roompnl)
+    LeaveBtn=ui.AddButton()
+    LeaveBtn.anchor=top_left
+    LeaveBtn.dock=top_left
+    LeaveBtn.w=9
+    LeaveBtn.h=5
+    LeaveBtn.text="Leave"
+    LeaveBtn.SetPressed(Loc.Leave)
+    //PausePnl=ui.AddPanel()
+    //PausePnl.w=7
+    //PausePnl.h=5
+    //PausePnl.visible=false
+    PauseAnim=ui.AddAnim(pauseasci)
+    PauseAnim.visible=false
+    PauseAnim.y=1
+    //PausePnl.Add(PauseAnim)
+    TitleScreen()
+  
+  disable pause
+    
+  GenerateRooms()
+  FoeController()
+  ?AttackCD>0
+    AttackCD--
+  ?MoveCD>0
+    MoveCD--
+  Level=math.FloorToInt((Points/1000)+1)
+  ?Level>OldLevel
+    Health+=5*HealMult
+    OldLevel=Level
+  ?Health<=0&!paused
+    paused=true
+    ?Points>HighScore
+      HighScore=Points
+      storage.Set("HighScore",HighScore)
+    ?zoom=3
+      You.frame=5
+      FacialTimer=0
+    GameOver()
+  
+  ?Effects.Count()>0
+    for e : Effects
+      ?e[1]>0
+        e[1]=e[1]-1
+        >`0,15,@e[0]@:@e[1]@
+        ?e[0]="Webbed"&e[1]=0
+          Slowed=false
+  
+  ?HitFoe.Count()>0
+    for f : HitFoe
+      f.color=#red
+      RemoveArray.Add(f)
+    ?RemoveArray.Count()>0
+      for R : RemoveArray
+        HitFoe.RemoveAt(HitFoe.IndexOf(R))
+      RemoveArray.Clear()
+  
+  ?ShowHitTimer>0
+    ShowHitTimer--
+    ?ShowHitTimer=0
+      cameraback.color=#white
+  
+  ?!paused
+    StatTxt.text="Stats\n[color=#red]Health:"+Health
+  ^+"\nHeal Mult:"+HealMult+"\nHealing:"+(5*HealMult)
+  ^+"[/color]\n[color=#cyan]Level:"+Level
+  ^+"\nDamage Mult:"+DamageMult+"\nDamage:"+(Level*DamageMult)
+  ^+"[/color]\n[color=#magenta]Points:"+Points
+  ^+"\nPoints Mult:"+PointsMult+"[/color]"
+  ^+"\n[color=#yellow]Floor:"+FloorNmbr+"[/color]"
+    >c33,11,#a9a9a9,CD:@AttackCD@
+    >c-25,8,#a9a9a9,CD:@MoveCD@
+  
+    ?zoom=3&FacialTimer=0
+      ?rng%100=0
+        You.frame=1
+        FacialTimer=10
+    
+    ?FacialTimer>0
+      FacialTimer--
+      ?FacialTimer=0
+        You.frame=0
+  
+  >c-7,@-(screen.h/2)@,#rainFF,HighScore:@HighScore@
+  
+  ?key=leftBegin
+    MoveYou("West")
+  ?key=rightBegin
+    MoveYou("East")
+  ?key=upBegin
+    MoveYou("North")
+  ?key=downBegin
+    MoveYou("South")
+
+var Mockup=ascii
+┌───────┐
+│       │
+│ Leave │
+│       │
+└───────┘########.---------------------------------------------------.
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+#################|###################################################|
+┌───────┐┌───────┐###################################################|
+│       ││   .   │###################################################|
+│ Zoom? ││  / \  │###################################################|
+│       ││  ¯'¯  │###################################################|
+└───────┘└───────┘###################################################|┌───────────────┐
+┌───────┐┌───────┐┌───────┐-Stats------------------------------------'│               │
+│    .  ││  _._  ││  .    │ Health:20 | Heal Mult:1   | Healing:5     │     Melee     │
+│ .´ |  ││  \ /  ││  | `. │ Level:1   | Damage Mult:1 | Damage:1      │     CD:30     │
+│  `.!  ││   '   ││  !.´  │ Points:0  | Points Mult:1 |               │               │
+└───────┘└───────┘└───────┘           |               |               └───────────────┘
+asciiend
+//>c0,0,X
+//>`0,0,@Mockup@

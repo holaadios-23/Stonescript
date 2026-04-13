@@ -1,0 +1,9 @@
+todas a 0 +0 sin mindstone
+loadout 1 = quest stone + towering shield
+loadout 2 = poison hammer dP + poison hammer D
+loadout 3 = hook + torch
+loadout 4 = hook + moon
+loadout 5 = ice crossbow dI (si no sirve intentar con otra arma)
+loadout 7 = mindstone + towering shield
+loadout 8 = ouroboros + towering shield
+loadout 9 = star stone + dashing shield

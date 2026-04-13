@@ -1,0 +1,63 @@
+var sky = ascii
+####*######+#####*########+#####.########*######
+asciiend
+
+var x = 0
+var y = 0
+var w = 100
+var h = screen.h
+var len = string.Size(sky)
+
+for i = 0 .. h - 1
+  var drawY = y + i
+  // Desplazamiento basado en la fila para variar el patrón
+  var offset = (drawY * 17) % len
+  
+  // Rotar la cadena
+  var s1 = string.Sub(sky, offset)
+  var s2 = string.Sub(sky, 0, offset)
+  var full = s1 + s2
+  
+  // Repetir y cortar al ancho deseado (w)
+  full = full + full
+  var line = string.Sub(full, 0, w)
+  
+  // Dibujar en pantalla
+  >`@x@,@drawY@,#505050,@line@
+
+/*
+var ctanim
+var cta = ascii
+       ,
+ , -.-´'\
+ )`,\ ow°)
+(  ;/` ,|
+ `-(_`,|;
+%%{repeat:12}
+       ,
+ , -.-´'\
+ )`,\ ow°)
+(  ;/   .
+ `-(_`,\ \
+%%
+       ,
+   -.-´'\
+(`. \ ow°)
+(  ;/   .
+ `-(_`/ /
+asciiend
+
+
+?totalTime = 1
+ ctanim = ui.AddAnim(cta)
+ ctanim.duration = 20
+ ctanim.loop = true
+ ctanim.playOnStart = true
+ ctanim.Play()
+ ctanim.gamePause = true
+ ctanim.anchor = top_left
+ ctanim.dock = top_left
+ ctanim.color = #FFFFFF
+ctanim.x = refx - 15
+ctanim.y = refz - 0
+*/

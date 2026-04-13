@@ -1,0 +1,271 @@
+/*Credits\\
+By Citriondragon
+Version 1.0
+*/
+var domasci=ascii
+#(#__#)
+##¯\/¯##
+#,-´'-.#
+//\. ¯`)
+´#/-´\"#
+#( `\ \#
+##)/#)/#
+##"##"##
+%%
+#(#__#)
+##¯\/¯##
+#,-´'-.#
+//\. ¯`)
+´#/-´\"#
+#( (_(##
+##)/"###
+##"#####
+%%
+#(#__#)
+##¯\/¯##
+#,-´'-.#
+//\. ¯`)
+´#/-´\"#
+#( ( (##
+##)/)/##
+##"#"###
+%%
+#(#__#)
+##¯\/¯##
+#,-´'-.#
+//\. ¯`)
+´#/-´\"#
+#(_,\ \#
+###"#)/#
+#####"##
+asciiend
+
+var balloon=ascii
+.-.
+\ /
+#^
+asciiend
+
+var balloons=ascii
+#
+#####.-.
+##.-.\ /
+.-\ /#^
+\ /^.-.
+#^.-. /
+#|\ /^
+/#/^|/
+||/-'
+/
+%%
+#####.-.
+#####\ /
+.-..-.^
+\ /\ /|
+#^##.-.
+#.-.\ /
+/\ /|^
+|#^/'|
+|/'_/
+/-'
+%%
+#####
+#.-.##.-.
+#\ .-.\ /
+##^\ /#^
+.-.#^#/
+\ /.-.|
+#^|\ //
+#|/'^/
+#|/-'
+/
+%%
+#####
+###.-.
+.-.\ /.-.
+\ /#^#\ /
+#^#/.-.^
+#.-.\ /|
+#\ /#^/
+/#^#//
+|/-'-
+/
+asciiend
+/*
+##################
+##################*
+################.'#
+#############(.'_|)
+######,-.#####¯\/¯
+#######/#####,-´'-.
+######|#####//\. ¯`)
+#######\_,==´#/-´\"
+#############( `\ \
+##############)/#)/
+##############"##"
+
+     .-.
+  .-.\ /
+.-\ /#^
+\ /^.-.
+#^.-. /
+  \ /^
+  #^
+*/
+
+var refX = 0
+var refZ = 0
+refX = screen.FromWorldX(pos.x)
+refZ = pos.z
+var lastrefX=0
+var playerX
+playerX=pos.x
+var lastplayerX=0
+var domX=0
+
+var frametime=0
+
+var dominitaur
+var uppnl
+var up
+
+var b1
+var b2
+var b3
+var b4
+var b5
+
+?totaltime=1
+  dominitaur=UI.AddAnim(domasci)
+  dominitaur.anchor=top_left
+  dominitaur.dock=top_left
+  dominitaur.x=refX-15
+  dominitaur.y=refZ-8
+  dominitaur.flipX=true
+  dominitaur.loop=false
+  domX=-15
+  lastrefX=screen.FromWorldX(pos.x)
+  lastplayerX=pos.x
+  uppnl=ui.AddPanel()
+  uppnl.anchor=top_left
+  uppnl.dock=top_left
+  uppnl.x=dominitaur.x+1
+  uppnl.y=dominitaur.y-3
+  uppnl.style=ui.AddStyle("#########")
+  up=ui.AddAnim(balloons)
+  up.Play()
+  up.loop=true
+  up.duration=120
+  uppnl.Add(up)
+  b1=ui.AddAnim(balloon)
+  b1.color=color.Random()
+  b1.x=0
+  b1.y=0
+  uppnl.Add(b1)
+  b2=ui.AddAnim(balloon)
+  b2.color=color.Random()
+  b2.x=0
+  b2.y=0
+  uppnl.Add(b2)
+  b3=ui.AddAnim(balloon)
+  b3.color=color.Random()
+  b3.x=0
+  b3.y=0
+  uppnl.Add(b3)
+  b4=ui.AddAnim(balloon)
+  b4.color=#yellow
+  b4.x=0
+  b4.y=0
+  uppnl.Add(b4)
+  b5=ui.AddAnim(balloon)
+  b5.color=color.Random()
+  b5.x=0
+  b5.y=0
+  uppnl.Add(b5)
+
+?up.frame%4=0
+  b1.x=-3
+  b1.y=-1
+  b2.x=-1
+  b2.y=-2
+  b3.x=1
+  b3.y=0
+  b4.x=-1
+  b4.y=1
+  b5.x=2
+  b5.y=-3
+:?up.frame%4=1
+  b1.x=-3
+  b1.y=-2
+  b2.x=0
+  b2.y=-2
+  b3.x=1
+  b3.y=0
+  b4.x=-2
+  b4.y=1
+  b5.x=2
+  b5.y=-4
+:?up.frame%4=2
+  b1.x=-2
+  b1.y=-3
+  b2.x=0
+  b2.y=-2
+  b3.x=0
+  b3.y=1
+  b4.x=-3
+  b4.y=0
+  b5.x=3
+  b5.y=-3
+:?up.frame%4=3
+  b1.x=-3
+  b1.y=-2
+  b2.x=0
+  b2.y=-3
+  b3.x=1
+  b3.y=0
+  b4.x=-2
+  b4.y=1
+  b5.x=3
+  b5.y=-2
+
+?key=upbegin
+  up.frame++
+
+domX = domX - (playerX - lastplayerX)
+
+?domX<-12
+  ?domX<-17
+    ?time%2=0
+      frametime++
+      ?frametime%2=0
+        dominitaur.frame++
+      domX++
+    :?domX<-23
+      frametime++
+      ?frametime%2=0
+        dominitaur.frame++
+      domX++
+  :?time%3=0
+    frametime++
+    ?frametime%2=0
+      dominitaur.frame++
+    //?dracula.frame=0
+      //dracula.frame=1
+    domX++
+:?time%3=0
+  dominitaur.frame=0
+  frametime=1
+
+?domX < -70 | domX > 70
+  domX = -30
+
+?dominitaur.y>refZ-8
+  dominitaur.y=dominitaur.y-1
+:?dominitaur.y<refZ-8
+  dominitaur.y=dominitaur.y+1
+
+lastrefX=screen.FromWorldX(pos.x)
+lastplayerX=pos.x
+dominitaur.x=refX+domX
+uppnl.x=dominitaur.x+1
+uppnl.y=dominitaur.y-3

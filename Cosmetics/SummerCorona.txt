@@ -1,0 +1,940 @@
+/* 
+~~~~ SUMMER CORONA ~~~~
+A fiery golden aura first fielded by Summer Dysangelos
+Adapted for the Stonehead by Kangasaur
+
+v 1.0: original art jam submission
+v 1.0.1: added color caching to reduce lag
+v 1.0.2: updated default color to be more faithful to Dysan's cosmetic
+*/
+
+var corona_color = "DYSAN"
+
+/* ^^^ CHANGE THE COLOR OF YOUR CORONA HERE
+or use the SetColorScheme() function below in your mind stone after import
+Default value is "DYSAN" (case sensitive)
+Others are "GOLD", "CYAN", "YELLOW", "GREEN", "BLUE", "RED", "GREY", "RAIN", "RAIN2", "MAGENTA", "PURPLE", "SUNSET"
+*/
+
+func SetColorScheme(col)
+  corona_color = string.ToUpper(col)
+
+
+func Saturate(val)
+  return math.Clamp(val, 0.0, 1.0)
+
+func ColorFromHSV(h, s, v)
+  var r = Saturate(h * 6 - 4) + 
+  ^Saturate((1 - h) * 6 - 4)
+  var g = Saturate(h * 6) * 
+  ^Saturate((1 - h) * 6 - 2)
+  var b = Saturate(h * 6 - 2) * 
+  ^Saturate((1 - h) * 6)
+
+  r = math.RoundToInt(((r * s) + 
+  ^(1 - s)) * v * 255)
+  g = math.RoundToInt(((g * s) + 
+  ^(1 - s)) * v * 255)
+  b = math.RoundToInt(((b * s) + 
+  ^(1 - s)) * v * 255)
+
+  return color.FromRGB(r, g, b)
+
+var color_cache = []
+var gran = 0
+
+func InitColorCache()
+  var c1 = color.ToRGB(c_scheme[0])
+  var c2 = color.ToRGB(c_scheme[1])
+  for i = 0 .. 2
+    ?math.Abs(c1[i] - c2[i]) > gran
+      gran = math.Abs(c1[i] - c2[i])
+  for i = 0 .. gran
+    var new_c = color.Lerp(c_scheme[0], c_scheme[1], i / (gran + 0.0))
+    color_cache.Add(color.ToRGB(new_c))
+
+func AddTopShine(rgb, val)
+  var c = [rgb[0], rgb[1], rgb[2]]
+  for i = 0 .. 2
+    c[i] = math.Min(c[i] + val, 255)
+  return color.FromRGB(c[0], c[1], c[2])
+
+func RainLerp(a, b, t)
+  var a1
+  a1 = "#" + a + a + a
+  var b1
+  b1 = "#" + b + b + b
+  var c
+  c = color.Lerp(a1, b1, t)
+  return "#rain" + string.Sub(c, 1, 2)
+
+func Shine(x, y)
+  var dark_t
+  dark_t = math.Sin((time + x*3 + y*3) / 30.0)
+  ^ / 2 + 0.5
+  var shine
+  shine = math.Pow(math.Sin(
+  ^(time + x*2 - y*2) / 12.0) / 2 + 0.5, 10.5)
+  var c
+  ?string.Equals(corona_color, "RAIN")
+    c = RainLerp(c_scheme[1], c_scheme[0], dark_t)
+  :
+    c = color.Lerp(c_scheme[1], c_scheme[0], dark_t)
+    ?shine > 1.0 / 255.0
+      c = AddTopShine(color_cache[math.RoundToInt((1 - dark_t) * gran)], math.FloorToInt(shine * 0.8 * 255))
+  return c
+
+func Fade(t)
+  ?t < 0.2
+    return c_scheme[3]
+  :?t < 0.5
+    return color.Lerp(c_scheme[3], c_scheme[2], (t - 0.2) / 0.3)
+  :?t < 0.7
+    return color.Lerp(c_scheme[2],c_scheme[0], (t - 0.5) / 0.2)
+  :
+    return color.Lerp(c_scheme[0], #000000, (t - 0.7) / 0.3)
+
+func RainFade(t)
+  ?t < 0.2
+    return "#rain" + c_scheme[3]
+  :?t < 0.5
+    return RainLerp(c_scheme[3], c_scheme[2], (t - 0.2) / 0.3)
+  :?t < 0.7
+    return RainLerp(c_scheme[2],c_scheme[0], (t - 0.5) / 0.2)
+  :
+    return RainLerp(c_scheme[0], "00", (t - 0.7) / 0.3)
+
+func Rain2Fade(t)
+  var h
+  h = (t + totaltime / 30.0) - math.Floor(t + totaltime / 30.0)
+  var s
+  s = math.Min(t + 0.1, 1.0)
+  var v
+  v = math.Min((1 - t) * 2, 1.0)
+  return ColorFromHSV(h, s, v)
+
+func InitCanvas()
+  base_canvas = ui.AddCanvas()
+  base_canvas.w = screen.w
+  base_canvas.h = screen.h
+
+func SpawnParticle(t)
+  var new_part
+  new_part = ui.AddAnim(clock_sparks[t])
+  new_part.duration = particle_lifespan
+  new_part.gamePause = true
+  new_part.anchor = particle_align[t]
+  new_part.dock = top_left
+  new_part.x = pscreen_x
+  new_part.y = pscreen_y - 2
+  new_part.Play()
+  current_particles.Add(new_part)
+  
+func ClearOldestParticle()
+  current_particles[0].Recycle()
+  current_particles.RemoveAt(0)
+
+var suncrown_base = ascii
+       .     .
+       .":::".
+    .´    .    `.
+   .      :      .
+  ::      '      ::
+-:::·- · · · · -·:::-
+  ::      .      ::
+   '      :      '
+    '.    '    .'
+       `,;:;,´
+       ´     `
+asciiend
+
+var clock_sparks = [ascii
+
+
+
+
+
+
+¡
+
+%%
+
+
+
+
+
+|
+
+
+%%
+
+
+
+
+|
+
+
+
+%%
+
+
+
+|
+
+
+
+
+%%
+
+
+|
+
+
+
+
+
+%%
+
+i
+
+
+
+
+
+
+%%
+.
+
+
+
+
+
+
+asciiend, ascii
+
+
+
+
+#'
+
+%%
+
+
+
+#.
+
+
+%%
+
+
+
+##,
+
+
+%%
+
+
+
+##'
+
+
+%%
+
+
+##.
+
+
+
+%%
+
+
+###,
+
+
+
+%%
+
+
+###'
+
+
+
+%%
+
+###.
+
+
+
+
+%%
+
+####,
+
+
+
+
+%%
+
+####'
+
+
+
+
+%%
+####.
+
+
+
+
+
+%%
+#####,
+
+
+
+
+
+%%
+#####'
+
+
+
+
+
+asciiend, ascii
+
+##.
+
+%%
+
+###,
+
+%%
+
+####'
+
+%%
+
+#####'
+
+%%
+######.
+
+
+%%
+#######,
+
+
+%%
+########'
+
+
+%%
+#########'
+
+
+asciiend, ascii
+##-
+%%
+###-
+%%
+####-
+%%
+#####-
+%%
+######-
+%%
+#######-
+%%
+########-
+%%
+#########-
+%%
+##########-
+%%
+###########-
+%%
+############-
+%%
+#############-
+asciiend, ascii
+
+##`
+
+%%
+
+###'
+
+%%
+
+####.
+
+%%
+
+#####.
+
+%%
+
+
+######`
+%%
+
+
+#######'
+%%
+
+
+########.
+%%
+
+
+#########.
+asciiend, ascii
+
+#.
+
+
+
+
+%%
+
+
+#'
+
+
+
+%%
+
+
+##`
+
+
+
+%%
+
+
+##.
+
+
+
+%%
+
+
+
+##'
+
+
+%%
+
+
+
+###`
+
+
+%%
+
+
+
+###.
+
+
+%%
+
+
+
+
+###'
+
+%%
+
+
+
+
+####`
+
+%%
+
+
+
+
+####.
+
+%%
+
+
+
+
+
+####'
+%%
+
+
+
+
+
+#####`
+%%
+
+
+
+
+
+#####.
+asciiend, ascii
+
+|
+
+
+
+
+
+
+%%
+
+
+|
+
+
+
+
+
+%%
+
+
+
+|
+
+
+
+
+%%
+
+
+
+
+|
+
+
+
+%%
+
+
+
+
+
+|
+
+
+%%
+
+
+
+
+
+
+!
+
+%%
+
+
+
+
+
+
+
+'
+asciiend, ascii
+
+####.#
+
+
+
+
+%%
+
+###,##
+
+
+
+
+%%
+
+
+###'##
+
+
+
+%%
+
+
+###.##
+
+
+
+%%
+
+
+##,###
+
+
+
+%%
+
+
+
+##'###
+
+
+%%
+
+
+
+##.###
+
+
+%%
+
+
+
+#,####
+
+
+%%
+
+
+
+
+#'####
+
+%%
+
+
+
+
+#.####
+
+%%
+
+
+
+
+,#####
+
+%%
+
+
+
+
+
+'#####
+%%
+
+
+
+
+
+.#####
+asciiend, ascii
+
+#######'##
+
+%%
+
+######'###
+
+%%
+
+#####,####
+
+%%
+
+####.#####
+
+%%
+
+
+###'######
+%%
+
+
+##'#######
+%%
+
+
+#,########
+%%
+
+
+.#########
+asciiend, ascii
+###########-##
+%%
+##########-###
+%%
+#########-####
+%%
+########-#####
+%%
+#######-######
+%%
+######-#######
+%%
+#####-########
+%%
+####-#########
+%%
+###-##########
+%%
+##-###########
+%%
+#-############
+%%
+-#############
+asciiend, ascii
+
+#######.##
+
+%%
+
+######.###
+
+%%
+
+#####`####
+
+%%
+
+####'#####
+
+%%
+###.######
+
+
+%%
+##.#######
+
+
+%%
+#`########
+
+
+%%
+'#########
+
+
+asciiend, ascii
+
+
+
+
+####'#
+
+%%
+
+
+
+####.#
+
+
+%%
+
+
+
+####`#
+
+
+%%
+
+
+
+###'##
+
+
+%%
+
+
+###.##
+
+
+
+%%
+
+
+###`##
+
+
+
+%%
+
+
+##'###
+
+
+
+%%
+
+##.###
+
+
+
+
+%%
+
+##`###
+
+
+
+
+%%
+
+#'####
+
+
+
+
+%%
+#.####
+
+
+
+
+
+%%
+#`####
+
+
+
+
+
+%%
+'#####
+
+
+
+
+
+asciiend]
+
+var particle_align = ["bottom_center","bottom_left","bottom_left","center_left","top_left","top_left",
+"top_center","top_right","top_right","center_right","bottom_right","bottom_right"]
+
+var particle_lifespan = 20
+
+var current_particles = []
+
+var clock = 0
+
+var suncrown_lines = string.Split(suncrown_base, ＂\n＂)
+
+
+
+var pscreen_x
+var pscreen_y
+pscreen_x = screen.FromWorldX(pos.x)
+pscreen_y = screen.FromWorldZ(pos.z-pos.y)
+
+var offset_x = -10
+var offset_y = -7
+var curr_char
+var curr_part
+var part_time
+var to_clean
+var base_canvas
+
+?loc.begin
+  InitCanvas()
+  
+  ?corona_color = "GOLD"
+    var c_scheme = [#D4AF37, #816928, #yellow, #white]
+  :?corona_color = "CYAN"
+    var c_scheme = [#cyan, #5AC1DD, #1EFFB4, #A0FFD4]
+  :?corona_color = "YELLOW"
+    var c_scheme = [#yellow, #DADA6B, #BEFF32, #white]
+  :?corona_color = "GREEN"
+    var c_scheme = [#green, #65BC77, #6FF27C, #B0F2BB]
+  :?corona_color = "BLUE"
+    var c_scheme = [#blue, #524EC9, #2020FF, #99A8FF]
+  :?corona_color = "RED"
+    var c_scheme = [#red, #990714, #FF1987, #FFA8C5]
+  :?corona_color = "GREY"
+    var c_scheme = [#808080, #A9A9A9, #B3B3B3, #white]
+  :?corona_color = "RAIN2"
+    var c_scheme = [#white, #A9A9A9, #B3B3B3, #white]
+  :?corona_color = "RAIN"
+    var c_scheme = ["80", "FF", "A9", "FF"]
+  :?corona_color = "MAGENTA"
+    var c_scheme = [#FF00FF, #5A005A, #FF80FF, #white]
+  :?corona_color = "PURPLE"
+    var c_scheme = [#C575FF, #9B54F2, #DAB5FF, #F9E2FF]
+  :?corona_color = "SUNSET"
+    var c_scheme = [#FF866B, #FF4C96, #FF9EED, #DEAFFF]
+  :
+    corona_color = "DYSAN" //default to DYSAN
+    var c_scheme = [#E7CA59, #514519] //I do the Dysan scheme differently
+    var burn_scheme = [#FFFFFF,
+    ^#FFFFEB,
+    ^#FFFFD6,
+    ^#FFFFC2,
+    ^#FFFFAD,
+    ^#FFFF99,
+    ^#FFFF70,
+    ^#FFFF70,
+    ^#FEFA5F,
+    ^#FCE954,
+    ^#FAD94A,
+    ^#F8C840,
+    ^#F3A72B,
+    ^#F19721,
+    ^#EF8616,
+    ^#BA650F,
+    ^#9B540C,
+    ^#7C430A,
+    ^#5D3207,
+    ^#3E2205,
+    ^#1F1102]
+  
+  InitColorCache()
+
+?loc.loop
+  InitCanvas()
+
+base_canvas.Set(＂#＂)
+base_canvas.SetFG(#D4AF37)
+
+for y = 0 .. suncrown_lines.Count()-1
+  for x = 0 .. string.Size(suncrown_lines［y］)-1
+    curr_char = string.Sub(suncrown_lines［y］, x, 1)
+    ? !string.Equals(curr_char, ＂ ＂) & pscreen_x + offset_x + x >= 0 & pscreen_y + offset_y + y < screen.h
+      base_canvas.Set(pscreen_x + offset_x + x, pscreen_y + offset_y + y, Shine(x, y), curr_char)
+
+draw.Player()
+
+?totaltime % 2 = 0
+  SpawnParticle(clock)
+  SpawnParticle(clock + 6)
+  clock = (clock + 1) % 6
+
+to_clean = false
+?current_particles.Count() > 0
+  for i = 0 .. current_particles.Count()-1
+    curr_part = current_particles[i]
+    part_time = math.Floor((current_particles.Count() - 1 - i)/2.0) * 2 + totaltime % 2
+    ?part_time > particle_lifespan
+      to_clean = true
+    :?corona_color = "DYSAN"
+      part_time = math.RoundToInt(part_time)
+      curr_part.color = burn_scheme[part_time]
+    :?corona_color = "RAIN2"
+      curr_part.color = Rain2Fade(part_time / particle_lifespan)
+    :?corona_color = "RAIN"
+      curr_part.color = RainFade(part_time / particle_lifespan)
+    :
+      curr_part.color = Fade(part_time / particle_lifespan)
+  	?part_time < 14
+  	  curr_part.x = pscreen_x
+	  curr_part.y = pscreen_y - 2
+
+
+?to_clean
+  ClearOldestParticle()
+  ClearOldestParticle()

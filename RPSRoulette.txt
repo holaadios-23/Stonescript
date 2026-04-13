@@ -1,0 +1,325 @@
+// Piedra Papel Tijera de Dos Manos + Ruleta de la Muerte
+// Autor: Gemini Code Assist
+//
+// Descripción:
+// Juegas Piedra Papel o Tijera pero eligiendo 2 manos al principio.
+// Luego descartas una y te quedas con la otra para el duelo final.
+// El perdedor debe girar una ruleta mortal.
+// Cada vez que alguien sobrevive, la ruleta añade una "bala" extra.
+//
+// Uso:
+// import Games/RPSRoulette
+
+var state = 0 
+// Estados:
+// 0: Inicio
+// 1: Selección (Elegir 2 símbolos)
+// 2: Descarte (Elegir 1 para jugar)
+// 3: Resolución (Mostrar ganador ronda)
+// 4: Ruleta Girando
+// 5: Fin del Juego (Muerte)
+
+var pHand = [-1, -1] // 0:Piedra, 1:Papel, 2:Tijera
+var eHand = [-1, -1]
+var pFinal = -1
+var eFinal = -1
+var pickCount = 0
+
+// Configuración Ruleta
+var bullets = 1
+var maxBullets = 8 // Probabilidad x/8
+var victim = 0 // 0:Jugador, 1:Enemigo
+
+var timer = 0
+var animFrame = 0
+
+// UI References
+var rootPanel
+var txtInfo
+var btnRock
+var btnPaper
+var btnScissors
+var btnKeep1
+var btnKeep2
+var btnReset
+
+// Símbolos y Textos
+var sRock = "O"
+var sPaper = "[]"
+var sScissors = "8<"
+
+func GetSymbol(id)
+  ?id = 0
+    return sRock
+  ?id = 1
+    return sPaper
+  ?id = 2
+    return sScissors
+  return "?"
+
+func GetName(id)
+  ?id = 0
+    return "Piedra"
+  ?id = 1
+    return "Papel"
+  ?id = 2
+    return "Tijera"
+  return "?"
+
+// --- Funciones de Lógica ---
+
+func Init()
+  state = 1
+  pHand = [-1, -1]
+  pickCount = 0
+  bullets = 1
+  DrawUI()
+
+func Restart()
+  Init()
+
+func PickSymbol(id)
+  ?pickCount = 0
+    pHand[0] = id
+    pickCount = 1
+    txtInfo.text = "Elige tu 2da mano"
+  :
+    pHand[1] = id
+    pickCount = 2
+    // IA del Enemigo: Elige 2 manos al azar
+    eHand[0] = rng % 3
+    eHand[1] = rng % 3
+    state = 2
+    txtInfo.text = "¡Elige con cuál quedarte!"
+    DrawUI()
+
+// Wrappers para los botones (SetPressed requiere función sin argumentos)
+func PickRock()
+  PickSymbol(0)
+func PickPaper()
+  PickSymbol(1)
+func PickScissors()
+  PickSymbol(2)
+
+func KeepHand(idx)
+  ?idx = 0
+    pFinal = pHand[0]
+  :
+    pFinal = pHand[1]
+  
+  // IA Enemigo: Elige una mano al azar para quedarse
+  ?rng % 2 = 0
+    eFinal = eHand[0]
+  :
+    eFinal = eHand[1]
+    
+  Resolve()
+
+func Keep1()
+  KeepHand(0)
+func Keep2()
+  KeepHand(1)
+
+func Resolve()
+  state = 3
+  DrawUI()
+  
+  var res = 0 // 0:Empate, 1:Gana Jugador, -1:Gana Enemigo
+  
+  ?pFinal = eFinal
+    res = 0
+  :?pFinal = 0 & eFinal = 2 // Piedra vs Tijera
+    res = 1
+  :?pFinal = 1 & eFinal = 0 // Papel vs Piedra
+    res = 1
+  :?pFinal = 2 & eFinal = 1 // Tijera vs Papel
+    res = 1
+  :
+    res = -1
+    
+  ?res = 0
+    txtInfo.text = "¡EMPATE! Repitiendo ronda..."
+    timer = 45
+  :?res = 1
+    txtInfo.text = "¡GANASTE! El enemigo gira la ruleta..."
+    victim = 1
+    timer = 60
+  :
+    txtInfo.text = "¡PERDISTE! Debes girar la ruleta..."
+    victim = 0
+    timer = 60
+
+func Update()
+  ?state = 3 // Esperando leer el resultado
+    timer--
+    ?timer <= 0
+      ?txtInfo.text = "EMPATE"
+        state = 1
+        pHand = [-1, -1]
+        pickCount = 0
+        DrawUI()
+      :
+        state = 4
+        timer = 60 // Tiempo de giro de ruleta
+        DrawUI()
+
+  ?state = 4 // Ruleta Girando
+    timer--
+    animFrame = (animFrame + 1) % 4
+    var spinText = "|"
+    ?animFrame = 1
+      spinText = "/"
+    ?animFrame = 2
+      spinText = "-"
+    ?animFrame = 3
+      spinText = "\\"
+      
+    var vName = "JUGADOR"
+    ?victim = 1
+      vName = "ENEMIGO"
+      
+    txtInfo.text = vName + " GIRANDO... " + spinText + "\nRiesgo Actual: " + bullets + "/" + maxBullets
+    
+    ?timer <= 0
+      // Resultado Ruleta
+      var roll = rng % maxBullets
+      ?roll < bullets
+        // Muerte
+        state = 5
+        txtInfo.text = vName + " HA MUERTO.\nFin del Juego."
+        DrawUI()
+      :
+        // Vive
+        bullets++
+        ?bullets >= maxBullets
+          bullets = maxBullets - 1
+        state = 1
+        pHand = [-1, -1]
+        pickCount = 0
+        txtInfo.text = vName + " SOBREVIVIÓ.\nEl riesgo aumenta (+1 Bala)."
+        DrawUI()
+
+// --- UI ---
+
+func DrawUI()
+  ui.Clear()
+  rootPanel = ui.AddPanel()
+  rootPanel.w = screen.w
+  rootPanel.h = screen.h
+  rootPanel.color = #222222
+  
+  txtInfo = ui.AddText()
+  txtInfo.x = 0
+  txtInfo.y = 2
+  txtInfo.w = screen.w
+  txtInfo.align = center
+  txtInfo.text = "Piedra Papel Tijera (2 Manos)"
+  rootPanel.Add(txtInfo)
+  
+  ?state = 1
+    txtInfo.text = "Elige mano " + (pickCount + 1) + "/2"
+    
+    btnRock = ui.AddButton()
+    btnRock.text = sRock + " Piedra"
+    btnRock.x = 5
+		btnRock.y = 6
+		btnRock.w = 10
+		btnRock.h = 3
+    btnRock.SetPressed(PickRock)
+    rootPanel.Add(btnRock)
+    
+    btnPaper = ui.AddButton()
+    btnPaper.text = sPaper + " Papel"
+    btnPaper.x = 16
+		btnPaper.y = 6
+		btnPaper.w = 10
+		btnPaper.h = 3
+    btnPaper.SetPressed(PickPaper)
+    rootPanel.Add(btnPaper)
+    
+    btnScissors = ui.AddButton()
+    btnScissors.text = sScissors + " Tijera"
+    btnScissors.x = 27
+		btnScissors.y = 6
+		btnScissors.w = 10
+		btnScissors.h = 3
+    btnScissors.SetPressed(PickScissors)
+    rootPanel.Add(btnScissors)
+    
+    ?pickCount > 0
+      var sel = ui.AddText()
+      sel.text = "Mano 1: " + GetName(pHand[0])
+      sel.x = 15
+		  sel.y = 10
+      rootPanel.Add(sel)
+
+  ?state = 2
+    var tE = ui.AddText()
+    tE.text = "Enemigo tiene:\n" + GetSymbol(eHand[0]) + "  " + GetSymbol(eHand[1])
+    tE.align = center
+		tE.y = 5
+		tE.w = screen.w
+    rootPanel.Add(tE)
+    
+    var tP = ui.AddText()
+    tP.text = "Tus manos (Elige una para jugar):"
+    tP.align = center
+		tP.y = 9
+		tP.w = screen.w
+    rootPanel.Add(tP)
+    
+    btnKeep1 = ui.AddButton()
+    btnKeep1.text = GetSymbol(pHand[0]) + "\n" + GetName(pHand[0])
+    btnKeep1.x = 10
+		btnKeep1.y = 11
+		btnKeep1.w = 8
+		btnKeep1.h = 4
+    btnKeep1.SetPressed(Keep1)
+    rootPanel.Add(btnKeep1)
+    
+    btnKeep2 = ui.AddButton()
+    btnKeep2.text = GetSymbol(pHand[1]) + "\n" + GetName(pHand[1])
+    btnKeep2.x = 24
+		btnKeep2.y = 11
+		btnKeep2.w = 8
+		btnKeep2.h = 4
+    btnKeep2.SetPressed(Keep2)
+    rootPanel.Add(btnKeep2)
+
+  ?state = 3
+    var resTxt = ui.AddText()
+    resTxt.text = "Tú: " + GetName(pFinal) + " vs " + GetName(eFinal) + " :Enemigo"
+    resTxt.align = center
+		resTxt.y = 8
+		resTxt.w = screen.w
+    rootPanel.Add(resTxt)
+
+  ?state = 4
+    var rVisual = ui.AddText()
+    rVisual.text = ascii
+   .---.
+  /  |  \
+ |   *   |
+  \  |  /
+   '---'
+asciiend
+    rVisual.x = 18
+		rVisual.y = 6
+		rVisual.color = #red
+    rootPanel.Add(rVisual)
+
+  ?state = 5
+    btnReset = ui.AddButton()
+    btnReset.text = "Reiniciar"
+    btnReset.x = 15
+		btnReset.y = 10
+		btnReset.w = 12
+		btnReset.h = 3
+    btnReset.SetPressed(Restart)
+    rootPanel.Add(btnReset)
+
+// Bucle Principal
+?state = 0
+  Init()
+
+Update()

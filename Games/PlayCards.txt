@@ -1,0 +1,432 @@
+//Play Card 1.0
+//By 流木_とりさん
+
+//==============================
+// btn配列 + lerp配る/捨てる演習
+//==============================
+?loc=water
+ disable hud
+ ui.root.visible=true
+
+//------------------------------
+// 座標・ボックス定義
+//------------------------------
+var boxes=［
+ ［16,14,16,15,0］,
+ ［21,14,21,15,1］,
+ ［26,14,26,15,2］,
+ ［31,14,31,15,3］,
+ ［36,14,36,15,4］,
+ ［16,3,16,3,5］,
+ ［21,3,21,3,6］,
+ ［26,3,26,3,7］,
+ ［31,3,31,3,8］,
+ ［36,3,36,3,9］
+］
+
+//------------------------------
+// 共通変数
+//------------------------------
+
+var cardcnt=0
+var myhand=［0,0,0,0,0］
+var opphand=［0,0,0,0,0］
+var showflg=false
+// デッキとスート表示用
+var cardA=［］
+var exchangeflg=［0,0,0,0,0,0,0,0,0,0］
+var strsuit=［＂∞＂,＂❄＂,＂❤＂,＂*＂,＂φ＂,＂o＂］
+var colorArr=［＂#B0B＂,＂#cyan＂,＂#red＂,
+＂#777＂,＂#F66＂,＂#FFF＂］
+
+//------------------------------
+// int変換ユーティリティ
+//------------------------------
+func Fi2(a,b)
+ return ［Fint(a),Fint(b)］
+func Fint(a)
+ return math.FloorToInt(a)
+
+//------------------------------
+// 枠描画
+//------------------------------
+func box(x,y)
+ var x=Fi2(x,y)［0］
+ var y=Fi2(x,y)［1］
+ >`@x@,@y+0@,#__#
+ >`@x@,@y+1@,│##│
+ >`@x@,@y+2@,│##│
+ >`@x@,@y+3@,#‾‾#
+
+//------------------------------
+// ボタン
+//------------------------------
+var btn1=ui.AddButton()
+var btn2=ui.AddButton()
+var btnNm=［btn1,btn2］
+var btnPos=［［-50,4］,［24,17］］
+var btnT=［＂配る＂,＂交換＂］
+
+//------------------------------
+// デッキ生成(初期化)
+//------------------------------
+?time=1
+ cardA.Clear()
+ for i=0..4
+  for j=0..5
+   cardA.Add(j)
+
+//------------------------------
+// カード描画関数
+//------------------------------
+func showcard(px,py,n)
+ var x=Fint(px)
+ var y=Fint(py)
+ ?n<=strsuit.Count()-1
+  >`@x+2@,@y+2@,@colorArr［n］@,@strsuit［n］@
+  >`@x+1@,@y+1@,@colorArr［n］@,@strsuit［n］@
+func showReverse(px,py,n)
+ var x=Fint(px)
+ var y=Fint(py)
+ >`@x+1@,@y+2@,::
+ >`@x+1@,@y+1@,::
+
+func ed(i)
+ return ［boxes［i］［0］,boxes［i］［1］,boxes［i］［4］］
+
+//------------------------------
+// アニメーション
+//------------------------------
+var timerF=true
+var stx=0
+var sty=0
+var objectarr=［9,9,9,9,9,9,9,9,9,9］
+var spot=［［70,3］,［0,0］,［0,0］］
+
+func kubaru(i)
+ box(Fint(stx),Fint(sty))
+ showReverse(Fint(stx),Fint(sty),ed(i)［2］)
+ stx=math.Lerp(stx,ed(i)［0］,0.3)
+ sty=math.Lerp(sty,ed(i)［1］,0.3)
+ ?Fint(stx)=boxes［i］［0］
+  stx=spot［0］［0］
+  sty=spot［0］［1］
+  objectarr.Emplace(i,9)
+  ?i<5
+   myhand.Emplace(i,cardA［cardcnt］)
+  :?i<10
+   opphand.Emplace(i-5,cardA［cardcnt］)
+  cardcnt++
+  ?i=9
+   timerF=false
+
+var bg=［#000,#111,#222,#333,#444,#555,#666,
+#777,#888,#999,#AAA,#BBB,#CCC,#DDD,#EEE,#FFF］
+var bgi=bg.Count()-1
+
+?!objectarr.Contains(0)&
+^!objectarr.Contains(1)&
+^!objectarr.Contains(3)
+ ?btnflg=1
+  over()
+
+func suteru(i)
+  ?exchangeflg［i］=1
+   draw.Bg(boxes［i］［0］,boxes［i］［1］,bg［bgi］,4,2)
+    ?bgi-1>=0
+     bgi--
+    :
+     bgi=bg.Count()-1
+     objectarr.Emplace(i,3)
+     exchangeflg.Emplace(i,0)
+  ?!objectarr.Contains(1)
+    for i=0..objectarr.Count()-1
+     ?objectarr［i］=3
+      objectarr.Emplace(i,0)
+      cardcnt++
+  ?i<5
+   myhand.Emplace(i,cardA［cardcnt］)
+  :?i<10
+   opphand.Emplace(i-5,cardA［cardcnt］)
+  
+
+//------------------------------
+// 役判定関数
+//------------------------------
+func checkHand(hand)
+ var freq=［］
+ for i=0..5
+  freq.Add(0)
+ for i=0..4
+  var v=hand［i］
+  freq.Emplace(v,freq［v］+1)
+ var fs=［］
+ for i=0..freq.Count()-1
+  fs.Add(freq［i］)
+ fs.Sort()
+ var last=fs.Count()-1
+ var top=fs［last］
+ var second=fs［last-1］
+ ?top=5
+  return ［＂ファイブカード＂,6,16］
+ :?top=4
+  return ［＂フォーカード＂,5,8］
+ :?top=3 & second=2
+  return ［＂フルハウス＂,4,6］
+ :?top=3
+  return ［＂スリーカード＂,3,4］
+ :?top=2 & second=2
+  return ［＂ツーペア＂,2,3］
+ :?top=2
+  return ［＂ワンペア＂,1,2］
+ :
+  return ［＂ノーペア＂,0,0］
+
+//------------------------------
+// UI ボタンセット
+//------------------------------
+for i=0..btnNm.Count()-1
+ btnNm［i］.x=btnPos［i］［0］
+ btnNm［i］.y=btnPos［i］［1］
+ btnNm［i］.w=8
+ btnNm［i］.h=3
+ btnNm［i］.anchor=top_left
+ btnNm［i］.dock=top_left
+ ?exchangeflg.Contains(1)
+  btnNm［i］.text=＂交換＂
+ :
+  btnNm［i］.text=＂交換しない＂
+ btnNm［i］.SetPressed(btnF)
+// ボタン配列を初期化
+//キー登録の配列
+var keyarr=［］
+?key=＂Begin＂
+ ?keyarr.Count()=0
+  keyarr.Add(［input.x,input.y］)
+ :
+  keyarr.Insert(0,［input.x,input.y］)
+?keyarr.Count()>5
+ keyarr.RemoveAt(5)
+for i=0..4
+ ?keyarr.Count()>0
+  ?keyarr［0］［0］<=boxes［i］［0］+3&
+  ^keyarr［0］［0］>=boxes［i］［0］
+   ?keyarr［0］［1］<=boxes［i］［1］+1&
+   ^keyarr［0］［1］>=boxes［i］［1］
+    ?exchangeflg［i］=1
+     exchangeflg.Emplace(i,0)
+    :
+     exchangeflg.Emplace(i,1)
+    keyarr.RemoveAt(0)
+//------------------------------
+// ボタン押下イベント
+//------------------------------
+var myhand=［0,0,0,0,0］
+var opphand=［0,0,0,0,0］
+var btnflg=9
+func btnF(btn)
+ timerF=true
+ showflg=false
+ btnflg=btnNm.IndexOf(btn)
+ ?btnflg=0
+  var temp=［］
+  for i=0..29
+   temp.Add(cardA［i］)
+  cardA.Clear()
+  var limit=30
+  for i=0..29
+   var n=rng%limit
+   cardA.Add(temp［n］)
+   temp.RemoveAt(n)
+   limit--
+  cardcnt=0
+  stx=spot［0］［0］
+  sty=spot［0］［1］
+  var arr=［0,0,0,0,0,0,0,0,0,0］
+  replace(btnflg,arr)
+ :?btnflg=1
+  var arr=［9,9,9,9,9,9,9,9,9,9］
+
+  for i=0..exchangeflg.Count()-1
+   ?exchangeflg［i］=1
+    arr.Emplace(i,exchangeflg［i］)
+
+  replace(btnflg,arr)
+
+
+// 選択状態を表示
+exchangeflgfunc()
+
+func exchangeflgfunc()
+ for i=0..4
+  var boxi0=boxes［i］［0］
+  var boxi1=boxes［i］［1］
+  ?exchangeflg［i］=1
+   >`@boxi0+1@,@boxi1-2@,交換
+//------------------------------
+// オブジェクト制御
+//------------------------------
+func replace(n,arr)
+ for i=0..arr.Count()-1
+  objectarr.Emplace(i,arr［i］)
+
+//------------------------------
+// 描画ループ
+//------------------------------
+for j=0..4
+ box(boxes［j］［0］,boxes［j］［1］-1)
+for j=5..9
+ box(boxes［j］［0］,boxes［j］［1］)
+
+for i=0..objectarr.Count()-1
+ ?objectarr［i］=0
+  kubaru(i)
+  break
+ :?objectarr［i］=1
+  suteru(i)
+  break
+ :?i=9
+  timerF=false
+
+//------------------------------
+// 手札描画
+//------------------------------
+for i=0..9
+ var x=boxes［i］［0］
+ var y=boxes［i］［1］
+ var idx=boxes［i］［4］
+ ?(objectarr［i］=9)&time>2
+  ?i<5
+   showcard(x,y-1,myhand［i］)
+  :?i<10
+   ?showflg=false
+    showReverse(x,y,idx)
+   :
+    showcard(x,y,opphand［i-5］)
+ ?objectarr［i］=1
+  ?i<5
+   showReverse(x,y-1,myhand［i］)
+  :?i<10
+   showReverse(x,y,idx)
+
+//------------------------------
+// 役の表示
+//------------------------------
+
+?!timerF
+ >`7,16,@checkHand(myhand)［0］@
+//------------------------------
+// 動作
+//------------------------------
+?time=2
+ btnF(btn1)
+var sum=0
+var nexttimeri=0
+func nexttimer()
+ ?nexttimeri+1<60
+  nexttimeri++
+  return false
+ :
+  nexttimeri=0
+  coins--
+  bet++
+  return true
+func over()
+ showflg=true
+ >`7,16,@checkHand(myhand)［0］@
+ >`7,5,@checkHand(opphand)［0］@
+ var my=checkHand(myhand)［1］
+ var opp=checkHand(opphand)［1］
+ ?my>opp
+  var ret=checkHand(myhand)［2］
+  ?bet>0
+   sum=bet*ret
+   bet=0
+  coinsup()
+  >`40,10,coin↑↑
+  >`20,8,ascii
+ _ _ _  _  _ _ 
+| | | || || \ |
+| | | || ||   |
+|__/_/ |_||_\_|
+               
+asciiend
+ :?my<opp
+  ?bet>0
+   sum=bet
+   bet=0
+  ?nexttimer()
+   btnF(btn1)
+  >`40,10,coin↓↓
+  >`17,8,ascii
+ _    ___  ___  ___ 
+| |  |   |/ __|| __|
+| |_ | | |\__ \| _|
+|___||___||___/|___|                    
+asciiend
+ :
+  coins=coins+bet
+  bet=0
+  ?nexttimer()
+   btnF(btn1)
+
+  >`17,8,ascii
+ ___  ___  ___  _ _ _ 
+| . \| . \| . || | | |
+| | ||   /|   || | | |
+|___/|_\_\|_|_||__/_/ 
+                      
+asciiend
+//////
+
+>`2,8,*****#:16
+>`2,9,****##:#8
+>`2,10,***@@#:#6
+>`2,11,***###:#4
+>`2,12,**@@##:#3
+>`2,13,**####:#2
+
+var coins=10
+>`2,2,*:@coins@
+>`2,3,BET:@bet@
+var bet=1
+var betup = ui.AddButton()
+betup.x = 18
+betup.y = 9
+betup.w = 7
+betup.h = 3
+betup.anchor = top_left
+betup.dock   = top_left
+betup.text   = ＂BetUP＂
+betup.style  = 1
+betup.SetPressed(betupF)
+func betupF()
+ ?coins>1&bet<5
+  bet++
+  coins--
+var betDn= ui.AddButton()
+betDn.x = 30
+betDn.y = 9
+betDn.w = 7
+betDn.h = 3
+betDn.anchor = top_left
+betDn.dock   = top_left
+betDn.text   = ＂BetDn＂
+betDn.style  = 1
+betDn.SetPressed(betDnF)
+func betDnF()
+ ?bet>1
+  bet--
+  coins++
+var coinstimer=0
+func coinsup()
+ ?sum-1>0
+  sum--
+  coins++
+ :?sum-1<=0
+  coinstimer++
+ ?coinstimer>=60
+  coinstimer=0
+  coins--
+  bet++
+  btnF(btn1)

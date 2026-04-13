@@ -1,0 +1,20 @@
+//New Wave Hat
+//by: michael.g.g.
+//ver 1.0
+
+//This script will put an "energy dome" on your head.
+//Whip it good!
+
+
+?bighead
+  >h-3,-3,#red,ascii
+  ._.
+ '-=-'
+'-===-'
+asciiend
+:
+  >h-2,0,#red,ascii
+#.=.
+asciiend
+
+

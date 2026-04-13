@@ -1,0 +1,42 @@
+func CreateButton(text, x, y, w, h, a, d, action)
+ var b = ui.AddButton()
+ b.text = text
+ b.x = x
+ b.y = y
+ b.w = w
+ b.h = h
+ b.anchor = a
+ b.dock = d
+ b.SetPressed(action)
+ return b
+
+func createtext(text, x, y, w, h, col, align)
+ var t = ui.AddText()
+ t.text = text
+ t.x = x
+ t.y = y
+ t.w = w
+ t.h = h
+ t.color = col
+ t.align = align
+ return t
+
+func Createbg(x,y,w,h,col)
+ var bg = ui.AddPanel()
+ bg.x = x
+ bg.y = y
+ bg.w = w
+ bg.h = h
+ bg.color = col
+ return bg
+
+func Createpanel(x,y,w,h,c,s,v)
+ var panel = ui.AddPanel()
+ panel.x = x
+ panel.y = y
+ panel.w = w
+ panel.h = h
+ panel.color = c
+ panel.style = s
+ panel.visible = v
+ return panel

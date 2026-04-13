@@ -1,0 +1,798 @@
+// Skateboarding and Snowboarding
+// by: michael.g.g.
+// ver 0.8
+
+/*This minigame is played over the normal game stages and is designed to not interfere with main game action. 
+When your character is a certain distnce away from enemies, they will ride a skatebord around the level.
+
+Press the Up arrow key to pop an ollie.
+When airborne, either press the Left, Down or Right arrow keys to try some tricks.
+If you complete the trick animation before landing on the ground, you completed the trick and are awarded points.
+Left key is a kickflip. Easy to do and worth 10pts.
+Right key is a heelflip. Easy too. 10pts.
+Down key does an Impossible. It takes longer to finish and is worth 20pts.
+
+If you land any trick twice in a row you will get a multiplier to your score. Each consecutive trick you make after will add another multiplier. If you wipe out, you lose all multiplers. 
+
+If your character gets too close to an enemy, they will get off the board to fight. Try to get a feel for how far away you can be before attempting a trick.
+
+When you visit Icy Ridge, your character will use a snowboard! Tricks will be various board grabs with their own difficulty but all controls act the same in this mode.
+
+The top of the screen will show your current trick score, any multiplier and a total score for the stage.
+
+In it's current state, some difficulty balancing, animations and bug fixes will need to be done but it's playable so give it a shot and have some fun! 
+
+Surfing has been added. See below for instructions. */
+
+var air_count
+var trick_count
+var trick_score
+var trick_set
+var trick_hold
+var score_total
+var multiplier
+//first two frames of the stage sets 0 value integers
+?time <= 2
+  air_count = 0
+  trick_count = 0
+  trick_score = 0
+  trick_set = 0
+  trick_hold = 0
+  score_total = 0
+  multiplier = 0
+
+>`55,1,Skate Score: @score_total@
+>`55,2,Trick: @trick_score@
+>`64,2,x@multiplier@
+
+//draw skatebaord when away from enemies
+?(loc ! ridge) & (foe.distance > 15)
+  ?air_count = 0
+    >h-6,3,#white,ascii
+#####> >###
+###._'_`_.
+####cʘ#cʘ##
+asciiend
+
+//up arrow to ollie
+  ?key = upBegin & air_count = 0
+    play sword_hit
+    trick_score = 0
+    air_count++
+//draw ollie animation
+  ?air_count >= 1 & air_count < 3
+    >h-6,3,#white,ascii
+#####/ >###
+###._'_`_.
+####cʘ#cʘ##
+asciiend
+    air_count++
+  ?air_count >= 3 & air_count < 6
+    >h-6,3,#white,ascii
+#####/ >_.
+###._'--cʘ
+####cʘ#####
+asciiend
+    air_count++
+  ?air_count >= 6 & air_count < 9
+    >h-6,3,#white,ascii
+#####< \_.
+###.__--cʘ
+####cʘ#####
+asciiend
+    air_count++
+  ?air_count >= 9 & air_count < 12
+    >h-6,3,#white,ascii
+###._<_\_.
+####cʘ#cʘ##
+asciiend
+    air_count++
+  ?air_count >= 12 & air_count < 18
+    >h-6,3,#white,ascii
+###._<_>_.
+####cʘ#cʘ##
+asciiend
+    air_count++
+  ?air_count >= 18
+    >h-6,3,#white,ascii
+#####< >###
+###._'_`_.
+####cʘ#cʘ##
+asciiend
+    air_count = 0
+
+//skate tricks
+//kickflip
+  ?key = leftBegin & air_count > 3 & trick_count = 0
+    trick_set = 1
+    trick_count++
+  ?trick_count > 0 & trick_count <= 3 & trick_set = 1
+    >h-6,3,#white,ascii
+### _\_>_ 
+###(_8_8_)
+###      
+asciiend
+    trick_count++
+  ?trick_count > 3 & trick_count <= 6 & trick_set = 1
+    >h-6,3,#white,ascii
+###  \ >  
+### co co 
+###'‾‾‾‾‾'
+asciiend
+    trick_count++
+  ?trick_count > 6 & trick_count <= 9 & trick_set = 1
+    >h-6,3,#white,ascii
+### _\_>_ 
+###(_____)
+###      
+asciiend
+    trick_count++
+    ?trick_count ! 0
+      trick_score = trick_count
+    ?trick_count > 9
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + (trick_score * multiplier))
+      trick_count = 0
+//heelflip
+  ?key = rightBegin & air_count > 3 & trick_count = 0
+    trick_set = 2
+    trick_count++
+  ?trick_count > 0 & trick_count <= 3 & trick_set = 2
+    >h-6,3,#white,ascii
+### _\_>_ 
+###(_____)
+###      
+asciiend
+    trick_count++
+  ?trick_count > 3 & trick_count <= 6 & trick_set = 2
+    >h-6,3,#white,ascii
+###  \ >  
+### co co 
+###'‾‾‾‾‾'
+asciiend
+    trick_count++
+  ?trick_count > 6 & trick_count <= 9 & trick_set = 2
+    >h-6,3,#white,ascii
+### _\_>_ 
+###(_8_8_)
+###      
+asciiend
+    trick_count++
+    ?trick_count ! 0
+      trick_score = trick_count
+    ?trick_count > 9
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + (trick_score * multiplier))
+      trick_count = 0
+
+//impossible
+  ?key = downBegin & air_count > 3 & trick_count = 0
+    trick_set = 3
+    trick_count++
+  ?trick_count > 0 & trick_count <= 4 & trick_set = 3
+    >h-6,3,#white,ascii
+###('>-\._
+### 0--._.0
+###      0
+asciiend
+    trick_count++
+  ?trick_count > 4 & trick_count <= 8 & trick_set = 3
+    >h-6,3,#white,ascii
+###  > \   
+###  .=. 
+###  0 0
+asciiend
+    trick_count++
+  ?trick_count > 8 & trick_count <= 12 & trick_set = 3
+    >h-6,3,#white,ascii
+###_.>-\')
+# 0._.--0 
+#  0   
+asciiend
+    trick_count++
+    ?trick_count ! 0
+//Impossibles are worth double points due to more frames
+      trick_score = (trick_count * 2)
+    ?trick_count > 9
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + (trick_score * multiplier))
+      trick_count = 0
+
+//snowboarding version
+?loc = ridge & loc ! cross_bridge & (foe.distance > 15)
+//  trick_count = 0
+  ?air_count = 0
+    >h-6,3,#white,ascii
+#####>  >#####
+'-..^..^..-'
+asciiend
+//up arrow to ollie
+  ?key = upBegin & air_count = 0
+    play yeti_attack
+    trick_count = 0
+    air_count++
+  ?air_count >= 1 & air_count < 3
+    >h-6,3,#white,ascii
+#####/#>###.
+'-..^..^--'
+asciiend
+    air_count++
+  ?air_count >= 3 & air_count < 6
+    >h-6,3,#white,ascii
+#####/ >#_.'
+'-..^.-^'
+asciiend
+    air_count++
+  ?air_count >= 6 & air_count < 9
+    >h-6,3,#white,ascii
+_###> \##_.'
+#'''^--''
+asciiend
+    air_count++
+  ?air_count >= 9 & air_count < 12
+    >h-6,3,#white,ascii
+'-..>..\..-'
+asciiend
+    air_count++
+  ?air_count >= 12 & air_count < 18
+    >h-6,3,#white,ascii
+'-..>..>..-'
+asciiend
+    air_count++
+  ?air_count >= 18
+    >h-6,3,#white,ascii
+####>  >#####
+'-..^..^..-'
+asciiend
+    air_count = 0
+
+//showboarding tricks
+//side grab
+  ?key = downBegin & air_count > 3 & trick_count = 0
+    trick_set = 5
+    trick_count++
+  ?trick_count > 0 & trick_count <= 9 & trick_set = 5 
+    >h-6,2,#white,ascii
+     /\‾‾  
+'-..>\.>..-'
+            
+asciiend
+    trick_count++
+    ?trick_count ! 0
+      trick_score = trick_count
+    ?trick_count > 9
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + ((trick_score * 1.5) * multiplier))
+      trick_count = 0
+
+//nose grab
+  ?key = rightBegin & air_count > 3 & trick_count = 0
+    trick_set = 6
+    trick_count++
+  ?trick_count > 0 & trick_count <= 9 & trick_set = 6
+    >h-6,2,#white,ascii
+    ‾‾#‾\_.
+'-..^.-^'   
+            
+asciiend
+    trick_count++
+    ?trick_count ! 0
+      trick_score = trick_count
+    ?trick_count > 7
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + (trick_score * multiplier))
+      trick_count = 0
+
+//tail grab
+  ?key = leftBegin & air_count > 3 & trick_count = 0
+    trick_set = 7
+    trick_count++
+  ?trick_count > 0 & trick_count <= 9 & trick_set = 7
+    >h-6,2,#white,ascii
+-._##\‾‾  
+   ‾^-.^..-' 
+            
+asciiend
+    trick_count++
+    ?trick_count ! 0
+      trick_score = trick_count
+    ?trick_count > 7
+      ?air_count = 0
+        trick_score = 0
+        multiplier = 0
+      ?air_count ! 0
+        multiplier++
+        score_total = (score_total + (trick_score * multiplier))
+      trick_count = 0
+
+
+//Surfing=========================================================================
+/*
+The Surfing update
+
+Crossing the Deadwood River is now an interactive surfing game.
+
+After the intro animation, repeatedly click (or tap for mobile) to paddle against the current the wave makes to catch it. You will wipe out if you paddle too hard or too lightly.
+
+You will pop onto the board automatically and have control of moving up and down on the wave.
+Move your cursor farther from the surfboard to move and turn faster (carve) and score points.
+Go off the wave and you will wipe out.
+
+Try to score more than 200 points!
+*/
+
+?loc = cross_deadwood_river
+
+//  >`0,0,Current time = @totaltime@ frames
+//  >`0,0,posXY = > (@input.x@, @input.y@) \\@boardX@ @boardY@
+
+//Initialize the variables early in the stage
+  ?totaltime < 40
+    var paddleFrame = 0
+    var boardX = 12
+    var boardY = 16
+    var paddleState = 0
+    var paddleTime = 0
+    var success = 0
+    var waveX = 0
+    var waveY = 0
+    var boundry = 7
+    var carveScore = 0
+    var splashFlag = 0
+
+  >`0,0,Carve Score: = @carveScore@ Points
+
+//draw the board being carried-------------
+  ?totaltime >= 40 & totaltime <= 46
+        >`@boardX@,16,@#888888@,ascii
+. 
+
+asciiend
+
+  ?totaltime >= 47 & totaltime <= 50
+        >`@boardX@,16,@#888888@,ascii
+_.   #
+#
+asciiend
+
+  ?totaltime >= 50 & totaltime <= 53
+        >`@boardX@,16,@#888888@,ascii
+__.   #
+    #
+asciiend
+
+  ?totaltime >= 53 & totaltime <= 56
+        >`@boardX@,16,@#888888@,ascii
+___.  #
+     #
+asciiend
+
+  ?totaltime >= 57 & totaltime <= 59
+        >`@boardX@,16,@#888888@,ascii
+____.  #
+#     #   
+asciiend
+
+  ?totaltime >= 60 & totaltime <= 63
+        >`@boardX@,16,@#888888@,ascii
+_____.  #
+###   #  
+asciiend
+
+  ?totaltime >= 64 & totaltime <= 66
+        >`@boardX@,16,@#888888@,ascii
+______.  #
+ ###   #
+asciiend
+
+  ?totaltime >= 67 & totaltime <= 69
+        >`@boardX@,16,@#888888@,ascii
+_______.  #
+"  ##   # 
+asciiend
+
+  ?totaltime >= 70 & totaltime <= 73
+        >`@boardX@,16,@#888888@,ascii
+ _______.  #
+'"  ###  #        
+asciiend
+
+  ?(totaltime > 73 & totaltime < 452) | (totaltime > 900)
+        >`@boardX@,@boardY@,@#888888@,ascii
+   _______. 
+  '" ###   #
+asciiend
+
+
+//move the board right when carried
+   ?time%3 = 0 & totaltime < 130
+     boardX++
+
+   ?totaltime >= 150 & totaltime <= 151
+     boardX++
+   ?totaltime >= 155 & totaltime <= 156
+     boardX--
+  // ?totaltime >= 170 & totaltime <= 172
+  //   boardX++
+
+//move the board when thrown down
+   ?totaltime > 185 & totaltime < 197
+     ?time%1 = 0
+       boardX++
+   ?totaltime > 195 & totaltime < 200
+     ?time%2 = 0 
+       boardY++ 
+   ?time = 200   
+      boardY = 19
+
+//Draw the wave in the background---------------
+
+  ?totaltime >= 150 & totaltime <= 200
+        >`@50@,10,@#888888@,ascii
+####  .▒░░▒░▒░▒░░▒░░▒.
+#####/            "" \
+####|                 \
+asciiend
+
+  ?totaltime >= 200 & totaltime <= 250
+        >`@50@,10,@#888888@,ascii
+######.░▒░░▒░▒░▒░░▒░░▒░░
+#####/            ""   |
+####/                  \
+###|                    \
+asciiend
+
+  ?totaltime >= 250 & totaltime <= 300
+        >`@50@,9,@#888888@,ascii
+######░░▒░░▒░▒░▒░░▒░░▒░▒░░░░
+#####▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+####/             ""      |
+###/                       \
+##|                         \
+asciiend
+
+  ?totaltime >= 300 & totaltime <= 350
+        >`@50@,8,@#888888@,ascii
+######░░▒░░▒░▒░▒░░▒░░▒░▒░░▒░▒░
+#####▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+####/                ""      |
+###/                         |
+##/                           \
+#|                              \
+asciiend
+
+  ?totaltime >= 350 & totaltime <= 400
+        >`@50@,7,@#888888@,ascii
+#########░░▒░▒░▒░░▒░░▒░▒░░▒░▒░▒░▒▒░▒░░
+#####░░▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+####/▒▒▒▒           ""             |
+###/                                |
+##/                                  \
+#|                                    \
+/                                       \
+                                         \
+                                          \
+asciiend
+  ?totaltime >= 400 & totaltime <= 500
+        >`@50@,3,@#888888@,ascii
+#########░░▒░▒░▒░░▒░░▒░▒░░▒░▒░▒░▒▒░▒░░▒░░░░▒░
+#####   ░░▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+####/░░▒░▒▒▒▒       ""                    |
+###/░░▒▒                                  |
+##/▒▒▒▒                                    .
+#/▒▒                                        \
+ .                                           \
+|                                              .
+|                                               \
+.                                                \
+                                                  '\
+asciiend
+
+  ?totaltime >= 350 & totaltime <= 400
+        >`@50@,7,@#white@,ascii
+#########░░▒░▒░▒░░▒░░▒░▒░░▒░▒░▒░▒▒░▒░░
+#####░░▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+#####▒▒▒▒                      
+asciiend
+
+  ?totaltime >= 400 & totaltime <= 500
+        >`@50@,3,@#white@,ascii
+#########░░▒░▒░▒░░▒░░▒░▒░░▒░▒░▒░▒▒░▒░░▒░░░░▒░
+#######░░▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+#####░░▒░▒▒▒▒
+####░░▒▒
+###▒▒▒▒  
+##▒▒             
+asciiend
+
+//Paddle Out Animation--------------------------
+  ?totaltime > 275 & totaltime < 452
+      ?paddleTime/7 = 0
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+####       #
+###    O   #
+   #=-\
+#####      #
+asciiend
+
+//Paddle Animation
+      ?paddleTime/7 = 1
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+####       #
+###    O   #
+   #=-|
+#####      #
+asciiend
+      ?paddleTime/7 = 2
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+####       #
+###    O   #
+   #=-/
+#####      #
+asciiend
+      ?paddleTime/7 = 3
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+####       #
+###    O   #
+   #=-<
+#####      #
+asciiend
+
+//Draw the wave----------------------------------
+  ?totaltime > 452 & totaltime <= 875
+    ?time%14 = 0
+        waveY++
+    for i = 1..75
+      >`@waveX + i@,@waveY+(7-(i/3)@,@#333333@,ascii
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+|
+asciiend
+      ?(time + i)%2 = 0
+        >`@waveX + i@,@waveY+(7-(i/3)@,@#white@,ascii
+▒
+░
+▒
+░
+asciiend
+      ?(time + i)%2 = 1
+       >`@waveX + i@,@waveY+(7-(i/3)@,@#white@,ascii
+░
+▒
+░
+▒
+
+asciiend
+
+/*
+      ?(time + i)%2 = 0
+        >`@waveX + i@,@24@,@#white@,ascii
+▒
+asciiend
+      ?(time + i)%2 = 1
+       >`@waveX + i@,@24@,@#white@,ascii
+░
+asciiend
+*/
+   
+//Paddle to catch wave-----------------------------
+  ?totaltime > 452 & totaltime < 552 & success ! 2
+      ?totaltime%4 = 0
+        boardY--
+      ?key = primaryBegin
+        boardY++
+
+      >`@boardX@,@boardY - 2@,@#888888@,ascii
+,.
+\ \
+#\ \
+##\ \
+###'.'
+asciiend
+
+      ?paddleTime/7 = 0
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+#
+#"
+##\
+#> O \  
+#
+asciiend
+
+      ?paddleTime/7 = 1
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+#
+#"
+##\
+#/ O >
+#
+asciiend
+      ?paddleTime/7 = 2
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+#
+#"
+##\#|
+#< O 
+#
+asciiend
+      ?paddleTime/7 = 3
+        >`@boardX@,@boardY - 2@,@#white@,ascii
+#
+#"
+##\ / 
+#\ O
+#
+asciiend
+
+  paddleTime++
+  ?paddleTime >= 27
+    paddleTime = 0
+  
+//Surf the wave------------------------------------------
+  ?totaltime = 552 
+    ?boardY < 20 & boardY > 10
+      success = 1
+    :
+      success = 2
+
+  ?success = 1 & totaltime <= 875
+    ?(boardY + 3 >= input.y) & (boardY - 3 <= input.y)
+      >`@boardX@,@boardY@,@#888888@,ascii
+###_______. 
+##'"
+asciiend
+    >`@boardX@,@boardY - 2@,@#white@,ascii
+#####O#
+### /|>#
+#####>>
+#
+asciiend
+
+   ?boardY < input.y
+     ?boardY + 3 < input.y
+       carveScore++
+       ?time%2 = 0
+         boardY++
+       >`@boardX@,@boardY - 2@,@#888888@,ascii
+###,.
+###\ \
+####\ \
+#####\ \
+######'.'
+asciiend
+     ?time%4 = 0
+       boardY++
+
+   ?boardY > input.y
+     ?boardY - 3 > input.y
+       carveScore++
+       ?time%2 = 0
+         boardY--
+       >`@boardX@,@boardY - 2@,@#888888@,ascii
+#######.
+#####' '
+####/ /
+###/ /
+##','
+asciiend
+     ?time%4 = 0
+       boardY--
+     
+     ?time%16 = 0
+       boundry++
+
+ ?boundry > boardY
+   success = 2
+ ?success = 2
+   >`30,0,@#red@,ascii
+WIPEOUT!
+asciiend
+    ?splashFlag = 0
+      play waterfall_splash
+      >`@boardX@,@boardY - 2@,@#white@,ascii
+_`. " ,'.
+asciiend
+      splashFlag = 1
+
+
+//---------------------------------------------------------
+
+//set postioning of board on new screen
+ ?totaltime = 452
+   boardX = -3
+   boardY = 20
+ ?totaltime = 925
+   boardX = -6
+   boardY = 20
+
+ ?totaltime > 900 & totaltime < 1150
+       >`@boardX@,@boardY - 2@,@#white@,ascii
+####       #
+###    O   #
+   #=-\
+#####      #
+asciiend
+
+//move board
+ ?time%6 = 0 & totaltime > 290 & totaltime < 1070
+   boardX++
+ ?totaltime = 980 | totaltime = 1000 | totaltime = 1020
+   boardX--
+
+  ?totaltime > 873
+    ?time%2 = 0
+      >`@0@,@20@,@#white@,ascii
+▒░
+░▒
+▒░▒░▒
+░░▒░░░▒░▒░▒
+░░▒░▒░▒░░▒░▒░▒#░
+asciiend
+    ?time%2 = 1
+      >`@0@,@20@,@#white@,ascii
+░▒
+▒░
+░▒░░░
+▒░░▒░▒░░░▒░
+▒▒░░▒░▒░▒░░▒░▒#▒
+asciiend

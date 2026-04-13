@@ -1,0 +1,50 @@
+/*
+Cat 
+by holadios_ (Discord)
+v1.0
+description:
+Cat with changes of humor and that holds your
+refer to scooty
+usage
+to change the code (your reffer to scotty) put
+this in the mindstone:
+ var mycode = import Cat
+ mycode.reffer = ＂ABCD＂ <--- here your code
+*/
+
+var reffer
+reffer = ＂CODE＂
+var randomcolor = #white
+var cat = ［ascii
+##_###/\##/\    
+###)#(  °w° )
+##(##/=    =\     
+###\(        )
+asciiend,ascii
+######/\  /\
+_####(  •w• )
+#`.##/-    -\
+###\(        )
+asciiend,ascii
+######/\  /\
+#####(  -_- )
+-._##/_    _\
+###\(        )
+asciiend,ascii
+######/\  /\
+#####(  ;-; )
+#####/\    /\
+-´¯\(        )
+asciiend］
+
+var i = 0
+>o-25,0,#red,@cat［i］@
+?totaltime % 17 = 0
+ i++
+?i >= cat.Count()
+ i = 0
+
+?time%2 = 0
+ randomcolor = color.Random()
+
+>o-18,2,@randomcolor@,@reffer@

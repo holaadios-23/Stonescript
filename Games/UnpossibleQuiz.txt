@@ -1,0 +1,656 @@
+/*Unpossible Quiz
+Version: 0.5
+By Toast
+
+Just import and go to deadwood waterfall.
+Or not. I'm not your Dad.
+
+
+
+
+Question Ideas:
+
+- Memory test
+- Where is SpringBuddy from?
+- How long have you been answering questions?
+- How do you prevent a sea bear attack?
+- How many minibosses can apply debuffs?
+- Fake Game Over screen
+- In chess, what move is an "en passant"?
+- What did I have for breakfast last week?
+- Sans bone thing
+- "Oh no, a time paradox, don't run into your former answers!"
+*/
+
+var Title = ascii
+`--._|       
+  |  |,-. .-.
+  |  |  |(--'
+  |  |  ; `-'
+            {2}___  [/color]{3}  ___ [/color]{4}  __ [/color]{5}  __ [/color]{6}  ___ [/color]{7}  _   [/color]     {9}  ___ [/color]
+{0}││ ││[/color]{1} │\ ││[/color]{2} │ _`.[/color]{3} . _ .[/color]{4} / _│[/color]{5} / _│[/color]{6} │_ _│[/color]{7} │ │_ [/color]{8} ││  [/color]{9} | __|[/color]
+{1}││ ││[/color]{2} │ \││[/color]{3} ││_)│[/color]{4} ││ ││[/color]{5} \ \ [/color]{6} \ \ [/color]{7}  │ │ [/color]{8} │ _ \[/color]{9} ││  [/color]{10} | └┐ [/color]
+{2}:`-´;[/color]{3} ││\ │[/color]{4} │ .-'[/color]{5} ││_││[/color]{6} _) )[/color]{7} _) )[/color]{8}  │ │ [/color]{9} ││_)│[/color]{10} ││_ [/color]{11} | ┌┘ [/color]
+{3} `-´ [/color]{4} ││ \│[/color]{5} │_│  [/color]{6} '___'[/color]{7}│__/ [/color]{8}│__/ [/color]{9} │¯ ¯│[/color]{10} │___/[/color]{11} │__|[/color]{12} | ¯¯|[/color]
+                                  {9}¯¯¯[/color]              {12}¯¯¯[/color]
+      Quiz
+asciiend
+
+var Brag = import UI/BragMeter
+var R = new Components/Rainbowifier
+
+func TitleRender()
+  return string.Format(Title, R.NextShade(true), R.NextShade(true),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false),R.NextShade(false))
+
+var Questions = [
+^"How long is a piece of string?",//                                                           Q0
+^"Which platform game was infamous for having apples that would fall upwards to kill the player?",//    Q1
+^"The Phoenicians were a civilisation which occupied which region of the modern world?",//     Q2
+^"Have you seen Joe?",//                                                                       Q3
+^"Click\nThe Answer",//                                                                        Q4
+^"The\n\nis the\npowerhouse\nof the",//                                                        Q5
+^"How much wood could a wood Chuck Norris?",//                                                 Q6
+^"Please take a moment to review my report on the Epic of Gilgamesh",//                        Q7
+^"Which of these plant varieties does not exist?",//                                           Q8
+^"What is Sonic the Hedgehog's full name as shown by Archie Comics?",//                        Q9
+^"When Enkidu and Gilgamesh traveled to the Cedar forest, what is the name of the monstrous demi-god that they hunted?",// Q10
+^"When Gilgamesh arrives at the twin peaks of Mount Mashu, what creature(s) are guarding the passage?",//Q11
+^"Which of these communist reigimes did not result in horrific human rights violations?",//    Q12
+^"What question are you up to now?",//                                                         Q13
+^"In the lore of 'The Elder Scrolls' which of the following is NOT a species of elf?",//       Q14
+^"Where were you on 911?!",//                                                                  Q15
+^"Which came first?",//                                                                        Q16
+^"The following question will be triggered with ui.SetUp()",//                                 Q17
+^"Which word pairing doesn't belong?",//                                                       Q18
+^"Multichoice:\nWhich of these games require you to say the game's name?",//                   Q19
+^"import Games/UnposibleQuiz\n .I_Am_Ugly_And_Proud = true",//                                 Q20
+^"What is your current Brag-meter score?",//                                                   Q21
+^"How do you prevent a sea bear attack?",//                                                    Q22
+^"Jeopardy",//                                                                                 Q23
+^"In what year did French operatives enter New Zealand water and commit an act of terrorism by sinking a vessel that had been protesting French nuclear testing?",//                                                   Q24
+^]
+var QuestionInfo = [ //  [ Question Prompt Width, Panel Y offset, Text prompt Y offset,  Prompt Height ]
+^[20,-7,0,6],//      Q0
+^[20,-7,0,7],//      Q1
+^[24,-6,0,6],//      Q2
+^[11,-5,1,4],//      Q3
+^[12,-5,1,4],//      Q4
+^[18,-8,-1,8],//     Q5
+^[18,-8,0,6],//      Q6
+^[18,-8,0,6],//      Q7
+^[18,-6,1,5],//      Q8
+^[17,-6,0,6],//      Q9
+^[25,-6,0,7],//      Q10
+^[25,-6,0,6],//      Q11
+^[25,-6,0,6],//      Q12
+^[20,-6,0,4],//      Q13
+^[24,-6,0,6],//      Q14
+^[24,-6,0,6],//      Q15
+^[24,-6,0,6],//      Q16
+^[24,-6,0,6],//      Q17
+^[24,-6,0,6],//      Q18
+^[24,-6,0,6],//      Q19
+^[30,-4,1,4],//      Q20
+^[24,-6,0,6],//      Q21
+^[24,-6,0,6],//      Q22
+^[17,-6,0,6],//      Q23
+^[40,-5,0,6],//      Q24
+^]
+var Answers = [
+^["Indeterminate","14","As long as you cut it","Over 9000"],//      Q0
+^["I wanna be the guy","N","Cave Story","Jump King"],//             Q1
+^["Turkey","Lebanon","Morocco","Iran"],//                           Q2
+^["Who's Joe?","I ain't falling for that"],//                       Q3
+^["The answer","Teh Answer","The Anwser","the Answer","the answer","The answer","The Answer","Teh Answer","The Anwser","the Answer","the answer"],//Q4
+^["mitochondria\ncell","midi-chlorian\nForce","Chuck\nNorris","French Government\nwar crimes"],// "Mesopotamia\nFirst major civilisations"          Q5
+^["Heaps","Over 9000","Chuck Norris memes are old and cringe","All of it"],//                                   Q6
+^["You clearly took this from wikipedia","I loved all the words","It's inspiring to see honest effort","I hate it and take time off work to euthanize puppies"],//                       Q7
+^["Dutch Asparagus","Jerusalim Artichokes","Lebanese Cucumber","Chinese Gooseberries"],//                       Q8
+^["Sonic Guillevin Hedgehog","Ogilvie Maurice Hedgehog","Sonny Olrich Hedgehog","Ryu Satoshi Hedgehog"],//      Q9
+^["Hammurabi","Shamash","Ninsun","Humbaba"],//                                                                  Q10
+^["2 scorpion monsters, who appear to be a married couple","A creature bearing a similar resemblance to an Egyptian sphynx","Twin serpents which spoke in riddles","Nothing"],//                       Q11
+^["The Soviet Union\n(1922 - 1991)","East Germany\n(1949 - 1990)","Poland\n(1947 - 1989)","Czechoslovakia\n(1948 - 1989)","Hungary\n(1949 - 1989)","Romania\n(1947 - 1989)","Bulgaria\n(1946 - 1990)","Yugoslavia\n(1945 - 1992)","Albania\n(1946 - 1991)","Cambodia (Khmer)\n(1975 - 1979)","Ethiopia\n(1974 - 1991)","Afghanistan\n(1978 - 1992)","China\n(1949 - present)","North Korea\n(1948 - present)","Cuba\n(1959 - present)","Vietnam\n(1976 - present)","Laos\n(1975 - present)","None of these"],//                                                  Q12
+^["13","14","10","12"],//                                                                        Q13
+^["Bosmer","Orsimer","Dwemer","Chimer","Falmer","Ayleid","Maomer","Altmer","Sigmer","Aldmer","Sinistral Elves","Dunmer"],// Q14
+^["I did it","Not born yet","Nothing officer","At 711"],//                                                                  Q15
+^["The chicken","The egg","General Tso's famous chicken recipe","The first answer"],//                                      Q16
+^["Ok?","I don't know what that means","Understood","I'm a big dum dum"],//                                                 Q17
+^["Genius\nIngenius","Valuable\nInvaluable","Sensitive\nInsensitive","Flammable\nInflammable"],//                           Q18
+^["Uno","Monopoly","Go Fish!","Bingo","Confirm"],//                           Q19
+^[],//                           Q20
+^[ Brag.grkr+18+"%", Brag.grkr-16+"%", Brag.grkr+"%", Brag.grkr-5+"%" ],//                                                  Q21
+^["Sing the campfire song song","Eat diced (not sliced) cheese","Draw a circle around you","Wear anti sea bear underwear"],//Q22
+^["What is that?","What is a game show?","Never seen it", "Deal!"],//                                                       Q23
+^["1985","1998","2000", "1976","Didn't happen"],//                                                                          Q24
+
+
+
+^]
+// 0 = false, 1 = true, 2 = record stats, 3 = Toggle, 4 = Toggle Select, else = run given function
+//Format: Question box width, Question box height, Buttons Per Row, Answer data values
+
+var AnswerInfo = [
+^[20,4,2,0,1,0,0],//                       Q0
+^[14,5,2,1,0,0,0],//                       Q1
+^[11,3,2,0,1,0,0],//                       Q2
+^[10,5,2,1,0],//                           Q3
+^[10,5,5,0,0,0,0,0,0,1,0,0,0,0],//         Q4
+^[21,4,2,0,0,0,1],//                       Q5
+^[21,4,2,0,0,0,1],//                       Q6
+^[21,5,2,0,1,1,2],//                       Q7
+^[21,4,2,1,0,0,0],//                       Q8
+^[21,4,2,0,1,0,0],//                       Q9
+^[14,3,2,0,0,0,1],//                       Q10
+^[21,6,2,1,0,0,0],//                       Q11
+^[21,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],//Q12
+^[10,5,5,1,0,0,0],//                       Q13
+^[21,4,2,0,0,0,0,0,0,0,0,1,0,0,0],//       Q14
+^[10,5,5,2,2,2,2],//                       Q15
+^[15,5,2,0,1,0,0],//                       Q16
+^[15,5,2,1,1,1,1],//                       Q17
+^[15,5,2,0,0,1,0],//                       Q18
+^[10,5,2,3,3,5,3,0,FishyTime],//           Q19
+^[1,1,1],//                                Q20
+^[15,5,2,0,0,1,0],//                       Q21
+^[20,6,2,0,0,1,0],//                       Q22
+^[15,4,2,0,1,0,0],//                       Q23
+^[15,3,2,1,0,0,0,0],//                     Q24
+^]
+
+var QNumber = 0
+var Buttons = []
+var ButtonText = []
+var ButtonPanels = []
+
+var MotherPanel
+var QuestionPanel
+var QuestionPrompt
+var runtime = 0
+
+var UpButton
+var DownButton
+var I_Am_Ugly_And_Proud
+var FishGame = import Games/Fishing/FishingGame
+var FishingOn = false
+var ScaleCount
+var SoundTimer = 0
+var Boom = import Cosmetics/Explosion
+var ScrollFactor
+var AdditionalTextBox2
+var StartMoving = false
+var ScrollClamp
+var ToggleStates
+var Lives = 3
+var TimeStamp
+var AdditionalTextBox
+
+//Achievement Stats
+var FishCaught = storage.Get("FishCaught",0)
+var WrongQuestions = storage.Get("WrongQuestions",0)
+var TimeSpent = storage.Get("TimeSpent",0)
+var CryScore = storage.Get("CryScore",0)
+var ConfessedToNineEleven
+var MostFailedQuestion = DecompileStorageIntoList(storage.Get("MostFailedQuestion",null))
+
+func DecompileStorageIntoList(str)
+  ?str
+    var strlist = string.Split(str,",",true)
+    for a : strlist
+      a = int.Parse(a)
+    return strlist
+  :  
+    return GenerateFailedQuestionList()
+
+func CompileListIntoStorage(list)
+  storage.Set("MostFailedQuestion", string.Join(list, ","))
+
+func GenerateFailedQuestionList()
+  var templist = []
+  for a : Answers
+    templist.Add(0) 
+  return templist
+
+func ClearStorage()
+  storage.Delete("FishCaught")
+  storage.Delete("WrongQuestions")
+  storage.Delete("TimeSpent")
+  storage.Delete("CryScore")
+
+func Death()
+  play bearer_super_attack 200
+  SoundTimer = 6
+  Lives--
+  ?Lives < 1
+    DeathScreen()
+  Boom.Explosion(input.x,input.y)
+  IncrementStorage("WrongQuestions",1)
+  WrongQuestions++
+
+func UpdatePlayerAnimPosition()
+  FishGame.playerAnimRoot.x = screen.FromWorldX(-3)
+  FishGame.playerAnimRoot.y = screen.FromWorldZ(9)
+
+func FishyTime()
+  ui.Clear()
+  FishingOn = true
+  FishGame.Init()
+  FishGame.waitTimeMin = 0
+  FishGame.UpdatePlayerAnimPosition = UpdatePlayerAnimPosition
+  FishGame.SetState(Throwing)
+  ScaleCount = FishGame.progress.scales
+
+func None()
+  return
+
+func ScrollButtons(Xoffset)
+  ScrollFactor = [0,0]
+  UpButton = ui.AddButton()
+  DownButton = ui.AddButton()
+  UpButton.x = screen.w/2 + Xoffset
+  DownButton.x = screen.w/2 + Xoffset
+
+  UpButton.y = -5
+  DownButton.y = 5
+
+  UpButton.w = 2
+  DownButton.w = 2
+
+  UpButton.h = 3
+  DownButton.h = 3
+
+  UpButton.text = "/\"
+  DownButton.text = "\\/"
+
+  UpButton.SetDown(ScrollUp)
+  DownButton.SetDown(ScrollDown)
+
+func ScrollUp()
+  ScrollFactor = [20,2]
+func ScrollDown()
+  ScrollFactor = [20,-2]
+
+func ToggleSelect(N)
+  MultichoiceToggle[N] = !MultichoiceToggle[N]
+  ?MultichoiceToggle[N]
+    Buttons[N].style = 3
+    Buttons[N].bcolor = #FFFFFF
+  :
+    Buttons[N].style = 1
+    Buttons[N].bcolor = #808080
+
+func OnPressed(btn)
+  ?Buttons.Count() = 0
+    return
+  for z=0..Buttons.Count()-1
+    ?btn = Buttons[z]
+      ?AnswerInfo[QNumber][z+3] = 1 
+        QNumber++
+        ?QNumber = 4
+          >Joe Mamma! Gottem!
+        ?QNumber >= Questions.Count()
+          ClearAll()
+          OperatingFunction = Achievements
+          Init = true
+          return
+        GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+      :?AnswerInfo[QNumber][z+3] = 2
+        ?QNumber = 15
+          ConfessedToNineEleven = z
+        QNumber++
+        GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+      :?AnswerInfo[QNumber][z+3] = 3
+        ToggleSelect(z)
+      :?AnswerInfo[QNumber][z+3] = 0
+        Death()
+      :?AnswerInfo[QNumber][z+3] = 5
+        AnswerInfo[QNumber]  [AnswerInfo[QNumber].Count()-1]  ()
+      return
+
+func SetButton(Qlist,Row,ButtonNumber,Qwidth,Qheight,ColumnCount,ListReference)
+  var ButtonListLast
+  var MiddleNumber
+  var PositionOffset
+
+  ButtonPanels.Add(ui.AddPanel())
+  Buttons.Add(ui.AddButton())
+  ButtonText.Add(ui.AddText(Qlist[ListReference]))
+  ButtonListLast = Buttons.Count()-1
+
+  ButtonPanels[ButtonListLast].Add(Buttons[ButtonListLast])
+  ButtonPanels[ButtonListLast].Add(ButtonText[ButtonListLast])
+
+  MotherPanel.Add(ButtonPanels[ButtonListLast])
+
+  MiddleNumber = math.CeilToInt((1.0*ColumnCount)/2)
+  PositionOffset = ButtonNumber - MiddleNumber
+
+  ButtonPanels[ButtonListLast].x =  (Qwidth+1) * PositionOffset - ((1+ColumnCount)%2)*(Qwidth+1)/2	
+  ButtonPanels[ButtonListLast].h = 0
+
+  ?Qheight < 5
+    ButtonPanels[ButtonListLast].y = Qheight * (Row-1) -1
+    ButtonText[ButtonListLast].y = Qheight%2 + 4
+  :
+    ButtonPanels[ButtonListLast].y = Qheight * (Row-1)
+    ButtonText[ButtonListLast].y = Qheight%2 + 3
+
+  Buttons[ButtonListLast].h = Qheight
+  Buttons[ButtonListLast].w = Qwidth
+  Buttons[ButtonListLast].text = ""
+  
+  ?QNumber = 18
+    Buttons[ButtonListLast].SetUp(OnPressed)
+  :
+    Buttons[ButtonListLast].SetDown(OnPressed)
+
+  ButtonText[ButtonListLast].w = Qwidth - 2
+  ButtonText[ButtonListLast].align = center
+  ButtonText[ButtonListLast].anchor = bottom_center
+
+var MultichoiceToggle = []
+
+func GenerateButtons(Qlist,Qwidth,Qheight,ButtonsPerRow)
+  ClearAll()
+
+  var remainder
+  var ListReference
+  var RowCount
+  RowCount = math.CeilToInt((1.0*Qlist.Count())/ButtonsPerRow)
+  remainder = Qlist.Count() % ButtonsPerRow
+
+  MotherPanel = ui.AddPanel()
+  MotherPanel.h = -1
+  MotherPanel.w = -1
+
+  for a : Answers[QNumber]
+    MultichoiceToggle.Add(false)
+
+  ?Answers[QNumber].Count()
+   for a=1..RowCount
+    ?a = RowCount & remainder>0
+      for b=1..remainder
+        ListReference = (a-1)*ButtonsPerRow + b - 1
+        SetButton(Qlist,a,b,Qwidth,Qheight,remainder,ListReference)
+    :
+      for b=1..ButtonsPerRow
+        ListReference = (a-1)*ButtonsPerRow + b - 1
+        SetButton(Qlist,a,b,Qwidth,Qheight,ButtonsPerRow,ListReference)
+
+
+  QuestionPanel = ui.AddPanel()
+  QuestionPrompt = ui.AddText(Questions[QNumber])
+  QuestionPrompt.w = QuestionInfo[QNumber][0]
+  QuestionPrompt.align = center
+  MotherPanel.Add(QuestionPanel)
+
+  QuestionPanel.w = QuestionInfo[QNumber][0]+2
+  QuestionPanel.Add(QuestionPrompt)
+  QuestionPanel.h = QuestionInfo[QNumber][3]
+
+  QuestionPanel.y = QuestionInfo[QNumber][1]-QuestionInfo[QNumber][2]
+  QuestionPrompt.y = QuestionInfo[QNumber][2]
+  
+  ScrollFactor = null
+
+  ?QNumber = 7
+    ScrollClamp = [0,190]
+    ScrollButtons(-5)
+    AdditionalTextBox = ui.AddPanel()
+    AdditionalTextBox2 = ui.AddText(EpicOfGilgamesh)
+    AdditionalTextBox.w = 74 //screen.w-13
+    AdditionalTextBox2.w = 72 //screen.w-15
+    MotherPanel.Add(AdditionalTextBox)
+    AdditionalTextBox.Add(AdditionalTextBox2)
+    MotherPanel.y = 190
+    QuestionPanel.y += -190
+    AdditionalTextBox.h = 190
+    AdditionalTextBox2.h = 190
+    AdditionalTextBox.y += -100
+    AdditionalTextBox2.y += 1
+  :?QNumber = 12
+    ScrollClamp = [-30,0]
+    ScrollButtons(-20)
+  :?QNumber = 14
+    ScrollClamp = [-10,0]
+    ScrollButtons(-20)
+
+func Restart()
+  ui.Clear()
+  QNumber = 0
+  Lives = 3
+  //RunTime = 0
+  GenerateButtons(Answers[0],AnswerInfo[0][0],AnswerInfo[0][1],AnswerInfo[0][2])
+
+
+func Crying()
+  play bearer_super_attack 400
+  IncrementStorage("CryScore",1)
+  CryScore++
+
+func ClearAll()
+  Buttons.Clear()
+  ButtonText.Clear()
+  ButtonPanels.Clear()
+  MultichoiceToggle.Clear()
+  ui.Clear()
+
+func DeathScreen()
+  ClearAll()
+
+  MotherPanel = ui.AddPanel()
+  MotherPanel.style = -11
+  
+  var Retry = ui.AddButton()
+  Retry.w = 9
+  Retry.h = 3
+  Retry.x = 6
+  Retry.text = "Retry"
+  Retry.SetPressed(Restart)
+  MotherPanel.Add(Retry)
+  
+  var Cry = ui.AddButton()
+  Cry.w = 18
+  Cry.h = 3
+  Cry.x = -8
+  Cry.text = "Cry Inconsolably"
+  Cry.SetPressed(Crying)
+  MotherPanel.Add(Cry)
+
+  var DeathMessage = ui.AddText("   You died\n...peacefully of natural causes")
+  DeathMessage.w = 20
+  DeathMessage.y = -4
+  MotherPanel.Add(DeathMessage)
+
+var TitleText
+var Init = true
+var TitleButton
+
+func StartGame()
+  OperatingFunction = Run
+  TitleText.Recycle()
+  TitleButton.Recycle()
+
+  TitleText = null
+  TitleButton = null
+
+  GenerateButtons(Answers[0],AnswerInfo[0][0],AnswerInfo[0][1],AnswerInfo[0][2])
+
+func IncrementStorage(name,value)
+  ?storage.Has(name)
+    storage.Incr(name,value)
+  :
+    storage.Set(name,value)
+
+func CheckConfession()
+  ?ConfessedToNineEleven
+    return "You didn't confess your\ninvolvment in 911"
+  :
+    return "You confessed to your\ninvolvment in 911"
+
+func AchievementList()
+  var a = ascii
+=== Achievements! ===#
+                     #
+Wrong Answers: {1}    #
+Cry Score:     {2}    #
+Time Spent:    {3}    #
+Fish Caught:   {4}    #
+
+{5}
+asciiend
+  return string.Format(a,"",WrongQuestions,CryScore,time.FormatCasual(RunTime),FishCaught,CheckConfession())
+
+func Achievements()
+  >o-25,0,     You Win!\n@AchievementList()@
+
+func StartScreen()
+  ?Init
+    Init = false
+    TitleText = ui.AddText(TitleRender())
+    TitleText.w = 1
+    TitleText.align = center
+    TitleText.h = 10
+    TitleText.y = -4
+
+    TitleButton = ui.AddButton()
+    TitleButton.y = 60
+    TitleButton.w = 9
+    TitleButton.text = "Start"
+    TitleButton.SetPressed(StartGame)
+
+  :?time % 3 = 0
+    TitleText.text = TitleRender()
+
+  ?TitleText.w < 56
+    TitleText.w += 2
+
+  ?TitleButton.y > 6
+    TitleButton.y -= 2
+
+var RunTime = 0
+
+func Run()
+  Boom.ExplosionStatus()
+  >`0,10,Lives:@Lives@
+
+  RunTime++
+  ?SoundTimer
+    SoundTimer--
+    ?SoundTimer = 0
+      play hammer_hit 50
+      play bronze_guardian_helmet 60
+      play snail_death_small 50
+      play controller_whip_hit 50
+  ?FishingOn
+    UpdatePlayerAnimPosition()
+    FishGame.Update()
+    ?time%2
+     FishGame.Update()
+
+    ?FishGame.logo.logoIn
+      FishingOn = false
+      ui.Clear()
+      ?ScaleCount = FishGame.progress.scales
+        >You Didn't It!
+        QNumber = 0
+        GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+      :
+        >You Did It!
+        QNumber = 20
+        IncrementStorage("FishCaught",1)
+        FishCaught ++
+        GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+
+  /*
+  ?key = UpBegin
+    QNumber++
+    GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+
+  :?key = DownBegin
+    QNumber--
+    GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+  */
+
+  ?QNumber = 4 & Lives > 0
+    ?TimeStamp = null
+      TimeStamp = totaltime
+    var a
+    var b
+    var c
+    var d
+    ?TimeStamp + 50 < totaltime & !StartMoving
+      StartMoving = true
+      //ui.root.Add(QuestionPanel)
+      QuestionPanel.y = -12
+    ?StartMoving
+     ?time % 4
+      runtime++
+      for i = 0..3
+        var OffsetInner = 2*math.pi/9
+        a = math.sin(runtime/12.0+i*OffsetInner)
+        b = math.cos(-1*runtime/12.0+i*OffsetInner)
+        c = 20
+        d = 10
+        ButtonPanels[i].x = math.RoundToInt(a*a*c-c/2.0)
+        ButtonPanels[i].y = 2+math.RoundToInt(b*b*d-d/2.0)
+
+      for i = 4..10
+        var Offset = 2*math.pi/6
+        a = math.sin(runtime/12.0+i*Offset)
+        b = math.cos(runtime/12.0+i*Offset)
+        c = 25
+        d = 10
+        ButtonPanels[i].x = math.RoundToInt(a*c)
+        ButtonPanels[i].y = 2+math.RoundToInt(b*d)
+  :
+    TimeStamp = null
+    StartMoving = false
+
+
+  ?QNumber = 5
+    ?AdditionalTextBox = null
+      AdditionalTextBox = ui.AddText()
+    AdditionalTextBox.y = -7
+    AdditionalTextBox.x = 0
+    AdditionalTextBox.w = 30
+    AdditionalTextBox.align = center
+    ?math.Abs(screen.w/2-input.x) < 22  &  math.Abs(screen.h/2+1-input.y) < 5
+      ?input.x > screen.w/2
+        ?input.y > screen.h/2
+          AdditionalTextBox.text = " French Government\n\n\n\n  war crimes"
+        :
+          AdditionalTextBox.text = " midi-chlorian\n\n\n\n Force"
+      :
+        ?input.y > screen.h/2
+          AdditionalTextBox.text = "Chuck\n\n\n\nNorris"
+        :
+          AdditionalTextBox.text = "mitochondria\n\n\n\n cell"
+    :
+      AdditionalTextBox.text = ""
+  :
+    AdditionalTextBox = null
+
+  ?QNumber = 20
+    ?I_Am_Ugly_And_Proud = true
+      QNumber++
+      GenerateButtons(Answers[QNumber],AnswerInfo[QNumber][0],AnswerInfo[QNumber][1],AnswerInfo[QNumber][2])
+
+  ?QNumber = 19
+    ?ToggleStates
+      ToggleStates = [false, false, false, false]
+  :
+    ToggleStates = null
+
+  ?ScrollFactor
+    ?ScrollFactor[0]>0
+      MotherPanel.y = math.Clamp(MotherPanel.y + ScrollFactor[1], ScrollClamp[0], ScrollClamp[1])
+      ScrollFactor[0] -= math.Abs(ScrollFactor[1])
+
+var OperatingFunction = StartScreen
+?totaltime = 1
+  Init = true
+  OperatingFunction = StartScreen
+
+OperatingFunction()
+
+var EpicOfGilgamesh = "Gilgamesh was the Sumerian king of Uruk who ruled somewhere between 2900-2350 BC. He later became a legendary God hero figure as the subject of the 'Epic of Gilgamesh' at around 2100 BC.\nThe Epic of Gilgamesh was seperated into 11 tablets. There was a 12th tablet found but due to inconsistencies in the story it appears to have been a later addition to the tale.\nTablet one\nThe story introduces Gilgamesh, king of Uruk. Gilgamesh, two-thirds god and one-third man, is oppressing his people, who cry out to the gods for help. For the young women of Uruk this oppression takes the form of a droit du seigneur, or 'lord's right', to sleep with brides on their wedding night. For the young men (the tablet is damaged at this point) it is conjectured that Gilgamesh exhausts them through games, tests of strength, or perhaps forced labour on building projects. The gods respond to the people's pleas by creating an equal to Gilgamesh who will be able to stop his oppression. This is the primitive man, Enkidu, who is covered in hair and lives in the wild with the animals. He is spotted by a trapper, whose livelihood is being ruined because Enkidu is uprooting his traps. The trapper tells the sun-god Shamash about the man, and it is arranged for Enkidu to be seduced by Shamhat, a temple prostitute, his first step towards being tamed. After six days and seven nights (or two weeks, according to more recent scholarship) of lovemaking and teaching Enkidu about the ways of civilization, she takes Enkidu to a shepherd's camp to learn how to be civilized. Gilgamesh, meanwhile, has been having dreams about the imminent arrival of a beloved new companion and asks his mother, Ninsun, to help interpret these dreams.\nTablet two\nShamhat brings Enkidu to the shepherds' camp, where he is introduced to a human diet and becomes the night watchman. Learning from a passing stranger about Gilgamesh's treatment of new brides, Enkidu is incensed and travels to Uruk to intervene at a wedding. When Gilgamesh attempts to visit the wedding chamber, Enkidu blocks his way, and they fight. After a fierce battle, Enkidu acknowledges Gilgamesh's superior strength and they become friends. Gilgamesh proposes a journey to the Cedar Forest to slay the monstrous demi-god Humbaba in order to gain fame and renown. Despite warnings from Enkidu and the council of elders, Gilgamesh is not deterred.\nTablet three\nThe elders give Gilgamesh advice for his journey. Gilgamesh visits his mother, the goddess Ninsun, who seeks the support and protection of the sun-god Shamash for their adventure. Ninsun adopts Enkidu as her son, and Gilgamesh leaves instructions for the governance of Uruk in his absence.\nTablet four\nGilgamesh and Enkidu journey to the Cedar Forest. Every few days they camp on a mountain, and perform a dream ritual. Gilgamesh has five terrifying dreams about falling mountains, thunderstorms, wild bulls, and a thunderbird that breathes fire. Despite similarities between his dream figures and earlier descriptions of Humbaba, Enkidu interprets these dreams as good omens, and denies that the frightening images represent the forest guardian. As they approach the cedar mountain, they hear Humbaba bellowing, and have to encourage each other not to be afraid.\nTablet five\nThe heroes enter the cedar forest. Humbaba, the guardian of the Cedar Forest, insults and threatens them. He accuses Enkidu of betrayal, and vows to disembowel Gilgamesh and feed his flesh to the birds. Gilgamesh is afraid, but with some encouraging words from Enkidu the battle commences. The mountains quake with the tumult and the sky turns black. The god Shamash sends 13 winds to bind Humbaba, and he is captured. Humbaba pleads for his life, and Gilgamesh pities him. He offers to make Gilgamesh king of the forest, to cut the trees for him, and to be his slave. Enkidu, however, argues that Gilgamesh should kill Humbaba to establish his reputation forever. Humbaba curses them both and Gilgamesh dispatches him with a blow to the neck, as well as killing his seven sons. The two heroes cut down many cedars, including a gigantic tree that Enkidu plans to fashion into a gate for the temple of Enlil. They build a raft and return home along the Euphrates with the giant tree and (possibly) the head of Humbaba.\nTablet six\nGilgamesh rejects the advances of the goddess Ishtar because of her mistreatment of previous lovers like Dumuzi. Ishtar asks her father Anu to send the Bull of Heaven to avenge her. When Anu rejects her complaints, Ishtar threatens to raise the dead who will 'outnumber the living' and 'devour them'. Anu states that if he gives her the Bull of Heaven, Uruk will face 7 years of famine. Ishtar provides him with provisions for 7 years in exchange for the bull. Ishtar leads the Bull of Heaven to Uruk, and it causes widespread devastation. It lowers the level of the Euphrates river, and dries up the marshes. It opens up huge pits that swallow 300 men. Without any divine assistance, Enkidu and Gilgamesh attack and slay it, and offer up its heart to Shamash. When Ishtar cries out, Enkidu hurls one of the hindquarters of the bull at her. The city of Uruk celebrates, but Enkidu has an ominous dream about his future failure.\nTablet seven\nIn Enkidu's dream, the gods decide that one of the heroes must die because they killed Humbaba and Gugalanna. Despite the protestations of Shamash, Enkidu is marked for death. Enkidu curses the great door he has fashioned for Enlil's temple. He also curses the trapper and Shamhat for removing him from the wild. Shamash reminds Enkidu of how Shamhat fed and clothed him, and introduced him to Gilgamesh. Shamash tells him that Gilgamesh will bestow great honors upon him at his funeral, and will wander into the wild consumed with grief. Enkidu regrets his curses and blesses Shamhat instead. In a second dream, however, he sees himself being taken captive to the Netherworld by a terrifying Angel of Death. The underworld is a 'house of dust' and darkness whose inhabitants eat clay, and are clothed in bird feathers, supervised by terrifying beings. For 12 days, Enkidu's condition worsens. Finally, after a lament that he could not meet a heroic death in battle, he dies. In a famous line from the epic, Gilgamesh clings to Enkidu's body and denies that he has died until a maggot drops from the corpse's nose.\nTablet eight\nGilgamesh delivers a lament for Enkidu, in which he calls upon mountains, forests, fields, rivers, wild animals, and all of Uruk to mourn for his friend. Recalling their adventures together, Gilgamesh tears at his hair and clothes in grief. He commissions a funerary statue, and provides grave gifts from his treasury to ensure that Enkidu has a favourable reception in the realm of the dead. A great banquet is held where the treasures are offered to the gods of the Netherworld. Just before a break in the text there is a suggestion that a river is being dammed, indicating a burial in a river bed, as in the corresponding Sumerian poem, The Death of Gilgamesh.\nTablet nine\nTablet nine opens with Gilgamesh roaming the wild wearing animal skins, grieving for Enkidu. Having now become fearful of his own death, he decides to seek Utnapishtim ('the Faraway'), and learn the secret of eternal life. Among the few survivors of the Great Flood, Utnapishtim and his wife are the only humans to have been granted immortality by the gods. Gilgamesh crosses a mountain pass at night and encounters a pride of lions. Before sleeping he prays for protection to the moon god Sin. Then, waking from an encouraging dream, he kills the lions and uses their skins for clothing. After a long and perilous journey, Gilgamesh arrives at the twin peaks of Mount Mashu at the end of the earth. He comes across a tunnel, which no man has ever entered, guarded by two scorpion monsters, who appear to be a married couple. The husband tries to dissuade Gilgamesh from passing, but the wife intervenes, expresses sympathy for Gilgamesh, and (according to the poem's editor Benjamin Foster) allows his passage. He passes under the mountains along the Road of the Sun. In complete darkness he follows the road for 12 'double hours', managing to complete the trip before the Sun catches up with him. He arrives at the Garden of the gods, a paradise full of jewel-laden trees.\nTablet ten\nGilgamesh meets alewife Siduri, who assumes that he is a murderer or thief because of his disheveled appearance. Gilgamesh tells her about the purpose of his journey. She attempts to dissuade him from his quest, but sends him to Urshanabi the ferryman, who will help him cross the sea to Utnapishtim. Gilgamesh, out of spontaneous rage, destroys the stone charms that Urshanabi keeps with him. Gilgamesh tells his story, but when he asks for help, Urshanabi informs him that he has just destroyed the objects that can help them cross the Waters of Death, which are deadly to the touch. Urshanabi instructs Gilgamesh to cut down 120 trees and fashion them into punting poles. When they reach the island where Utnapishtim lives, Gilgamesh recounts his story, asking him for his help. Utnapishtim reprimands him, declaring that fighting the common fate of humans is futile and diminishes life's joys.\nTablet eleven\nGilgamesh observes that Utnapishtim seems no different from himself, and asks him how he obtained his immortality. Utnapishtim explains that the gods decided to send a great flood. To save Utnapishtim the god Enki told him to build a boat. He gave him precise dimensions, and it was sealed with pitch and bitumen. His entire family went aboard together with his craftsmen and 'all the animals of the field'. A violent storm then arose which caused the terrified gods to retreat to the heavens. Ishtar lamented the wholesale destruction of humanity, and the other gods wept beside her. The storm lasted six days and nights, after which 'all the human beings turned to clay'. Utnapishtim weeps when he sees the destruction. His boat lodges on a mountain, and he releases a dove, a swallow, and a raven. When the raven fails to return, he opens the ark and frees its inhabitants. Utnapishtim offers a sacrifice to the gods, who smell the sweet savor and gather around. Ishtar vows that just as she will never forget the brilliant necklace that hangs around her neck, she will always remember this time. When Enlil arrives, angry that there are survivors, she condemns him for instigating the flood. Enki also castigates him for sending a disproportionate punishment. Enlil blesses Utnapishtim and his wife, and rewards them with eternal life. This account largely matches the flood story that concludes the Epic of Atra-Hasis.\nThe main point seems to be that when Enlil granted eternal life it was a unique gift. As if to demonstrate this point, Utnapishtim challenges Gilgamesh to stay awake for six days and seven nights. Gilgamesh falls asleep, and Utnapishtim instructs his wife to bake a loaf of bread on each of the days he is asleep, so that he cannot deny his failure to keep awake. Gilgamesh, who is seeking to overcome death, cannot even conquer sleep. After instructing Urshanabi, the ferryman, to wash Gilgamesh and clothe him in royal robes, they depart for Uruk. As they are leaving, Utnapishtim's wife asks her husband to offer a parting gift. Utnapishtim tells Gilgamesh that at the bottom of the sea there lives a boxthorn-like plant that will make him young again. Gilgamesh, by binding stones to his feet so he can walk on the bottom, manages to obtain the plant. Gilgamesh proposes to investigate if the plant has the hypothesized rejuvenation ability by testing it on an old man once he returns to Uruk. When Gilgamesh stops to bathe, it is stolen by a serpent, who sheds its skin as it departs. Gilgamesh weeps at the futility of his efforts, because he has now lost all chance of immortality. He returns to Uruk, where the sight of its massive walls prompts him to praise this enduring work to Urshanabi."

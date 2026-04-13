@@ -1,0 +1,136 @@
+/*
+               ==Dysan Head==
+                    V1.0
+               ==Created By==
+                 @Telos6857
+              ==Descriptions==
+        Turns your head into Dysan's
+              ==Instructions==
+ Copy and paste code then turn on mindstone
+*/
+//IF variables
+var str = loc.stars
+//Output variables
+var Dysanhead
+var HeadCoords
+var HeadClr
+var Eyelid
+var EyelidClr
+var EyelidCoords
+var Eyeball
+var EyeballClr
+var EyeballCoords
+var Lyr
+//Output variable base values
+EyelidClr = HeadClr
+EyeballClr = HeadClr
+Eyeball = ＂o＂
+Lyr = ＂h＂
+HeadCoords = ＂-4,-2,＂
+//IF statements
+?face = ＂(   )＂
+ Eyelid = ＂─═─＂
+:
+ Eyelid = ＂<#>＂
+?player.direction = 1
+ Dysanhead = ascii
+##,-.
+#´_) \_
+(´(   )`)
+#`)`•´(´
+asciiend
+ EyeballCoords = ＂1,0,＂
+ EyelidCoords = ＂0,0,＂
+:
+ Dysanhead = ascii
+####,-.
+##_/ (_`
+(´(   )`)
+#`)`•´(´
+asciiend
+ EyeballCoords = ＂-1,0,＂
+ EyelidCoords = ＂-2,0,＂
+?str <= 5
+  HeadClr = ＂#white,＂
+:?str <= 10
+  HeadClr = ＂#cyan,＂
+:?str <= 15
+  HeadClr = ＂#yellow,＂
+:?str <= 20
+  HeadClr = ＂#green,＂
+:?str <= 25
+  HeadClr = ＂#blue,＂
+:?str <= 30
+  HeadClr = ＂#red,＂
+:?str <= 35
+  HeadClr = ＂#rainFF,＂
+?bighead
+ ?buffs.string = ＂berserk＂
+  ?str <= 15 & str >= 11
+  ^ | str <= 30 & str >= 26
+   EyelidClr = ＂#blue,＂
+   EyeballClr = ＂#cyan,＂
+  :
+   EyelidClr = ＂#red,＂
+   EyeballClr = ＂#yellow,＂
+ :?buffs.string = ＂lucky＂
+   EyelidClr = ＂#D4AF37,＂
+   EyeballClr = ＂#00FF00,＂
+   Eyeball = ＂♣＂
+ :?buffs.string = ＂experience＂
+   EyelidClr = ＂#magenta,＂
+   EyeballClr = ＂#white,＂
+   Eyeball = ＂@＂
+ :?buffs.string = ＂vampiric＂
+   EyelidClr = ＂#white,＂
+   EyeballClr = ＂#red,＂
+   HeadClr = ＂#2E2E2E,＂
+ :?buffs.string = ＂invisibility＂
+   EyelidClr = ＂#808080,＂
+   EyeballClr = ＂#A9A9A9,＂
+   HeadClr = ＂#565656,＂
+   Lyr = ＂o＂
+   ?player.direction = 1
+    Dysanhead = ascii
+##,-.
+#´_)#\_
+(´(###)`)
+#`)`•´(´
+asciiend
+   :
+    Dysanhead = ascii
+####,-.
+##_/#(_`
+(´(###)`)
+#`)`•´(´
+asciiend
+ :?buffs.string = ＂strength＂
+   HeadCoords = ＂-7,-3,＂
+   ?player.direction = 1
+    Dysanhead = ascii
+####,-.
+###(\,-.
+#,-.¯_) \_#,-.
+(\-,´(   )`,-/)
+#`--´#`•´#`--´
+asciiend
+   :
+    Dysanhead = ascii
+########,-.
+#######,-./)
+#,-.#_/ (_¯,-.
+(\-,´(   )`,-/)
+#`--´#`•´#`--´
+asciiend
+//Printing
+?bighead
+ >@Lyr@@HeadCoords@@HeadClr@@Dysanhead@
+ >@Lyr@@EyeballCoords@@EyeballClr@@Eyeball@
+ >@Lyr@@EyelidCoords@@EyelidClr@@Eyelid@
+:
+ >h-1,0,ascii
+#_
+'o'
+#│
+asciiend
+//End of .txt file

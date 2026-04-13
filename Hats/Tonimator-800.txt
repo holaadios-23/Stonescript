@@ -1,0 +1,160 @@
+/*
+Tonimator-800 Model 101
+by: michael.g.g.
+ver 1.0
+
+Cybernetic Skeletony from the future.
+Start stage looking normal except for the red eyes.
+When you lose 10 HP, part of your artificial skin will be lost showing some of the metallic skull. 
+When you have lost more than half your HP, your Skeletonimator skull will be revealed.
+Familiar quotes are made through the stage.
+Should look best with the repeater or other 'shooting' weapons but can be used with any equipment.
+Big head state required to work correctly.
+*/
+
+var metalColor
+var eyeColor
+var faceBurn
+var damage
+var quote
+var quoteSwitcher
+var quoteCountdown
+var foeOldCount
+var flag
+var shinyCount
+var shinyFlag
+
+eyeColor = #red
+
+?loc.begin
+  faceBurn = 0
+  quoteSwitcher = 0
+  quoteCountdown = 0
+  flag = 0
+  foeOldCount = 0
+  shinyCount = 0
+
+//set counter and logic for the metal color shine
+?shinyCount <= 0
+  shinyFlag = 1
+?shinyCount > 28
+  shinyFlag = 0
+
+?shinyFlag = 1
+  shinyCount++
+?shinyFlag = 0
+  shinyCount--
+
+?shinyCount >= 0 & shinyCount < 7
+  metalColor = #999999
+?shinyCount >= 7 & shinyCount < 14
+  metalColor = #AAAAAA
+?shinyCount >= 14 & shinyCount < 21
+  metalColor = #BBBBBB
+?shinyCount >= 21 & shinyCount < 28
+  metalColor = #CCCCCC
+
+?bighead
+  >h-6,0,@eyeColor@,ascii
+######''
+asciiend
+
+  ?totaltime < 60
+    faceBurn = 0
+    >h-5,-2,@#white@,ascii
+##########COME WITH ME IF YOU WANT TO LIVE
+#########/
+#########
+asciiend
+
+//Draw partial damage
+  ?hp <= (maxhp - 10) 
+    >h-6,0,@metalColor@,ascii
+#######°;
+#######'
+asciiend
+    >h-6,0,@eyeColor@,ascii
+######'°
+asciiend
+    damage = 1
+
+//Draw full skull
+  ?hp <= (maxhp/2) 
+    >h-5,-1,@metalColor@,ascii
+####__ #
+###(_o, #
+#### '" #
+asciiend
+    >h-5,1,@#FFFFBB@,ascii
+#### '" #
+asciiend
+    >h-6,0,@eyeColor@,ascii
+######o
+asciiend
+
+//Draw unmaking animation for the face
+    ?faceBurn >= 0 & faceBurn < 3
+      >h-5,-1,@#white@,ascii
+####..
+###::::
+####`::
+asciiend
+      faceBurn++
+    ?faceBurn >= 3 & faceBurn < 6
+      >h-5,-1,@#white@,ascii
+##..#
+##`.::
+#### .
+asciiend
+      faceBurn++
+    ?faceBurn >= 6 & faceBurn < 9
+      >h-5,-1,@#white@,ascii
+`#.#.#
+#.#..#
+#
+asciiend
+      faceBurn++
+
+//make quotes when killing a foe
+  ?(foe.count < foeOldCount) & foe.distance < 50 & quoteCountdown <= 0
+    ?quoteSwitcher = 0
+      quote = "HASTA LA VISTA...BABY"
+    ?quoteSwitcher = 1
+      quote = "TERMINATED"
+    ?quoteSwitcher = 2
+      quote = "I KNOW NOW WHY YOU CRY"
+    ?quoteSwitcher = 3
+      quote = "NO PROBLEMO"
+    ?quoteSwitcher = 4
+      quote = "AFFIRMATIVE"
+    ?foe = boss
+      quote = "I'LL BE BACK"
+    quoteCountdown = 10
+    flag = 1
+
+  ?flag = 1
+    >h-5,-2,@#white@,ascii
+##########@quote@
+#########/
+#########
+asciiend      
+
+quoteSwitcher++
+?quoteSwitcher > 4
+  quoteSwitcher = 0
+
+?quoteCountdown > 0
+  quoteCountdown--
+?quoteCountdown <= 0
+  flag = 0
+foeOldCount = foe.count
+
+
+//Thumbs up
+?time > 130 & (loc = bronze_guardian | loc = bronze_guardian_harder)
+  >`61,18,@metalColor@,ascii
+##;
+._
+`=
+#|
+asciiend

@@ -1,0 +1,133 @@
+
+var test = ascii
+#######(_________________)
+#######/__/___/__\___\___\
+######.─.───.─.───.─.───.─.
+######|#|¯¯¯|¯|¯¯¯|¯|¯¯¯|#|
+######|_|###|#|###|#|###|_|#####    
+ )────────.────────────────────(
+.───.───.─.´  .───.##`.─.───.───.
+ ¯|¯|¯¯¯|¯|#.´#####`.#|¯|¯¯¯|¯|¯
+##|#|###|#|#|#######|#|#|###|#|
+##|#|_#/|#|#|#######|#|#|\_#|#|
+##|#|#!#|#|#|#######|#|#|#.^|#|
+##|#|#._|#|#|#######|#|#|´##|#|
+##|#|´##|#|#|#######|#|#|`_/|#|
+##|#|###|#|#|#######|#|#|###|#|##
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+asciiend
+
+var player = ascii
+#############o##,--.
+###########_/|\/#/\|
+########,,(#)7¯,#)##
+#######// // ¯¯\-´#
+#######'  \,##,´#\#######
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+asciiend
+
+var moon = ascii
+#####_,.
+##,´# ,´¯`#######_
+ /   /##########((
+|   '############¯
+ \   `.___,  
+  `._###_,´
+      ¯¯
+asciiend
+
+draw.Clear()
+
+>`48,11,@test@
+>`0,20,@player@
+>`30,1,@moon@
+
+var sky = ascii
+*###+###.###*###+###.###*###+###.###*###+###.###
+asciiend
+
+>`0,0,#505050,@sky@
+>`47,0,#505050,@sky@
+
+var h = 9
+var len = string.Size(sky)
+
+for y = 10 .. h - 1
+  // Desplazamiento basado en la fila para variar el patrón
+  var offset = (y * 17) % len
+  
+  // Rotar la cadena
+  var s1 = string.Sub(sky, offset)
+  var s2 = string.Sub(sky, 0, offset)
+  var line = s1 + s2
+  
+  // Repetir para llenar el ancho
+  line = line + line + line
+  
+  // Dibujar en pantalla
+  >`0,@y@,#505050,@line@
+
+var x = 0
+var y1 = 1
+var w = 30
+var h1 = 7
+
+var x1 = 40
+var w1 = 5
+
+var x2 = 48
+var w2 = 50
+
+var len = string.Size(sky)
+
+for i = 0 .. h1 - 1
+ var drawY = y1 + i
+ var offset = (drawY * 17) % len
+ var s_1 = string.Sub(sky, offset)
+ var s_2 = string.Sub(sky, 0, offset)
+ var full1 = s_1 + s_2
+ full1 = full1 + full1
+ var line1 = string.Sub(full1, 0, w)
+ var line2 = string.Sub(full1, 0, w1)
+ var line3 = string.Sub(full1,0, w2)
+ >`@x@,@drawY@,#505050,@line1@
+ >`@x1@,@drawY@,#505050,@line2@
+ >`@x2@,@drawY@,#505050,@line3@
+
+var x3 = 0
+var w3 = 45
+var h2 = 9
+var y2 = 11
+
+for i = 0 .. h2 -1
+ var drawY1 = y2 + i
+ var offset1 = (drawY1 * 17) % len
+ var Ss1 = string.Sub(sky, offset1)
+ var Ss2 = string.Sub(sky, 0, offset1)
+ var full2 = Ss1 + Ss2
+ full2 = full2 + full2
+ var line4 = string.Sub(full2,0, w3)
+ >`@x3@,@drawY1@,#505050,@line4@
+
+var star = ascii
++##.###*###+###.###*###+#.#
+#*##+###.#*##+###.###*##+##
+##.##*##+##.###*###+###.##*
+*###+##.##*###+###.###*##+#
+#.###*###+###.###*###+##.#*
+asciiend
+
+>`20,20,#505050,@star@
+>`80,20,#505050,@star@
+>`81,15,#505050,@star@
+>`78,10,#505050,@star@
+
+var star2 = ascii
+*##+##.##*#
+asciiend
+
+>`2,20,#505050,@star2@
+>`0,21,#505050,@star2@
+>`-4,22,#505050,@star2@
+>`-3,23,#505050,@star2@
+>`0,24,#505050,@star2@

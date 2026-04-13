@@ -1,0 +1,480 @@
+// SLOT MACHINE - TRAGAPERRAS PRO
+// Autor: Gemini Code Assist
+
+var initialized = 0
+
+// --- Definición de Estados de Palanca ---
+var l2_up = ascii
+#.-.
+|###|
+#`-´
+##| 
+#.¯.´¯
+##¯#`-
+asciiend
+
+var l2_down = ascii
+#
+#
+#
+#
+#.¯.´¯
+##¯#`-
+##|
+#.-.
+|###|
+#`-´
+asciiend
+
+// --- Arte ASCII ---
+
+
+// --- Configuración de Juego ---
+var balance = 100
+var bet = 10
+var spinning = false
+var spin_timer = 0
+var result_msg = ""
+var last_res_key = "start"
+var win_count = 0
+
+// --- Sistema de Traducción ---
+var force_en = false
+var s_bal
+var s_start
+var s_no_creds
+var s_spinning
+var s_jackpot
+var s_triple
+var s_pair
+var s_lose
+var s_dang
+var s_reset
+var s_cant_stop
+
+
+func SetLang()
+  var sys_lang
+  sys_lang = te.language
+  var is_es
+  is_es = (sys_lang = "ES-LA") | (sys_lang = "ES-EU")
+  var is_pt
+  is_pt = (sys_lang = "PT-BR")
+  var is_zh
+  is_zh = (sys_lang = "ZH-CN") | (sys_lang = "ZH-TW")
+
+  ?force_en
+    s_bal = "Credits: "
+    s_start = "TRY YOUR LUCK!"
+    s_no_creds = "NO CREDITS"
+    s_spinning = "SPINNING..."
+    s_jackpot = "!!!JACKPOT 777!!!"
+    s_triple = "TRIPLE COMBO!"
+    s_pair = "PAIR! +15"
+    s_lose = "BETTER LUCK NEXT TIME"
+    s_dang = "OH DANG IT!"
+    s_reset = "RESET"
+    s_cant_stop = "I CAN'T STOP WINNING!!!"
+
+  :?is_es
+    s_bal = "Créditos: "
+    s_start = "¡PRUEBA TU SUERTE!"
+    s_no_creds = "SIN CRÉDITOS"
+    s_spinning = "GIRANDO..."
+    s_jackpot = "¡¡¡JACKPOT 777!!!"
+    s_triple = "¡TRIPLE!"
+    s_pair = "¡PAREJA! +15"
+    s_lose = "SUERTE PARA LA PRÓXIMA"
+    s_dang = "¡OH, RAYOS!"
+    s_reset = "REINICIAR"
+    s_cant_stop = "¡NO PUEDO PARAR DE GANAR!"
+
+  :?is_pt
+    s_bal = "Créditos: "
+    s_start = "TENTE A SUA SORTE!"
+    s_no_creds = "SEM CRÉDITOS"
+    s_spinning = "GIRANDO..."
+    s_jackpot = "¡¡¡JACKPOT 777!!!"
+    s_triple = "¡COMBO TRIPLO!"
+    s_pair = "¡PAR! +15"
+    s_lose = "MAIS SORTE NA PRÓXIMA"
+    s_dang = "AH, QUE PENA!"
+    s_reset = "REINICIAR"
+    s_cant_stop = "NÃO CONSIGO PARAR DE GANHAR!"
+
+  :?sys_lang = "FR"
+    s_bal = "Crédits: "
+    s_start = "TENTEZ VOTRE CHANCE !"
+    s_no_creds = "PAS DE CRÉDITS"
+    s_spinning = "ROTATION..."
+    s_jackpot = "!!!JACKPOT 777!!!"
+    s_triple = "TRIPLE COMBO !"
+    s_pair = "PAIRE ! +15"
+    s_lose = "PLUS DE CHANCE LA PROCHAINE FOIS"
+    s_dang = "OH MINCE !"
+    s_reset = "RÉINITIALISER"
+    s_cant_stop = "JE N'ARRÊTE PAS DE GAGNER !"
+
+  :?sys_lang = "DE"
+    s_bal = "Guthaben: "
+    s_start = "VERSUCHE DEIN GLÜCK!"
+    s_no_creds = "KEIN GUTHABEN"
+    s_spinning = "DREHEN..."
+    s_jackpot = "!!!JACKPOT 777!!!"
+    s_triple = "DREIER-KOMBI!"
+    s_pair = "PAAR! +15"
+    s_lose = "VIEL GLÜCK BEIM NÄCHSTEN MAL"
+    s_dang = "ACH VERDAMMT!"
+    s_reset = "ZURÜCKSETZEN"
+    s_cant_stop = "ICH KANN NICHT AUFHÖREN ZU GEWINNEN!"
+
+  :?sys_lang = "RU"
+    s_bal = "Кредиты: "
+    s_start = "ИСПЫТАЙ УДАЧУ!"
+    s_no_creds = "НЕТ КРЕДИТОВ"
+    s_spinning = "ВРАЩЕНИЕ..."
+    s_jackpot = "!!!ДЖЕКПОТ 777!!!"
+    s_triple = "ТРОЙНАЯ КОМБО!"
+    s_pair = "ПАРА! +15"
+    s_lose = "ПОВЕЗЕТ В СЛЕДУЮЩИЙ РАЗ"
+    s_dang = "О, ЧЕРТ!"
+    s_reset = "СБРОС"
+    s_cant_stop = "Я НЕ МОГУ ПЕРЕСТАТЬ ПОБЕЖДАТЬ!"
+
+  :?sys_lang = "ZH-CN"
+    s_bal = "余额: "
+    s_start = "试试你的运气！"
+    s_no_creds = "余额不足"
+    s_spinning = "旋转中..."
+    s_jackpot = "!!!大奖 777!!!"
+    s_triple = "三连击！"
+    s_pair = "对子！+15"
+    s_lose = "下次好运"
+    s_dang = "哦，该死！"
+    s_reset = "重置"
+    s_cant_stop = "我停不下来了！"
+
+  :?sys_lang = "ZH-TW"
+    s_bal = "餘額: "
+    s_start = "試試你的運氣！"
+    s_no_creds = "餘額不足"
+    s_spinning = "旋轉中..."
+    s_jackpot = "!!!大獎 777!!!"
+    s_triple = "三連擊！"
+    s_pair = "對子！+15"
+    s_lose = "下次好運"
+    s_dang = "哦，該死！"
+    s_reset = "重置"
+    s_cant_stop = "我停不下來了！"
+
+  :?sys_lang = "JP"
+    s_bal = "クレジット: "
+    s_start = "運試しをしよう！"
+    s_no_creds = "クレジット不足"
+    s_spinning = "回転中..."
+    s_jackpot = "!!!ジャックポット 777!!!"
+    s_triple = "トリプルコンボ！"
+    s_pair = "ペア！+15"
+    s_lose = "次こそは！"
+    s_dang = "あちゃー！"
+    s_reset = "リセット"
+    s_cant_stop = "勝ちが止まらない！"
+
+  :?sys_lang = "KR"
+    s_bal = "크레딧: "
+    s_start = "행운을 빌어요!"
+    s_no_creds = "크레딧 부족"
+    s_spinning = "회전 중..."
+    s_jackpot = "!!!잭팟 777!!!"
+    s_triple = "트리플 콤보!"
+    s_pair = "페어! +15"
+    s_lose = "다음 기회에"
+    s_dang = "아이구!"
+    s_reset = "초기화"
+    s_cant_stop = "승리가 멈추지 않아요!"
+  :?sys_lang = "TK"
+    s_bal = "Kredi: "
+    s_start = "ŞANSINI DENE!"
+    s_no_creds = "KREDİ YOK"
+    s_spinning = "DÖNÜYOR..."
+    s_jackpot = "!!!BÜYÜK İKRAMİYE!!!"
+    s_triple = "ÜÇLÜ KOMBO!"
+    s_pair = "ÇİFT! +15"
+    s_lose = "BİR DAHAKİ SEFERE"
+    s_dang = "AH KAHRETSİN!"
+    s_reset = "SIFIRLA"
+    s_cant_stop = "DURMADAN KAZANIYORUM!"
+  :
+    s_bal = "Credits: "
+    s_start = "TRY YOUR LUCK!"
+    s_no_creds = "NO CREDITS"
+    s_spinning = "SPINNING..."
+    s_jackpot = "!!!JACKPOT 777!!!"
+    s_triple = "TRIPLE COMBO!"
+    s_pair = "PAIR! +15"
+    s_lose = "BETTER LUCK NEXT TIME"
+    s_dang = "OH DANG IT!"
+    s_reset = "RESET"
+    s_cant_stop = "I CAN'T STOP WINNING!!!"
+
+
+func ToggleLang()
+  force_en = !force_en
+  SetLang()
+  
+  // Actualizar UI
+
+  btn_reset.text = s_reset
+  var l_code
+  l_code = te.language
+  ?force_en
+    btn_lang.text = l_code
+  :
+    btn_lang.text = "EN"
+
+  // Sincronizar mensaje de estado usando la llave guardada
+  ?last_res_key = "start"
+    result_msg = s_start
+  :?last_res_key = "nocreds"
+    result_msg = s_no_creds
+  :?last_res_key = "spinning"
+    result_msg = s_spinning
+  :?last_res_key = "jackpot"
+    result_msg = s_jackpot
+  :?last_res_key = "triple"
+    result_msg = s_triple
+  :?last_res_key = "pair"
+    result_msg = s_pair
+  :?last_res_key = "lose"
+    result_msg = s_lose
+  :?last_res_key = "dang"
+    result_msg = s_dang
+  :?last_res_key = "winning_streak"
+    result_msg = s_cant_stop
+
+// Índices de los carretes
+var r1 = 0
+var r2 = 0
+var r3 = 0
+
+// Símbolos disponibles
+var sym = ["7", "$", "B", "C", "X"]
+
+// Referencias UI
+var pnl_main
+var txt_reels
+var txt_stats
+var btn_spin
+var btn_lang
+var btn_reset
+var lever2_obj
+
+// --- Funciones de Lógica ---
+
+func DoSpin()
+  ?spinning
+    return
+  ?balance < bet
+    result_msg = s_no_creds
+    last_res_key = "nocreds"
+    return
+  
+  balance = balance - bet
+  spinning = true
+  spin_timer = 45
+  result_msg = s_spinning
+  last_res_key = "spinning"
+
+func DoReset()
+  balance = 100
+  result_msg = s_start
+  last_res_key = "start"
+  win_count = 0
+  play confirm
+
+func CheckPrize()
+  spinning = false
+  
+  // Lógica de premios (Alineación vertical Rule 8)
+  ?r1 = r2 & r2 = r3
+    var win = 50
+    ?r1 = 0
+      win = 250
+      result_msg = s_jackpot
+      last_res_key = "jackpot"
+      win_count++
+    :
+      result_msg = s_triple
+      last_res_key = "triple"
+      win_count = 0
+    
+    balance = balance + win
+  :?r1 = r2 | r2 = r3 | r1 = r3
+    balance = balance + 15
+    result_msg = s_pair
+    last_res_key = "pair"
+    win_count = 0
+  :
+    result_msg = s_dang + " " + s_lose
+    last_res_key = "lose"
+    win_count = 0
+
+  ?win_count >= 3
+    result_msg = s_cant_stop
+    last_res_key = "winning_streak"
+
+// --- Inicialización y Seguridad (Rule 10) ---
+
+?loc.begin | loc.loop
+  initialized = 0
+
+?initialized = 0
+  ui.Clear()
+  
+  // Panel principal
+  pnl_main = ui.AddPanel()
+  pnl_main.w = 7
+  pnl_main.h = 3
+  pnl_main.x = -36
+  pnl_main.y = 0
+  pnl_main.anchor = center_center
+  pnl_main.dock = center_center
+  pnl_main.color = "#440000"
+  pnl_main.style = 1
+
+  // Texto de los carretes
+  txt_reels = ui.AddText()
+  txt_reels.y = -2
+  txt_reels.w = 20
+  txt_reels.x = 1
+  txt_reels.y = 2
+  txt_reels.align = center
+  txt_reels.color = "#FFFF00"
+  pnl_main.Add(txt_reels)
+
+  // Palancas (como Texto para control de estado)
+  lever2_obj = ui.AddText()
+  lever2_obj.x = -5
+  lever2_obj.y = 4
+  lever2_obj.h = 16
+  lever2_obj.color = "#999999"
+  pnl_main.Add(lever2_obj)
+
+  // Estadísticas y Mensajes
+  SetLang()
+  result_msg = s_start
+  txt_stats = ui.AddText()
+  txt_stats.y = -5
+  txt_stats.align = center
+  txt_stats.w = 40
+  pnl_main.Add(txt_stats)
+
+  // Botón para jugar
+  btn_spin = ui.AddButton()
+  btn_spin.text = ""
+  btn_spin.y = -3
+  btn_spin.x = -6
+  btn_spin.w = 2
+  btn_spin.h = 1
+  btn_spin.SetPressed(DoSpin)
+  pnl_main.Add(btn_spin)
+
+  // Botón para reiniciar
+  btn_reset = ui.AddButton()
+  btn_reset.text = s_reset
+  btn_reset.y = 7
+  btn_reset.w = 16
+  btn_reset.h = 3
+  btn_reset.x = 0
+  //btn_reset.visible = true
+  btn_reset.SetPressed(DoReset)
+  pnl_main.Add(btn_reset)
+
+  // Botón Idioma
+  btn_lang = ui.AddButton()
+  btn_lang.text = "EN"
+  btn_lang.x = 5
+  btn_lang.y = -9
+  btn_lang.w = 10
+  btn_lang.h = 3
+  btn_lang.SetPressed(ToggleLang)
+  var sl
+  sl = te.language
+  ?sl = "EN"
+    btn_lang.visible = false
+  pnl_main.Add(btn_lang)
+
+  initialized = 1
+
+// --- Bucle Principal ---
+
+?initialized = 1
+  // Control de visibilidad de botones
+  var is_game_over
+  is_game_over = balance < bet
+  ?spinning
+    btn_spin.visible = false
+    btn_reset.visible = false
+  :?is_game_over
+    btn_spin.visible = false
+    btn_reset.visible = true
+  :
+    btn_spin.visible = true
+    btn_reset.visible = false
+  
+  // MODO EDICIÓN: Forzamos visibilidad para ajustar posición
+  btn_reset.visible = true
+
+  // Lógica de animación
+  ?spinning
+    spin_timer--
+    
+    // El primer carrete se detiene al final, el segundo antes, etc.
+    // Usamos RNG del sistema
+    ?spin_timer > 30
+      r1 = rng % 5
+    
+    ?spin_timer > 15
+      r2 = rng % 5
+      
+    ?spin_timer > 0
+      r3 = rng % 5
+
+    ?spin_timer = 0
+      CheckPrize()
+
+  // Construir visualización de carretes
+  //los carretes seran representado por paneles o talvez usar un draw.Box() para que se vean mejor
+  var visual
+  visual = sym[r1] + " " + sym[r2] + " " + sym[r3]
+  txt_reels.text = visual
+
+  // Actualizar estado de las palancas (Rule 6)
+  var l2_t
+  var l_c
+  ?spinning
+    l2_t = l2_down
+    l_c = "#FF0000"
+  :
+    l2_t = l2_up
+    l_c = "#999999"
+
+  // Aplicar colores y textos (Rule 8)
+  lever2_obj.color = l_c
+  lever2_obj.text = l2_t
+
+  // Actualizar estadísticas (Dynamic Values Rule 6)
+  var cur_bal
+  cur_bal = balance
+  txt_stats.text = "##########" + s_bal + cur_bal + "\n###########" + result_msg
+
+  //caja que rodea los carretes
+  /*ejemplo:
+   __. __
+  |7!7! 7|
+   --' --
+
+   los lados de la caja seran reprentada por "!" la parte superir por . y la parte inferior por '
+   el resto es el panel
+  */  
+  draw.Box(8, 12, 3, 3, "#d3caca", -1)

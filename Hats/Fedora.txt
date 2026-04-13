@@ -1,0 +1,31 @@
+//Archeologist Fedora
+//by: michael.g.g.
+//ver 1.0
+
+//This script will put a brown fedora on your head and works with both small and big head modes.
+//Goes great with whips!
+
+var fedoraColor
+var bandColor
+
+fedoraColor = #927650
+bandColor = #675656
+
+
+?bighead
+  >h-5,-2,@fedoraColor@,ascii
+####-.`
+#,_'=u=`_
+asciiend
+  >h-5,-2,@bandColor@,ascii
+#
+####u==
+asciiend
+:
+  >h-2,0,@fedoraColor@,ascii
+#_=_
+asciiend
+  >h-2,0,@bandColor@,ascii
+##=
+asciiend
+

@@ -1,0 +1,42 @@
+/*
+Attack Animation Canceling, typically abbreviated to AAC, is a technique done with stonescript to enhance the attack speed of most weapons. It works by interrupting, or canceling, a certain weapon animation state (hence the name) in order to skip it, making weapons move to the next item state more quickly. This increases damage output considerably, depending on how fast your weapons already are.
+
+How it works
+The most common implementation of AAC, created by the community, is as follows:
+*/
+?item.left.state = 3
+  equipL *0 wand //trash
+  equipL @item.left@
+?item.right.state = 3
+  equipR *0 shield //trash
+  equip @item.right@
+
+/*
+It is intended to be placed at or close to the top of the Mind Stone interface, before any other equip commands that are to be called.
+
+Why it works
+Weapons have four states, used internally to determine what animations to display and if the weapon is allowed to begin dealing damage or not. The relevant one for AAC is called "perf", or just state 3. By interrupting the animation while it is in "perf", you can force it to proceed to state 4, "cooldown", instantly, rather than waiting for all frames of "perf" to happen before it then begins "cooldown". Because "perf" is used to indicate to the game weapon animation frames to draw, a characteristic of AAC is to make weapon swing animations cut off prematurely. This has no effect on damage output; in fact, the whole point of AAC is to increase damage output.
+Other implementations
+Weapons with zero frames of "cooldown" and only one frame of "cast", namely the Skeleton Arm and Rune Staffs while using Berserk Potion and sufficient attack speed enchantment, will not interact correctly with the original AAC script. The technique can still be used, but it requires a different implementation. An example of that implementation is shown below:
+*/
+?item.left.state = 3  //post-damage anim
+  equipL *0 wand      //temp item
+  equipL @item.left@  //left item from last frame
+?item.right.state = 3 //post-damage anim
+  ?time % 2           //used every other frame
+    equipR throw      //temp item 1
+  :                   //else
+    equipR *0 shield  //temp item 2
+  equip @item.right@  //right or 2 handed item from last frame
+//Version without comments for easier copy/paste:
+
+?item.left.state = 3
+  equipL *0 wand
+  equipL @item.left@
+?item.right.state = 3
+  ?time % 2
+    equipR throw
+  :
+    equipR *0 shield
+  equip @item.right@
+//Using this implementation of AAC allows for these weapons to attack 30 times per second, or once per frame, which is the maximum possible speed.

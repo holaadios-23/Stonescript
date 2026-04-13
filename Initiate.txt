@@ -1,0 +1,938 @@
+/*
+ ██▓ ███▄    █  ██▓▄▄▄█████▓ ██▓ ▄▄▄     ▄▄▄█████▓▓█████ 
+▓██▒ ██ ▀█   █ ▓██▒▓  ██▒ ▓▒▓██▒▒████▄   ▓  ██▒ ▓▒▓█   ▀ 
+▒██▒▓██  ▀█ ██▒▒██▒▒ ▓██░ ▒░▒██▒▒██  ▀█▄ ▒ ▓██░ ▒░▒███   
+░██░▓██▒  ▐▌██▒░██░░ ▓██▓ ░ ░██░░██▄▄▄▄██░ ▓██▓ ░ ▒▓█  ▄ 
+░██░▒██░   ▓██░░██░  ▒██▒ ░ ░██░ ▓█   ▓██▒ ▒██▒ ░ ░▒████▒
+░▓  ░ ▒░   ▒ ▒ ░▓    ▒ ░░   ░▓   ▒▒   ▓▒█░ ▒ ░░   ░░ ▒░ ░
+ ▒ ░░ ░░   ░ ▒░ ▒ ░    ░     ▒ ░  ▒   ▒▒ ░   ░     ░ ░  ░
+ ▒ ░   ░   ░ ░  ▒ ░  ░       ▒ ░  ░   ▒    ░         ░   
+ ░           ░  ░            ░        ░  ░           ░  ░
+
+v3.2                                      by MaxMinMedian
+
+'Initiate' is a Speedrun Ghost who repeats your best run.
+
+FEATURES:
+
+- She brings along her signature attitude with her quips.
+  (Also why she's my favourite character in SS ^.^)
+- She bought a Blade of the Fallen God from Hanz, but it
+  turned out to be a cheap knockoff of the real thing...
+- She has been training. Now she can really live up to
+  "Iym very dangerous".
+- Demonstrates how A2S (included in the script) can be used
+  to read and write arrays to storage.
+  
+INSTRUCTIONS:
+
+- Mobile: Copypaste into mindstone.
+- PC: 'import Initiate'
+
+CHANGELOG:
+- v1.0 Initial release for Stonejam 6
+- v2.0 Upgraded to use A2S v2.0
+- v2.0.1 Fixed error with loading arrays
+         Fixed BFG animation not playing if within player's own BFG activation
+         Fixed Initiate's BFG pose being overridden by attacking.
+- v3.0 Now allows a custom logging interval. Player state will be
+       saved every n frames (adjustable by user). Default is 5.
+       Lower values of n result in more precise Initiate position, but
+       more storage and processing power will be required.
+       
+       Initiate's position between logged frames are now interpolated,
+       which should result in much smoother Initiate positioning.
+
+- v3.1 Reverted to use of string.Break with enspaces as string.Sub is
+       simply too slow. Loading should be much faster now.
+
+- v3.2 Along with the discovery that we can make pointers to native funcs
+       to massively speed them up, once again reverted to A2S v2.1.
+       Also replaced native funcs in Initiate's own code.       
+       
+SETTINGS:
+*/
+
+var SRG_On = true
+var SRGReset = false  // set to true to wipe your save the moment you enter a location.
+var interval = 5
+var initiateAttackRange = 15
+
+// [0]: [duration of run, [BFG use timings]]  Future update: [duration, [BFG timings], [split timings]]
+//      (blade gets used for 72 frames)
+// [1]: run info at totaltime = 5
+// [2]: run info at totaltime = 10
+// [n]: run info at totaltime = 5*n
+//
+// usual elem is an array: [0:pos.x, 1:foe.distance]
+// meeting boss = [0:pos.x, 1:foe.distance 2:hp, 3:armor, 4:maxhp, 5:foe.name]
+// while fighting boss = [0:pos.x, 1:foe.distance, 2:hp, 3:armor] 
+
+var totaltime_ = 1
+var prevtotaltime = 1
+var bestRun = [[null,[]]]
+var thisRun = [[null,[]]]
+var pos_x = pos.x
+var foe_distance = foe.distance
+var initiate_x
+var initiate_prevX = pos_x
+var initiate_nextX = initiate_prevX
+var initiate_dist = 9999
+var followMode
+var BFGtimings
+var BFGNextActivationTime = 99999
+var pallasMoving = 0
+var bossesEncountered = []    // foe.name of bosses who have been met during the run.
+var bossInfo = ["", 0, 0, 0]  // [0:foe.name, 1:hp, 2:armor 3:maxhp]
+var loops = -1
+var scrw = screen.w
+var quip = ""
+var prevQuip = ""
+var quipArray = []
+var quipLength = 0
+var prevBox = 0
+var quipTimer = -30
+var SRGtime
+var quipDelay = 90
+var boxAnimFrames = 15
+var txtDispFrames = 20
+var txtRemainFrames = 60
+var txtTotalFrames = boxAnimFrames + txtDispFrames + txtRemainFrames
+var SRGStorageKey
+var initiateAttacking
+var initiateAnims = []  // 0 = walking, 1 = attacking, 2 = using BFG, 3 = spinning BFG
+var pallasAnims = []  // 0 = hand, 1 = sword skelly
+var pallasPanel     // children: 0 = hand, 1 = sword skelly
+var lowerSkelly = 0
+var initiatePanel
+var bossPanel
+var quipPanel
+var quipTextbox
+
+var getCD = item.GetCooldown
+var max = math.Max
+var min = math.Min
+var clamp = math.Clamp
+var intParse = int.Parse
+var strJoin = string.Join
+var strSize = string.Size
+var strSplit = string.Split
+var strSub = string.Sub
+var scrFromWorldX = screen.FromWorldX
+
+var dquote = ascii
+"
+asciiend
+
+?SRG_On
+  SRGMain()
+
+func SRGMain()
+  quipTimer += 1
+  prevtotaltime = totaltime_
+  totaltime_ = totaltime
+  ?totaltime_ = 1
+    loops += 1
+    // check for info in run array, save if necc, get bestrun
+    SRG_Init()
+  :
+    SRG()
+    SRG_initiateQuip()
+    moveInitiate()
+    checkPallas()
+
+func SRG_Init()
+  SRG_LoadArtAssets()
+  followMode = 0
+  initiate_prevX = pos.x
+  initiate_nextX = initiate_prevX
+  initiate_dist = 9999
+  initiateAttacking = false
+  
+  ?loops = 0  // First run. Try to retrieve best run from storage.
+    ?SRGReset
+      SRGReset = false
+      storage.Delete("Initiate SRG " + loc.name + loc.stars)
+    var bestRunString = storage.Get("Initiate SRG " + loc.name + loc.stars, "")
+    ?!bestRunString  // No pre-existing info in storage, start from scratch. Initiate will copy player's actions, but 5s (150 frames) later.
+      followMode = 1
+      BFGtimings = thisRun[0][1]
+    : // parse the string using A2S
+      bestRun = Arrayify(bestRunString)
+  : // just finished a run
+    thisRun[0][0] = prevtotaltime
+    ?SRGReset | bestRun[0][0] = null | thisRun[0][0] < bestRun[0][0]  // Check if thisRun is better. If it is, save it.
+      bestRun = thisRun
+      storage.Set("Initiate SRG " + loc.name + loc.stars, Stringify(bestRun))
+  ?!followMode
+    initiate_nextX = bestRun[1][0]
+    BFGtimings = bestRun[0][1]
+    BFGNextActivationTime = 99999
+    ?BFGtimings.Count()
+      BFGNextActivationTime = BFGtimings[0]
+    thisRun = [[null,[]]]
+ 
+  bossesEncountered.Clear()
+  pallasMoving = 0
+  pallasPanel.visible = false
+  bossPanel.visible = false
+  quipTimer = -quipDelay
+
+func SRG()
+  ?totaltime_ % interval
+    return    
+  var index = totaltime_ / interval
+  
+  // update thisRun with player's position and boss stats
+  var lapsedIndices = index - thisRun.Count()
+  ?lapsedIndices
+    for _ = 1 .. index - thisRun.Count()
+      thisRun.Add([pos_x, foe_distance])
+    ?lapsedIndices * interval > 60  // detected possible BFG activation
+      var cdBFG = getCD("blade")
+      ?cdBFG > 2200
+        var BFGtime = totaltime_ - 2472 + cdBFG
+        thisRun[0][1].Add(BFGtime)
+        ?followMode
+          BFGNextActivationTime = BFGtime
+
+  var foe_ = foe
+  pos_x = pos.x
+  foe_distance = foe.distance  
+
+  ?foe_ = boss
+    var foe_name = foe.name
+    ?!bossesEncountered.Contains(foe_name)
+      bossesEncountered.Add(foe_name)
+      thisRun.Add([pos_x, foe_distance, foe.hp, foe.armor, foe.maxhp, foe_name])  // [0:pos.x, 1:foe.distance 2:hp, 3:armor, 4:maxhp, 5:foe.name]
+    :
+      thisRun.Add([pos_x, foe_distance, foe.hp, foe.armor])  // [0:pos.x, 1:foe.distance, 2:hp, 3:armor]
+  :
+    thisRun.Add([pos_x, foe_distance])
+
+  // process initiate's position and boss stats
+  ?followMode  // take the element (index-29)
+    var elem = thisRun[max(index-29, 1)]
+  :  // get data from bestRun
+    var elem = bestRun[min(index+1, bestRun.Count()-1)]  // safeguard for when initiate finishes before player
+
+  initiate_prevX = initiate_nextX
+  initiate_nextX = elem[0]
+  initiate_dist = elem[1]
+  
+  ?elem.Count() >= 4  // array of either size 6 or 4
+    bossInfo[1] = elem[2]
+    bossInfo[2] = elem[3]
+    ?elem.Count() = 6        // New boss, update name and hp [0:pos.x, 1:foe.distance 2:hp, 3:armor, 4:maxhp, 5:foe.name]
+      bossInfo[0] = elem[5]  // bossInfo: [0:foe.name, 1:hp, 2:armor 3:maxhp]
+      bossInfo[3] = elem[4]
+    updateBossInfo()
+    
+func moveInitiate()
+  var partial = totaltime_ % interval
+  initiate_x = (partial * initiate_nextX + (interval - partial) * initiate_prevX) / interval
+  initiatePanel.x = scrFromWorldX(initiate_x)
+  ?initiate_dist <= initiateAttackRange & !initiateAttacking & !pallasMoving
+    initiateAttacking = true
+    initiatePanel.children[0].Load(initiateAnims[1])
+  :?initiate_dist > initiateAttackRange & initiateAttacking & !pallasMoving
+    initiateAttacking = false
+    initiatePanel.children[0].Load(initiateAnims[0])
+
+func checkPallas()
+  ?!pallasMoving
+    ?followMode & totaltime_ >= BFGNextActivationTime + 150 | !followMode & totaltime_ >= BFGNextActivationTime
+      // do pallas anims
+      pallasMoving = 1  // 0 = stopped, 1 = start, 2 = moving
+      var BFGActivationNum = BFGtimings.IndexOf(BFGNextActivationTime)
+      ?BFGActivationNum < BFGtimings.Count() - 1
+        BFGNextActivationTime = BFGtimings[BFGActivationNum + 1]
+      :
+        BFGNextActivationTime = 99999
+  : //pallasMoving
+    movePallas()
+
+func movePallas()                    // Points: (0, 0), (screen.w/2, 6), (screen.w, 0)
+  ?pallasMoving = 1  // initialize   // Equation: y = min(6, 32*(x)(scrw - x)/(scrw^2))
+    pallasPanel.visible = true
+    pallasMoving = 2
+    pallasPanel.x = -10
+    pallasPanel.y = -5
+    pallasPanel.children[1].y = 7
+    lowerSkelly = 0
+    initiatePanel.children[0].Load(initiateAnims[2])
+    initiatePanel.children[1].visible = true
+    initiatePanel.children[1].duration = 60
+    initiatePanel.children[1].Stop()
+    initiatePanel.children[1].Play()
+  :?pallasMoving = 2
+    pallasPanel.x += 1
+    var x = pallasPanel.x
+    var w = scrw * 3 / 4
+    pallasPanel.y = min(6, 30 * x * (w - x) / w / w) - 5
+    initiatePanel.children[1].duration = max(initiatePanel.children[1].duration - 1, 8)
+    ?pallasPanel.y = 1 & pallasPanel.children[1].y <= 10
+      lowerSkelly += 1
+      ?lowerSkelly = 5
+        pallasPanel.children[1].y += 1
+        lowerSkelly = 0
+    ?!pallasPanel.children[1].playing
+      pallasPanel.children[1].flipX = !pallasPanel.children[1].flipX
+      pallasPanel.children[1].Play()
+    ?pallasPanel.x >= scrw + 7  // end animations
+      pallasMoving = 0
+      initiatePanel.children[0].Load(initiateAnims[0])
+      initiatePanel.children[1].visible = false
+
+func updateBossInfo()
+  bossPanel.visible = true
+  bossPanel.children[0].text = bossInfo[0]
+  ?bossInfo[2] > 0  // boss has armor
+    bossPanel.children[1].text = "[" + bossInfo[2] + "] " + bossInfo[1] + "/" + bossInfo[3]
+  :
+    bossPanel.children[1].text = bossInfo[1] + "/" + bossInfo[3]  
+
+func SRG_LoadArtAssets()
+  ?!initiateAnims.Count()
+    initiateAnims = [ascii
+#####_,
+####//}
+###/´ )
+_.-´o´\
+#‾‾‾‾‾´
+%%
+#####_,
+####//}
+###/´ )
+#_.'o´)
+##‾‾‾`
+%%
+#####_,
+####//}
+###/´ )
+__.'o´\
+##‾‾`‾‾
+%%
+#####_,
+####//}
+###/´ )
+_.-´o´)
+#‾‾‾‾‾
+asciiend
+^,ascii
+#####_,
+####//} 
+###-<--\-
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//} 
+###/´<-----
+_.-´o´\
+ ‾´‾‾‾´
+%%
+#####_,
+####//} 
+###/´ \------
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}
+###/´ \####------
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}### ---#####\\\
+###/´ \##--#========== >>
+_.-´o´\####---#####///
+#‾´‾‾‾´
+%%
+#####_,#########+####'#####/
+####//}########.###\\^^//####+
+###/´ \##########>>==XX==<<
+_.-´o´\#########o##//VV\\##_
+#‾´‾‾‾´###########.##_###,
+%%
+#####_,###########-######.
+####//}#############\''/
+###/´ \##########.#------##o
+_.-´o´\#############/''\
+#‾´‾‾‾´###########.###.
+%%
+#####_,
+####//}###########|###/
+###/´ \###########\\#/##\\
+_.-´o´\#############/####|
+#‾´‾‾‾´
+%%
+#####_,
+####//}##############|#══
+###/´ \##########\###|###\
+_.-´o´\###########══#|
+#‾´‾‾‾´
+%%
+#####_,
+####//}#############\#==-
+###/´ \##############\
+_.-´o´\###########-==#\
+#‾´‾‾‾´
+%%
+#####_,#############,
+####//}############║
+###/´ \###########------
+_.-´o´\###############║
+#‾´‾‾‾´##############´
+%%
+#####_,
+####//}
+###/´ \#######------
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}
+###/´ \####------
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}
+###/´ \#------
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}
+###/´<-----
+_.-´o´\
+#‾´‾‾‾´
+%%
+#####_,
+####//}
+###-<--\-
+_.-´o´\
+#‾´‾‾‾´
+asciiend
+^,ascii
+### ,,
+`\ /{}\ /´
+##‾/´ \‾
+_.-'o '-._
+#‾´‾‾‾‾`‾
+asciiend
+^,ascii
+#########|\
+#########|`i
+#########| |
+#########| |
+########_)•(_
+#########´|`
+%%
+#############/.
+############/'|
+###########/ /
+##########/ /
+########¬/•/
+#########/`¬
+%%
+#
+#
+#
+##########)#__..───`7
+########_`•‾_ ..──'‾
+#######‾##`(
+%%
+#
+#
+#
+##########|_#_#_#_#__
+#######──)•_ _ _ _-./
+##########|
+%%
+#
+#
+#
+#######_##(
+########‾´•'-.#_
+#########)´`-._-‾`\
+###############‾‾‾‾
+%%
+#
+#
+#
+#########\.⌐
+########⌐\•\
+##########\ \
+###########\ \
+############\\\
+#############\_\
+###############‾
+%%
+#
+#
+#
+#########,|,
+########‾)•(‾
+#########| |
+#########| |
+#########i |
+##########\|
+%%
+#
+#
+#
+#########¬./
+#########/•/¬
+########/ /
+#######/ /
+######///
+#####| /
+######‾
+%%
+#
+#
+#
+##########)##_
+#####_#.-'•`‾
+##,´‾-_.-´`(
+##‾‾‾‾
+%%
+#
+#
+#
+#_#_#_#_#_|
+/_-_ _ _ _•(──
+##########|
+%%
+#
+#
+#
+τ'───..__#(
+#‾'──.. _‾•´_
+#########)###‾
+%%
+#####\`.
+######\'\
+#######\ \
+########\ \
+#########\•\⌐
+#########⌐´\
+asciiend
+^]
+
+  ?!pallasAnims.Count()
+    pallasAnims = [ascii
+\ \.
+#\ :\.
+##( . )
+##/ :..\
+#((|.))))
+##D|O///
+###|
+###|
+###|
+###|
+###|
+asciiend
+^,ascii
+#########⌐─¬
+########|o.O|
+#########'"'
+########`-╪\─┼────
+########_/#\_
+%%
+#########⌐─¬###/
+########|O.o|#/
+#########'"'_/_
+########,─╪─/
+########_/#|_
+%%
+#########⌐─¬|
+########|o.O|
+#########'"'┼─
+########`─╪─|
+########_/)_
+%%
+#########⌐─\
+########|O.o\
+#########'"'#\#_
+########,─╪─^‾\
+########_/)_
+%%
+#######───────┼──
+########|o.O|#^`
+#########'"'#/
+########,─┼─´
+########_/)_
+%%
+#########⌐-¬#``--,__
+########|O.o|#######‾`-.
+#####.###'"'#######\\###\
+###¬//#--─┼─‾#######||###)
+###//¬##_/)_######_´´###/|
+##//#`--__..----´‾###_-´#'
+#//_############__--‾‾##/
+//##‾‾--....--‾‾######.'
+###=_##############_.-‾
+######‾`--.-#--‾‾
+asciiend
+^]
+
+/*
+#########⌐-¬ ``--,__
+########|O.o|       ‾`-.
+#####.###'"'#      \\   \
+###¬// --─┼─‾       ||   )
+###//¬##_/)_      _´´   /|
+##// `--__..----´‾   _-´ '
+#//_            __--‾‾  /
+//  ‾‾--....--‾‾      .'
+###=_              _.-‾
+######‾`--.- --‾‾ 
+*/
+
+  // initiateAnims[]:  0 = walking, 1 = attacking, 2 = using BFG, 3 = spinning BFG
+  // pallasAnims[]:  0 = skelly hand, 1 = skelly sword anim
+
+  var n = null
+  
+  initiatePanel = makeUI(ui.AddPanel, 0, 19, 1, 1, top_left, bottom_center, ui.AddStyle("#########"), n, n, n, n)
+  initiatePanel.Add(makeAnim(n, n, n, n, top_left, top_left, initiateAnims[0], 4, 3, n, #cyan, 30, true, true))     // the Initiate
+  initiatePanel.Add(makeAnim(n, -7, n, n, top_left, top_left, initiateAnims[3], 10, 4, false, #cyan, 60, true, n))  // spinning BFG
+
+  pallasPanel = makeUI(ui.AddPanel, 0, 0, 1, 1, top_left, top_left, ui.AddStyle("#########"), n, n, n, n)
+  pallasPanel.Add(makeAnim(n, n, n, n, top_left, top_left, pallasAnims[0], 3, 0, n, #cyan, n, n, n))     // hand
+  pallasPanel.Add(makeAnim(n, 8, n, n, top_left, top_left, pallasAnims[1], 10, 0, n, #cyan, 12, n, n))   // sword skelly
+
+  quipPanel = makeUI(ui.AddPanel, n, screen.h - 4, n, n, top_left, center_center, ui.AddStyle("•─•│ │’─’"), n, n, n, false)
+  quipPanel.color = #cyan
+  quipPanel.clip = true
+  quipTextbox = makeUI(ui.AddText, 2, 1, n, n, top_left, top_left, n, "", center, n, n)
+  quipPanel.Add(quipTextbox)
+
+  bossPanel = makeUI(ui.AddPanel, n, 1, 1, 1, top_right, top_right, ui.AddStyle("#########"), n, n, n, n)
+  bossPanel.Add(makeUI(ui.AddText, n, n, 20, 1, top_right, top_right, n, "", right, n, n))
+  bossPanel.Add(makeUI(ui.AddText, n, 1, 20, 1, top_right, top_right, n, "", right, n, n))
+  bossPanel.children[0].color = #cyan
+
+func SRG_initiateQuip()
+  ?quipTimer = 0  // start a quip
+    SRG_getQuip()
+  :?quipTimer > 0  // show textbox/quip
+    var boxNow = (quipTimer - 1) / txtTotalFrames + 1
+    ?boxNow > quipArray.Count()
+      quipPanel.visible = false
+      prevBox = 0
+      quipTimer = -quipDelay
+      return
+    ?boxNow ! prevBox
+      prevBox = boxNow
+      SRG_prepareBox(boxNow)
+    var frame = (quipTimer%txtTotalFrames) + 1
+    ?frame <= boxAnimFrames
+      SRG_pnlResize(frame, boxAnimFrames)
+    :?frame <= boxAnimFrames+txtDispFrames
+      SRG_textPrint(min(frame - boxAnimFrames, txtDispFrames), txtDispFrames)
+    SRG_movePnl()
+
+func SRG_prepareBox(box)
+  quipPanel.visible = true
+  quipTextbox.text = ""
+  quip = quipArray[box-1]
+  quipLength = strSize(quip)
+  var quipLines = strSplit(quip, "\n")
+  var quipWidth = 0
+  for i : quipLines
+    var s = strSize(i)
+    quipWidth = max(quipWidth, s)
+  quipTextbox.w = quipWidth
+  quipTextbox.h = quipLines.Count()
+
+func SRG_textPrint(a, b)
+  quipTextbox.text = strSub(quip,0, a * quipLength / b) 
+
+func SRG_pnlResize(a, b)
+  quipPanel.h = a * (quipTextbox.h + 2) / b
+  quipPanel.w = a * (quipTextbox.w + 4) / b
+
+func SRG_movePnl()
+  quipPanel.x = clamp(initiatePanel.x, quipPanel.w/2, scrw - (quipPanel.w + 1) / 2)
+
+func SRG_getQuip()
+  ?followMode = 1
+    followMode = 2
+    quipArray = strSplit("Hmmm, I believe it's the first time\nIym visiting this place...:Guess Iyll just hang back\nand watch your moves.",":")
+    return
+  quipArray.Clear()
+  var initiateLead = initiate_x - pos_x
+  ?loc_ = icy
+    quipArray.Add("")
+  ?foe_ = nagaraja
+    quipArray.Add("Please forgive me, O great Nagaraja!\nMyne heart bleeds for you!")
+    quipArray.Add("BLASPHEMY!!:DEFILER!!:How dare you lay steel on our Lord!")
+    quipArray.Add("Nooo, stop this right now!:* tugs at your clothes *")
+    quipArray.Add("Great Naga, kindly note that\nIym in no way related to\nthis crazed lunatic.")
+  :?foe_ = bolesh
+    quipArray.Add("Iyve never liked creepy crawlies!")
+  ?initiateLead > 50
+    quipArray.Add("Iyve left you far behind,\nstonehead!")
+    quipArray.Add("VICTORY WILL BE MYNE!!!")
+    quipArray.Add("...Are you alright back there?")
+    quipArray.Add("Iyll be waiting for you\nat the temple steps.:...you do know the way, yes?")
+  :?initiateLead > 30
+    quipArray.Add("Seems you’re more of a Watcher\nthan a walker!")
+    quipArray.Add("Hurry up Watcher,\nNagaraja must be hungry.")
+  :?initiateLead > 5
+    quipArray.Add("Now I take the lead,\nstonehead!")
+    quipArray.Add("Come on, Watcher!:Myne coattails\nwill not wait for you\nmuch longer!")
+  :?initiateLead > -5
+    quipArray.Add("Noooo!!:Iyll not be outdone\nby the likes of thee,\nHeretic!")
+    quipArray.Add("Every step I take brings me closer...:To that MOPLESS LIFE!! ^_^")
+    quipArray.Add("Stay away from me, stonehead!:Myne majesty is being\nOVERWHELMED\nby thy stench!")
+    quipArray.Add("* huffs and puffs *")
+  :?initiateLead > -30
+    quipArray.Add("Great Nagaraja...:...*pant pant*...:Grant me... *pant*\n*pant*...thy strength!")
+    quipArray.Add("Maybe the feeling has not yet\nfully returned to myne legs...")
+  :?initiateLead > -50
+    quipArray.Add("Bah! Damned heretic\nmust be CHEATING!:...Iydiot!")
+    quipArray.Add("You’re lucky I have to\nlug this head around...:I’d flat out beat you otherwise.")
+  :
+    quipArray.Add("Iyme sure there used to be a\nshortcut around here somewhere...")
+    quipArray.Add("Whoyre you even in such a rush anyway?:Iyme just gonna take it slow\nand smell the flowers.")
+
+  var prevQuipIndex = quipArray.IndexOf(prevQuip)
+  var rndIndex
+  ?prevQuipIndex = -1 // prev quip not in list
+    prevQuip = quipArray[rng % quipArray.Count()]
+  : // prev quip in list, avoid choosing it.
+    rndIndex = rng % (quipArray.Count()-1)
+    ?rndIndex >= prevQuipIndex
+      rndIndex++
+    prevQuip = quipArray[rndIndex]
+  quipArray.Clear()
+  quipArray = strSplit(prevQuip, ":")
+
+func makeUI(type, x, y, w, h, dk, anc, sty, text, align, pressFunc, vis)
+  ?type = Anim | type = Text
+    var u = type(text)
+  :
+    var u = type()
+  ?x ! null
+    u.x = x
+  ?y ! null
+    u.y = y
+  ?w ! null
+    u.w = w
+  ?h ! null
+    u.h = h
+  ?dk ! null
+    u.dock = dk
+  ?anc ! null
+    u.anchor = anc
+  ?sty ! null  
+    u.style = sty
+  ?align ! null  
+    u.align = align
+  ?pressFunc ! null
+    u.SetPressed(pressFunc)
+  ?vis ! null
+    u.visible = vis
+  return u
+  
+func makeAnim(x, y, w, h, dk, anc, content, px, py, vis, color, dur, loop, startplay)
+  var anim = makeUI(ui.AddAnim, x, y, w, h, dk, anc, null, content, null, null, vis)
+  ?px ! null
+    anim.pivotX = px
+  ?py ! null
+    anim.pivotY = py
+  ?color ! null
+    anim.color = color
+  ?dur ! null
+    anim.duration = dur
+  ?loop ! null
+    anim.loop = loop
+  ?startplay ! null
+    anim.Play()
+  return anim
+
+/*
+
+   █████████    ████████   █████████ 
+  ███░░░░░███  ███░░░░███ ███░░░░░███
+ ░███    ░███ ░░░    ░███░███    ░░░ 
+ ░███████████    ███████ ░░█████████ 
+ ░███░░░░░███   ███░░░░   ░░░░░░░░███
+ ░███    ░███  ███      █ ███    ░███
+ █████   █████░██████████░░█████████ 
+░░░░░   ░░░░░ ░░░░░░░░░░  ░░░░░░░░░  
+
+v2.1                  by MaxMinMedian
+*/
+
+func Stringify(arr)
+  var stringBuilder = []
+  for e : arr
+    ?Type(e) = "string"
+      stringBuilder.Add(dquote + e + dquote)
+    :?Type(e) = "array"
+      stringBuilder.Add(Stringify(e))
+    :?Type(e) = "null"
+      stringBuilder.Add("null")
+    :
+      stringBuilder.Add("" + e)
+  return "[" + strJoin(",", stringBuilder) + "]"
+
+func Arrayify(str)
+  return Arrayify_Main(str, 0)
+
+var BEF_ARRAY = 11
+var BEF_FIELD = 12
+var WITHIN_STR = 13
+var WITHIN_INT = 14
+var WITHIN_FLOAT = 15
+var WITHIN_SPECIAL = 16
+var AFT_FIELD = 17
+var AFT_ARRAY = 18
+
+func Arrayify_Main(str,startPos)
+  var len = strSize(str) - startPos
+  ?len < 2
+    return "ERROR: String too short to contain an array"
+  var state = 11 // BEF_ARRAY
+  var resultArray = []     // [actual array, continuePos]
+  var stringBuilder = []   // speed up string reading
+  var negative = 1         // 1 for positive numbers/floats, -1 for negative numbers/floats.
+  var divisor = 1
+
+  for i = startPos .. strSize(str)-1
+    var ch = strSub(str, i, 1)
+
+    ?state = 11 // BEF_ARRAY
+      ?"［[" = ch
+        state = 12 // BEF_FIELD
+      :?ch ! " "
+        return "ERROR (pos " + i + "): Invalid character before starting array."
+    :?state = 12 // BEF_FIELD
+      ?ch = dquote  // just started a new string
+        state = 13 // WITHIN_STR
+      :?ch = "-"    // just started a new negative int/float
+        state = 14 // WITHIN_INT
+        negative = -1
+      :?"1234567890" = ch  // just started a new int/float
+        state = 14 // WITHIN_INT
+        stringBuilder.Add(ch)
+      :?"NTF" = ch   // just started a new special type
+        state = 16 // WITHIN_SPECIAL
+        stringBuilder.Add(ch)
+      :?"［[" = ch   // nested array
+        var nestedArray = Arrayify_Main(str, i)  //  [array, continuePos]
+        ?Type(nestedArray) = "string"
+          return nestedArray + "\n" + "within array @ pos:" + startPos
+        :
+          resultArray.Add(nestedArray[0])
+          i = nestedArray[1]
+          state = 17 // AFT_FIELD
+      :?"]］" = ch
+        ?resultArray.Count() = 0
+          return [resultArray, i]
+        :
+          return "ERROR (pos " + i + "): Unexpected end of array " + dquote + "]" + dquote
+      :?ch ! " "
+        return "ERROR (pos " + i + "): Unknown element"
+    :?state = 13 // WITHIN_STR
+      ?ch = dquote
+        resultArray.Add(strJoin("", stringBuilder))
+        stringBuilder.Clear()
+        state = 17 // AFT_FIELD
+      :
+        stringBuilder.Add(ch)
+    :?state = 14 // WITHIN_INT
+      ?"1234567890" = ch
+        stringBuilder.Add(ch)
+      :?ch = "."
+        state = 15 // WITHIN_FLOAT
+        divisor = 1.0
+      :?"]］ ," = ch
+        resultArray.Add(negative * intParse(strJoin("", stringBuilder)))
+        negative = 1
+        stringBuilder.Clear()
+        ?ch = " "
+          state = 17 // AFT_FIELD
+        :?ch = ","
+          state = 12 // BEF_FIELD
+        :?"]］" = ch
+          ?startPos = 0
+            state = 18 // AFT_ARRAY
+          :
+            return [resultArray, i]
+      :
+        return "ERROR (pos " + i + "): Unexpected character in int"
+    :?state = 15 // WITHIN_FLOAT
+      ?"1234567890" = ch
+        stringBuilder.Add(ch)
+        divisor *= 10
+      :?"]］ ," = ch
+        resultArray.Add(negative * intParse(strJoin("", stringBuilder)) / divisor)
+        divisor = 1.0
+        stringBuilder.Clear()
+        ?ch = " "
+          state = 17 // AFT_FIELD
+        :?ch = ","
+          state = 12 // BEF_FIELD
+        :?"]］" = ch
+          ?startPos = 0
+            state = 18 // AFT_ARRAY
+          :
+            return [resultArray, i]
+      :?ch = "."
+        return "ERROR (pos " + i + "): Multiple decimal points in float"
+      :
+        return "ERROR (pos " + i + "): Unexpected character in float"
+    :?state = 16 // WITHIN_SPECIAL
+      ?"UNREALS" = ch
+        stringBuilder.Add(ch)
+      :?"]］ ," = ch
+        var specialType = strJoin("", stringBuilder)
+        ?specialType = "null" & "null" = specialType
+          resultArray.Add(null)
+          stringBuilder.Clear()
+        :?specialType = "false" & "false" = specialType
+          resultArray.Add(false)          
+          stringBuilder.Clear()
+        :?specialType = "true" & "true" = specialType
+          resultArray.Add(true)
+          stringBuilder.Clear()
+        :
+          return "ERROR (pos " + i + "): Unrecognized special constant"
+        ?ch = " "
+          state = 17 // AFT_FIELD
+        :?ch = ","
+          state = 12 // BEF_FIELD
+        :?"]］" = ch
+          ?startPos = 0
+            state = 18 // AFT_ARRAY
+          :
+            return [resultArray, i]
+      :
+        return "ERROR (pos " + i + "): Unexpected character " + dquote + ch + dquote + " in special constant"
+    :?state = 17 // AFT_FIELD
+      ?ch = ","
+        state = 12 // BEF_FIELD
+      :?"]］" = ch
+        ?startPos = 0
+          state = 18 // AFT_ARRAY
+        :
+          return [resultArray, i]
+      :?ch ! " "
+        return "ERROR (pos " + i + "): Unexpected character " + dquote + ch + dquote + " after field"
+    :?state = 18 // AFT_ARRAY
+      ?ch ! " "
+        return "ERROR (pos " + i + "): Unexpected character " + dquote + ch + dquote + " after main array"
+
+  ?state = 18 // AFT_ARRAY
+    return resultArray
+  :
+    return "ERROR: Unexpected end of input string"

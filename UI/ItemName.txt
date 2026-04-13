@@ -1,0 +1,963 @@
+/*
+--------ItemName v1.2--------
+Creator: Davit
+Discord: pacz7224
+
+- Projects the name of the item held in a hand along with its enchantment, affix and other details (customizable),
+- Shows a colorful ASCII art of the item held (color is based on enchantment level).
+
+// UPDATES
+--- v1.1 ---
+• Looping a location will not delete the panels anymore.
+• Talisman ASCII is now fully displayed.
+• ASCII art is now properly displayed when moondialing.
+• Hidden wand/staff animation is now colored.
+
+--- v1.2 ---
+• Added lollipop wand.
+
+// Simple setup
+// Copy paste the code into your mindstone, or put the file in the UI folder and run this command:
+import UI/ItemName
+
+// Advanced setup
+var itemname
+itemname = import UI/ItemName
+
+// Toggle the booleans on and off to enable/disable elements in the item name string.
+// R is for right hand, L is for left hand.
+// Default values are shown.
+// Each item is projected in the following order (the word "none" is not projected):
+//   - item name, affix, star, enchantment, type (lost/none), element, ID, shiny/none, cosmetic/none
+ToggleNameR = true
+ToggleAffixR = true
+ToggleStarR = false
+ToggleEnchantmentR = true
+ToggleTypeR = false
+ToggleElementR = false
+ToggleIDR = false
+ToggleShinyR = false
+ToggleCosmeticR = false
+
+ToggleNameL = true
+ToggleAffixL = true
+ToggleStarL = false
+ToggleEnchantmentL = true
+ToggleTypeL = false
+ToggleElementL = false
+ToggleIDL = false
+ToggleShinyL = false
+ToggleCosmeticL = false
+
+// These are the UI elements that appear on the screen.
+// TextPanelR and TextPanelL show the name of the item held in right and left hands respectively.
+// ASCIIPanelR and ASCIIPanelL show the image of the item held in right and left hands respectively.
+// The following elements support all UI panel operations.
+TextPanelR
+TextPanelL
+ASCIIPanelR
+ASCIIPanelL
+
+// These are the animations that appear on the screen while holding specific items.
+// hiddenAnimR and hiddenAnimL appear when a hidden wand or staff is held in right and left hands respectively.
+// mindstoneAnimR and mindstoneAnimL appear when the mindstone is being held in a hand.
+// These animations DO NOT DISAPPEAR when their respective ASCIIPanel is disabled.
+// The following elements support all UI animation operations.
+hiddenAnimR
+hiddenAnimL
+mindstoneAnimR
+mindstoneAnimL
+*/
+
+var elements =
+^ ["poison", "vigor", "aether", "fire", "ice"]
+
+// Right hand item name
+var itemR
+itemR = string.Split(item.right)
+var Rarr1 = []
+var Rarr2 = []
+var nameR = ""
+var elementR = ""
+var idR = ""
+var starR = ""
+var enchantmentR = ""
+var affixR = ""
+var typeR = ""
+var shinyR = ""
+var cosmeticR = ""
+var dataR = []
+var ToggleNameR = true
+var ToggleElementR = false
+var ToggleIDR = false
+var ToggleStarR = false
+var ToggleEnchantmentR = true
+var ToggleAffixR = true
+var ToggleTypeR = false
+var ToggleShinyR = false
+var ToggleCosmeticR = false
+var boolListR = [ToggleNameR, ToggleAffixR, ToggleStarR, ToggleEnchantmentR, ToggleTypeR, ToggleElementR, ToggleIDR, ToggleShinyR, ToggleCosmeticR]
+var RarrN = 1
+var Rstr = ""
+?string.Size(item.right) > 0
+  // Splitting the array in half
+  for x : itemR
+    ?x = "_" | 
+    ^((Rarr1.Contains(string.Capitalize(x)) 
+    ^& !elements.Contains(string.ToLower(x))
+    ^& x ! "Stone") | x = "stones" | x = "runestone")
+      RarrN = 2
+    ?RarrN = 1
+      Rarr1.Add(x)
+    :?RarrN = 2
+      Rarr2.Add(x)
+
+  // Distributing values
+  for i = 0..Rarr1.Count()-2
+    ?i < Rarr1.Count()-2
+      nameR += Rarr1[i] + " "
+    :
+      nameR += Rarr1[i]
+  elementR = Rarr1[Rarr1.Count()-1]
+  idR = Rarr2[0]
+  starR = Rarr2[1]
+  enchantmentR = Rarr2[3]
+  affixR = Rarr2[4]
+  ?item.right = "lost"
+    typeR = "lost"
+  ?item.right = "shiny"
+    shinyR = "shiny"
+  ?item.right = "golden" | item.right = "prismatic" | item.right = "glitch"
+    cosmeticR = Rarr2[Rarr2.Count()-1]
+  dataR = [nameR, affixR, starR, enchantmentR, typeR, elementR, idR, shinyR, cosmeticR]
+
+  // Recording values
+  for i = 0..dataR.Count()-1
+    ?boolListR[i] = true
+      Rstr += dataR[i]
+    ?i < boolListR.Count()-1
+      ?boolListR[i+1] = true & string.Size(dataR[i+1]) > 0
+        Rstr += " "
+:
+  Rstr = "-"
+
+// Right hand enchantment
+var enchR
+var enchRint
+?string.Size(item.right) > 0
+  enchR = string.Split(enchantmentR, "+", "/")
+  ?string.Size(enchantmentR) > 0
+  ^& string.Sub(enchantmentR, 0, 1) = "+"
+    enchRint = int.Parse(enchR[1])
+
+// Left hand item name
+var itemL
+itemL = string.Split(item.left)
+var Larr1 = []
+var Larr2 = []
+var nameL = ""
+var elementL = ""
+var idL = ""
+var starL = ""
+var enchantmentL = ""
+var affixL = ""
+var typeL = ""
+var shinyL = ""
+var cosmeticL = ""
+var dataL = []
+var ToggleNameL = true
+var ToggleElementL = false
+var ToggleIDL = false
+var ToggleStarL = false
+var ToggleEnchantmentL = true
+var ToggleAffixL = true
+var ToggleTypeL = false
+var ToggleShinyL = false
+var ToggleCosmeticL = false
+var boolListL = [ToggleNameL, ToggleAffixL, ToggleStarL, ToggleEnchantmentL, ToggleTypeL, ToggleElementL, ToggleIDL, ToggleShinyL, ToggleCosmeticL]
+var LarrN = 1
+var Lstr = ""
+?string.Size(item.left) > 0
+  // Splitting the array in half
+  for x : itemL
+    ?x = "_" | 
+    ^((Larr1.Contains(string.Capitalize(x)) 
+    ^& !elements.Contains(string.ToLower(x))
+    ^& x ! "Stone") | x = "stones" | x = "runestone")
+      LarrN = 2
+    ?LarrN = 1
+      Larr1.Add(x)
+    :?LarrN = 2
+      Larr2.Add(x)
+
+  // Distributing values
+  for i = 0..Larr1.Count()-2
+    ?i < Larr1.Count()-2
+      nameL += Larr1[i] + " "
+    :
+      nameL += Larr1[i]
+  elementL = Larr1[Larr1.Count()-1]
+  idL = Larr2[0]
+  starL = Larr2[1]
+  enchantmentL = Larr2[3]
+  affixL = Larr2[4]
+  ?item.left = "lost"
+    typeL = "lost"
+  ?item.left = "shiny"
+    shinyL = "shiny"
+  ?item.left = "golden" | item.left = "prismatic" | item.left = "glitch"
+    cosmeticL = Larr2[Larr2.Count()-1]
+  dataL = [nameL, affixL, starL, enchantmentL, typeL, elementL, idL, shinyL, cosmeticL]
+
+  // Recording values
+  for i = 0..dataL.Count()-1
+    ?boolListL[i] = true
+      Lstr += dataL[i]
+    ?i < boolListL.Count()-1
+      ?boolListL[i+1] = true & string.Size(dataL[i+1]) > 0
+        Lstr += " "
+:
+  Lstr = "-"
+
+// Left hand enchantment
+var enchL
+var enchLint
+?string.Size(item.left) > 0
+  enchL = string.Split(enchantmentL, "+", "/")
+  ?string.Size(enchantmentL) > 0
+  ^& string.Sub(enchantmentL, 0, 1) = "+"
+    enchLint = int.Parse(enchL[1])
+
+// Colors by enchantment tier 
+var clr
+func itemColor (ench)
+  ?ench & ench ! " "
+    ?ench >= 16
+      clr = "#rainFF"
+    :?ench >= 11
+      clr = "#red"
+    :?ench >= 7
+      clr = "#blue"
+    :?ench >= 4
+      clr = "#green"
+    :?ench >= 2
+      clr = "#yellow"
+    :?ench = 1
+      clr = "#cyan"
+    :
+      clr = "[Something went wrong]"
+  :
+    clr = "#ffffff"
+  return clr
+
+var Rclr
+var Lclr
+Rclr = itemColor(enchRint)
+Lclr = itemColor(enchLint)
+
+
+// Text panel
+var TextR
+var TextPanelR
+var TextL
+var TextPanelL
+
+?loc.begin | loc.loop
+  TextR = ui.AddText()
+  TextPanelR = ui.AddPanel()
+  TextPanelR.Add(TextR)
+  TextPanelR.dock = top_right
+  TextPanelR.anchor = top_right
+  TextR.x = 2
+  TextR.y = 2
+  TextPanelR.style = 2
+  TextPanelR.x = -1
+  TextPanelR.y = 8
+  
+  TextL = ui.AddText()
+  TextPanelL = ui.AddPanel()
+  TextPanelL.Add(TextL)
+  TextPanelL.dock = top_right
+  TextPanelL.anchor = top_right
+  TextL.x = 2
+  TextL.y = 2
+  TextPanelL.style = 2
+  TextPanelL.x = TextPanelR.x
+  TextPanelL.y = TextPanelR.y + 3
+
+TextR.w = string.Size(Rstr)+4
+TextR.text = Rstr
+TextR.color = Rclr
+TextPanelR.h = 3
+
+TextL.w = string.Size(Lstr)+4
+TextL.text = Lstr
+TextL.color = Lclr
+TextPanelL.h = 3
+
+?TextR.w > TextL.w
+  TextPanelR.w = TextR.w
+  TextPanelL.w = TextR.w
+:
+  TextPanelR.w = TextL.w
+  TextPanelL.w = TextL.w
+
+// ASCII panel
+func AddASCIIPanel (hand)
+  var ASCIIPanelX = ui.AddPanel()
+  ASCIIPanelX.w = 11
+  ASCIIPanelX.h = 7
+  ASCIIPanelX.dock = top_left
+  ASCIIPanelX.anchor = top_left
+  ASCIIPanelX.style = 2
+  return ASCIIPanelX
+
+var ASCIIPanelR
+var ASCIIPanelL
+
+?loc.begin | loc.loop
+  ASCIIPanelR = AddASCIIPanel("right")
+  ASCIIPanelL = AddASCIIPanel("left")
+  ASCIIPanelL.x = screen.w - 23
+  ASCIIPanelR.x = ASCIIPanelL.x + 11
+  ASCIIPanelL.y = 1
+  ASCIIPanelR.y = ASCIIPanelL.y
+
+
+// Choosing the correct rune
+var elem = ["o","∞","♥","*","φ","❄"]
+var hiddenStaffEle = ["berserker", "prevention", "grasping", "infernal", "eternity"]
+var hiddenWandEle = ["plague", "reset", "calamity", "explosive", "frost"]
+var runeR = ""  // Current right hand item rune
+var runeL = ""  // Current left hand item rune
+
+func SelectRune (Xarr1)
+  var runeX
+  for i = 0..elem.Count()-1
+    var RUNEi = 0
+    ?Xarr1[0] = "big"
+      RUNEi = 1
+    :
+      RUNEi = 0
+    ?Xarr1[RUNEi] = "stone" | Xarr1[RUNEi] = "gravity" | Xarr1[RUNEi] = "acrobatic"
+      runeX = elem[0]
+      break
+    :?i < elem.Count()-1
+      ?Xarr1[RUNEi] = elements[i] | Xarr1[RUNEi] = hiddenStaffEle[i] | Xarr1[RUNEi] = hiddenWandEle[i]
+        runeX = elem[i+1]
+        break
+    :
+      runeX = "none"
+      break
+  return runeX
+
+?item.right
+  runeR = SelectRune(Rarr1)
+?item.left
+  runeL = SelectRune(Larr1)
+
+
+// Item ASCII
+func MakeASCIIList (runeX)
+  var itemsASCIIX
+  itemsASCIIX = [
+    ["big", [  // 0 Longswords
+^ascii
+#########
+#########
+##┤══──##
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+┤
+asciiend+runeX+ascii
+══──#
+#########
+#########
+asciiend
+    ]],
+    ["sword", [  // 1 Swords
+^ascii
+#########
+#########
+##┼───###
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+#┼
+asciiend+runeX+ascii
+──##
+#########
+#########
+asciiend
+    ]],
+    ["bardiche heavy", [  // 2 Bardiche, Heavy hammer
+^ascii
+#####,###
+####/-/##
+###/)/###
+##/ ´####
+#########
+asciiend,
+^ascii
+###___###
+##[___]##
+####║####
+####║####
+####║####
+####'####
+asciiend
+    ]],
+    ["hammer", [  // 3 Hammers
+^ascii
+#########
+###<´]###
+####║####
+####'####
+#########
+asciiend,
+^ascii
+#########
+###<
+asciiend+runeX+ascii
+]###
+####║####
+####'#### 
+#########
+asciiend
+    ]],
+    ["crossbow", [  // 4 Crossbows
+^ascii
+#########
+#########
+##╤══}###
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+##╤
+asciiend+runeX+ascii
+═}###
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+###═}####
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+##╤═}≡###
+#########
+#########
+asciiend
+    ]],
+    ["wand", [  // 5 Wands
+^"",
+^ascii
+#########
+####
+asciiend+runeX+ascii
+####
+###/#####
+#########
+#########
+#########
+asciiend,
+^ascii
+#########
+####@####
+###/#####
+#########
+#########
+#########
+asciiend
+    ]],
+    ["staff", [  // 6 Staves
+^ascii
+#####,###
+####/####
+###/#####
+##/######
+#########
+asciiend,
+^ascii
+#####
+asciiend+runeX+ascii
+###
+####/####
+###/#####
+##/######
+#########
+asciiend
+    ]],
+    ["lost", [  // 7 Lost
+^ascii
+####_####
+##,((}-,#
+##\`-´/##
+###`‾‾###
+#########
+asciiend,
+^ascii
+#########
+####¡####
+####
+asciiend+runeX+ascii
+####
+####'####
+#########
+asciiend,
+^ascii
+###|\####
+###|`¡###
+###| |###
+###| |###
+##_)·(_##
+###´|`###
+asciiend,
+^ascii
+#########
+#########
+#´‾‾\_,=#
+######`‾#
+#########
+asciiend,
+^ascii
+#########
+####_####
+###(>>###
+####‾####
+#########
+asciiend,
+^ascii
+#########
+###.╥.###
+###╞╬╡###
+###'╨'###
+#########
+asciiend
+    ]],
+    ["shield", [  // 8 Shields
+^ascii
+#########
+###__####
+###) )###
+####‾####
+#########
+asciiend,
+^ascii
+#########
+###__####
+###)
+asciiend+runeX+ascii
+)###
+####‾####
+#########
+asciiend,
+^ascii
+#########
+###.-.###
+###|·|###
+###'-'###
+#########
+asciiend,
+^ascii
+#########
+###|‾|###
+###)·(###
+###|_|###
+#########
+asciiend,
+^ascii
+#########
+####_####
+###(:)###
+####‾####
+#########
+asciiend
+    ]],
+    ["stone", [  // 9 Soul stones
+^ascii
+#########
+##,--.###
+##\<ʘ>)##
+###`-´###
+#########
+asciiend,
+^ascii
+#########
+##,-._###
+##\ ☆ ;##
+###`"´###
+#########
+asciiend,
+^ascii
+#########
+###,·-.##
+##/ @ /##
+##`·-´###
+#########
+asciiend,
+^ascii
+#########
+##.--.###
+#( 60 )##
+##`--´###
+#########
+asciiend,
+^ascii
+#########
+##,·_·.##
+#; ( ) ¡#
+#'._‾_.'#
+####‾####
+asciiend,
+^ascii
+#########
+###.-.###
+##/ ! \##
+##`---´##
+#########
+asciiend,
+^ascii
+#/‾‾\'‾\
+/`  /  ´\
+|   `   |
+\       /
+#`-----´#
+asciiend,
+^ascii
+###___###
+##/ 7 \##
+#/  '  \#
+#\<´ `>/#
+##`———´##
+asciiend,
+^ascii
+##,.-.,##
+#¡╔╧═╧╕¡#
+#|║###||#
+#!╙─┬─┘!#
+##`'-'´##
+asciiend,
+^ascii
+####_####
+##,((-.##
+#(  ‾  )#
+##`---´##
+#########
+asciiend
+    ]],
+    ["misc", [  // 10 Misc
+^ascii
+#########
+#########
+####
+asciiend+runeX+ascii
+####
+#########
+#########
+asciiend,
+^ascii
+#########
+####┬####
+####│####
+####Ü####
+#########
+asciiend,
+^ascii
+#########
+###<)####
+###|#####
+#########
+#########
+asciiend,
+^ascii
+#########
+###_#####
+##´ `ò###
+#########
+#########
+asciiend,
+^ascii
+#########
+#########
+##,--3###
+##`-'####
+#########
+asciiend
+    ]]
+  ]
+  return itemsASCIIX
+
+var itemsASCIIR
+var itemsASCIIL
+itemsASCIIR = MakeASCIIList(runeR)
+itemsASCIIL = MakeASCIIList(runeL)
+
+// Hidden wand/staff animation
+func AddHiddenAnim (ASCIIPanelX)
+  var anim = ui.AddAnim(ascii
+·##
+%%
+##·
+asciiend)
+  ASCIIPanelX.Add(anim)
+  anim.duration = 2
+  anim.dock = center_center
+  anim.anchor = center_center
+  anim.loop = true
+  anim.Play()
+  anim.visible = false
+  return anim
+
+// Mindstone icon center animation
+func AddMindstoneAnim (ASCIIPanelX)
+  var anim = ui.AddAnim(ascii
+´##
+%%
+#‾#
+%%
+##`
+%%
+##,
+%%
+#_#
+%%
+.##
+asciiend)
+  ASCIIPanelX.Add(anim)
+  anim.duration = 18
+  anim.dock = center_center
+  anim.anchor = center_center
+  anim.loop = true
+  anim.Play()
+  anim.visible = false
+  return anim
+
+
+// List of general item types
+var itemList = ["big", "sword", "bardiche", "heavy", "hammer", "crossbow", "wand", "staff", "lost", "shield", "stone", "misc"]  // DO NOT EDIT ORDER
+
+// Determine general item type
+func DetermineItem (dataX)
+  var itemType
+  var dataSet = "undefined"
+  ?dataX.Count() > 0
+    dataSet = string.Join(" ", [dataX[0], dataX[4]])
+  :
+    dataSet = "undefined"
+  ?dataSet = "torch"
+    return "undefined"
+  for i = 0..itemList.Count()-1
+    ?dataSet = "Heavy Crossbow" & dataX[0] = "Heavy Crossbow"
+      itemType = "crossbow"
+      return itemType
+    :?dataSet = "Stone Throwing" & dataX[0] = "Stone Throwing"
+      itemType = "misc"
+      return itemType
+    :?dataSet = itemList[i]
+      itemType = itemList[i]
+      return itemType
+    :?i = itemList.Count()-1
+      itemType = "misc"
+      return itemType
+  ?dataSet = "undefined"
+    return dataSet
+
+var itemRType
+var itemLType
+itemRType = DetermineItem(dataR)
+itemLType = DetermineItem(dataL)
+
+// Find the correct item ASCII art
+func SetIndex1_itemsASCII_ (itemXType)
+  var itemsASCII_i1X
+  ?itemXType = "undefined"
+    itemsASCII_i1X = 0-1
+    >`0,0,#red,UNKNOWN ITEM  
+  :?itemList.IndexOf(itemXType) > itemList.IndexOf("bardiche")
+    itemsASCII_i1X = itemList.IndexOf(itemXType)-1
+    ?itemList.IndexOf(itemType) > itemList.IndexOf("misc")
+      itemsASCII_i1X = itemList.IndexOf(itemXType)-1
+  :
+    itemsASCII_i1X = itemList.IndexOf(itemXType)
+  return itemsASCII_i1X
+
+var itemsASCII_i1R
+var itemsASCII_i1L
+itemsASCII_i1R = SetIndex1_itemsASCII_(itemRType)
+itemsASCII_i1L = SetIndex1_itemsASCII_(itemLType)
+
+// Create the resulting ASCII variable
+func CreateResultVar (ASCIIPanelX)
+  var result = ui.AddText()
+  ASCIIPanelX.Add(result)
+  result.dock = center_center
+  result.anchor = center_center
+  result.align = center
+  result.h = ASCIIPanelX.h
+  return result
+
+var resultR
+var resultL
+?loc.begin | loc.loop
+  resultR = CreateResultVar(ASCIIPanelR)
+  resultL = CreateResultVar(ASCIIPanelL)
+?item.right = "blade" | item.right = "heavy hammer"
+  resultR.y = 0
+:
+  resultR.y = 1
+resultL.y = 1
+
+// Choosing the correct ASCII art
+func ChooseResultingASCII (hand, runeX, itemsASCIIX, itemsASCII_i1X)
+  var resultX = ""
+  ?runeX = "none" | hand = "throw" | hand = "runestone"
+    ?hand = "bardiche" | hand = "mask" | hand = "sight" | hand = "rune" | hand = "quarterstaff" | hand = "sword" | (hand = "shield" & hand ! "towering" & hand ! "compound" & hand ! "dash" & hand ! "bash") | hand = "war hammer" | hand = "big" | hand = "heavy crossbow"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][0]
+    :?hand = "heavy" | hand = "star" | hand = "shovel"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][1]
+    :?(hand = "crossbow" & hand ! "repeat" & hand ! "heavy") | hand = "blade" | hand = "comp" | hand = "ki" | hand = "hatchet" | hand = "lollipop"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][2]
+    :?hand = "repeat" | hand = "towering" | hand = "arm" | hand = "exp" | hand = "throw"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][3]
+    :?hand = "dash" | hand = "bash" | hand = "ouro" | hand = "hook"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][4]
+    :?hand = "crusader" | hand = "quest"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][5]
+    :?hand = "fissure"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][6]
+    :?hand = "trisk"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][7]
+    :?hand = "mind"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][8]
+    :?hand = "moon"
+      resultX = itemsASCIIX[itemsASCII_i1X][1][9]
+    :
+      resultX = "???"
+  :
+    resultX = itemsASCIIX[itemsASCII_i1X][1][1]
+  return resultX
+
+?item.right = itemRType | itemRType = "misc"
+  resultR.text = ChooseResultingASCII(item.right, runeR, itemsASCIIR, itemsASCII_i1R)
+:
+  resultR.text = "???"
+?item.left = itemLType | itemLType = "misc"
+  resultL.text = ChooseResultingASCII(item.left, runeL, itemsASCIIL, itemsASCII_i1L)
+:
+  resultL.text = "???"
+
+// ASCII color
+resultR.color = Rclr
+resultL.color = Lclr
+
+// Creating UI animation
+var hiddenAnimR
+var hiddenAnimL
+var mindstoneAnimR
+var mindstoneAnimL
+?loc.begin | loc.loop
+  hiddenAnimR = AddHiddenAnim(ASCIIPanelR)
+  hiddenAnimL = AddHiddenAnim(ASCIIPanelL)
+  mindstoneAnimR = AddMindstoneAnim(ASCIIPanelR)
+  mindstoneAnimL = AddMindstoneAnim(ASCIIPanelL)
+
+// Trigger animations
+func ShowAnim (anim, anim2)
+  var hand
+  ?anim = hiddenAnimR | anim = mindstoneAnimR
+    hand = item.right
+  :?anim = hiddenAnimL | anim = mindstoneAnimL
+    hand = item.left
+  
+  // Hidden anim
+  ?anim = hiddenAnimR | anim = hiddenAnimL
+    ?hand = wand
+      anim.x = 0
+      anim.y = -1
+    :?hand = staff
+      anim.x = 1
+      anim.y = -2
+    anim.visible = true
+    anim2.visible = false
+  // Mindstone anim
+  :?anim = mindstoneAnimR | anim = mindstoneAnimL
+    anim.visible = true
+    anim2.visible = false
+  
+  // Color
+  ?hand = item.right
+    anim.color = Rclr
+  :?hand = item.left
+    anim.color = Lclr
+
+?item.right = "hidden"
+  ShowAnim(hiddenAnimR, mindstoneAnimR)
+:?item.right = "mind"
+  ShowAnim(mindstoneAnimR, hiddenAnimR)
+:
+  hiddenAnimR.visible = false
+  mindstoneAnimR.visible = false
+?item.left = "hidden"
+  ShowAnim(hiddenAnimL, mindstoneAnimL)
+:?item.left = "mind"
+  ShowAnim(mindstoneAnimL, hiddenAnimL)
+:
+  hiddenAnimL.visible = false
+  mindstoneAnimL.visible = false
+
+
+// No items = empty display
+?!item.right
+  resultR.text = ""
+?!item.left
+  resultL.text = ""
+
+
+// Reset variables
+RarrN = 1
+Rarr1.Clear()
+Rarr2.Clear()
+nameR = ""
+elementR = ""
+idR = ""
+starR = ""
+enchantmentR = ""
+affixR = ""
+typeR = ""
+shinyR = ""
+cosmeticR = ""
+boolListR = [ToggleNameR, ToggleAffixR, ToggleStarR, ToggleEnchantmentR, ToggleTypeR, ToggleElementR, ToggleIDR, ToggleShinyR, ToggleCosmeticR]
+Rstr = ""
+enchRint = " "
+
+LarrN = 1
+Larr1.Clear()
+Larr2.Clear()
+nameL = ""
+elementL = ""
+idL = ""
+starL = ""
+enchantmentL = ""
+affixL = ""
+typeL = ""
+shinyL = ""
+cosmeticL = ""
+boolListL = [ToggleNameL, ToggleAffixL, ToggleStarL, ToggleEnchantmentL, ToggleTypeL, ToggleElementL, ToggleIDL, ToggleShinyL, ToggleCosmeticL]
+Lstr = ""
+enchLint = " "

@@ -1,0 +1,481 @@
+// UNO Minigame
+// Importa este script para jugar: import Games/Uno
+
+var initialized = 0
+
+?initialized = 0
+  ?loc ! waterfall | totaltime > 1
+    initialized = -1
+
+?initialized = 0
+  disable pause
+  var deck = ［］
+  var pHand = ［］
+  var eHand = ［］
+  var discard = ［］
+  var turn = 0 // 0: Jugador, 1: Enemigo
+  var currentColor = ＂＂ 
+  var msg = ＂Welcome to UNO!＂
+  var gameStarted = false
+  var pickingColor = false
+  var showHelp = false
+
+  // UI References
+  var rootPanel
+  var btnDraw
+  var txtMsg
+  var txtEnemy
+  var discardBtn
+  var handPanel
+  var colorPanel
+  var btnRestart
+
+  // Colores
+  var C_R = #FF5555
+  var C_G = #55FF55
+  var C_B = #5555FF
+  var C_Y = #FFFF55
+  var C_W = #FFFFFF
+  var C_K = #222222
+
+  // Arte de Fondo (Patrón)
+  var bgArt = ascii
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+[]  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []  []
+asciiend
+
+  var stile = ui.AddStyle("abdfgceqi")
+
+func GetColorHex(c)
+  ?c = ＂R＂
+    return C_R
+  ?c = ＂G＂
+    return C_G
+  ?c = ＂B＂
+    return C_B
+  ?c = ＂Y＂
+    return C_Y
+  return C_W
+
+func Init()
+  deck.Clear()
+  pHand.Clear()
+  eHand.Clear()
+  discard.Clear()
+  
+  var colors = ［＂R＂, ＂G＂, ＂B＂, ＂Y＂］
+  var values = ［＂0＂, ＂1＂, ＂2＂, ＂3＂, ＂4＂, ＂5＂, ＂6＂, ＂7＂, ＂8＂, ＂9＂, ＂S＂, ＂R＂, ＂+2＂］
+  
+  for c : colors
+    for v : values
+      deck.Add(c + v)
+      ?v ! ＂0＂
+        deck.Add(c + v)
+  
+  for i = 0..3
+    deck.Add(＂WILD＂)
+    deck.Add(＂+4＂)
+    
+  Shuffle()
+  
+  for i = 0..6
+    Draw(pHand)
+    Draw(eHand)
+    
+  Draw(discard)
+  var top = discard［0］
+  currentColor = string.Sub(top, 0, 1)
+  ?currentColor = ＂W＂ | currentColor = ＂+＂
+    currentColor = ＂R＂ 
+    
+  gameStarted = true
+  turn = 0
+  msg = ＂Your Turn＂
+  DrawUI()
+
+func Shuffle()
+  var n = deck.Count()
+  for i = 0 .. n - 1
+    var r = rng % n
+    var temp = deck［i］
+    deck.Emplace(i, deck［r］)
+    deck.Emplace(r, temp)
+
+func Draw(hand)
+  ?deck.Count() = 0
+    RefillDeck()
+    ?deck.Count() = 0
+      return
+      
+  var c = deck［0］
+  deck.RemoveAt(0)
+  hand.Add(c)
+
+func RefillDeck()
+  ?discard.Count() <= 1
+    return
+  var top = discard［discard.Count()-1］
+  discard.RemoveAt(discard.Count()-1)
+  for c : discard
+    deck.Add(c)
+  discard.Clear()
+  discard.Add(top)
+  Shuffle()
+
+func CanPlay(card)
+  var c = string.Sub(card, 0, 1)
+  var v = string.Sub(card, 1)
+  
+  ?c = ＂W＂ | c = ＂+＂
+    return true
+    
+  var top = discard［discard.Count()-1］
+  var topV = string.Sub(top, 1)
+  var topC = string.Sub(top, 0, 1)
+  
+  // Si la cima es comodin, usar currentColor
+  ?topC = ＂W＂ | topC = ＂+＂
+    ?c = currentColor
+      return true
+  :
+    ?c = topC
+      return true
+      
+  ?v = topV
+    return true
+    
+  return false
+
+func PlayerDraw()
+  ?turn = 0 & !pickingColor & gameStarted
+    Draw(pHand)
+    turn = 1
+    msg = ＂Enemy Turn＂
+    DrawUI()
+
+func PlayerPlay(btn)
+  ?turn ! 0 | pickingColor & gameStarted
+    return
+  
+  // Encontrar carta por el botón presionado
+  var idx = -1
+  for i = 0 .. handPanel.children.Count() - 1
+    ?handPanel.children［i］ = btn
+      idx = i
+      break
+      
+  ?idx = -1
+    return
+
+  var card = pHand［idx］
+  ?CanPlay(card)
+    pHand.RemoveAt(idx)
+    discard.Add(card)
+    ProcessCard(card, true)
+    DrawUI()
+
+func EnemyTurn()
+  ?turn ! 1 | pickingColor
+    return
+    
+  // Pequeño delay simulado (requiere llamar EnemyTurn cada frame)
+  ?rng % 30 ! 0
+    return 
+
+  var played = false
+  for i = 0 .. eHand.Count() - 1
+    var card = eHand［i］
+    ?CanPlay(card)
+      eHand.RemoveAt(i)
+      discard.Add(card)
+      ProcessCard(card, false)
+      played = true
+      break
+      
+  ?!played
+    Draw(eHand)
+    msg = ＂Enemy drew＂
+    turn = 0
+    
+  DrawUI()
+
+func ProcessCard(card, isPlayer)
+  var c = string.Sub(card, 0, 1)
+  var v = string.Sub(card, 1)
+  
+  ?c ! ＂W＂ & c ! ＂+＂
+    currentColor = c
+  :
+    ?isPlayer
+      pickingColor = true
+      msg = ＂Pick Color＂
+      DrawUI()
+      return 
+    :
+      var r = rng % 4
+      var cols = ［＂R＂, ＂G＂, ＂B＂, ＂Y＂］
+      currentColor = cols［r］
+      msg = ＂Enemy picked ＂ + currentColor
+
+  // Efectos
+  ?v = ＂S＂ | v = ＂R＂
+    msg = ＂Skip!＂
+    // En 2 jugadores, Skip/Reverse te da otro turno
+  :?v = ＂+2＂
+    msg = ＂Draw 2!＂
+    var target = pHand
+    ?isPlayer
+      target = eHand
+    Draw(target)
+    Draw(target)
+    // En 2 jugadores, Draw 2 te da otro turno
+  :?v = ＂4＂
+    msg = ＂Wild +4!＂
+    var target = pHand
+    ?isPlayer
+      target = eHand
+    Draw(target)
+    Draw(target)
+    Draw(target)
+    Draw(target)
+    // En 2 jugadores, +4 te da otro turno
+  :
+    // Cambio de turno normal
+    ?isPlayer
+      turn = 1
+      msg = ＂Enemy Turn＂
+    :
+      turn = 0
+      msg = ＂Your Turn＂
+      
+  CheckWin()
+
+func CheckWin()
+  ?pHand.Count() = 0
+    msg = ＂YOU WIN!＂
+    gameStarted = false
+  ?eHand.Count() = 0
+    msg = ＂ENEMY WINS!＂
+    gameStarted = false
+
+func PickColor(btn)
+  var txt = btn.text
+  currentColor = string.Sub(txt, 0, 1)
+  pickingColor = false
+  turn = 1
+  msg = ＂Enemy Turn＂
+  DrawUI()
+
+func ToggleHelp()
+  showHelp = !showHelp
+  DrawUI()
+
+// Construcción de la UI
+func DrawUI()
+  ui.Clear()
+  
+  rootPanel = ui.AddPanel()
+  rootPanel.w = screen.w
+  rootPanel.h = screen.h
+  //rootPanel.style = stile
+  rootPanel.color = #222222 // <--- CAMBIAR FONDO DE PANTALLA (Color Hex)
+  
+///*
+  // Fondo ASCII
+  var bgText = ui.AddText()
+  bgText.text = bgArt
+  bgText.color = #333333 // Color sutil para el fondo (Gris oscuro)
+  bgText.x = 0
+  bgText.y = 0
+  bgText.w = screen.w
+  bgText.h = screen.h
+  rootPanel.Add(bgText)
+//*/
+
+  // Mano Enemigo (Visual)
+  for i = 0 .. eHand.Count() - 1
+    var eb = ui.AddButton()
+    eb.text = ＂?＂
+    eb.w = 3
+    eb.h = 3
+    eb.x = -4 + (i % 20) * 2 // <--- POSICION X CARTAS ENEMIGO
+    eb.y = -4 + (i / 20) * 2 // <--- POSICION Y CARTAS ENEMIGO
+    eb.bcolor = #FFFFFF // Fondo negro (Dorso)
+    eb.tcolor = #888888 // Texto gris
+    rootPanel.Add(eb)
+  
+  // Mensaje Central
+  txtMsg = ui.AddText()
+  txtMsg.text = msg
+  txtMsg.y = 4 // <--- CAMBIAR POSICION VERTICAL (Y) MENSAJE CENTRAL
+  txtMsg.align = center
+  txtMsg.w = screen.w
+  rootPanel.Add(txtMsg)
+  
+  // Pila de Descarte
+  discardBtn = ui.AddButton()
+  discardBtn.y = 6 // <--- CAMBIAR POSICION VERTICAL (Y) CARTA EN MESA
+  discardBtn.x = 0 // <--- CAMBIAR POSICION HORIZONTAL (X) CARTA EN MESA
+  discardBtn.w = 8
+  discardBtn.h = 3
+  
+  var top = discard［discard.Count()-1］
+  var disp = top
+  var c = string.Sub(top, 0, 1)
+  ?c = ＂W＂ | c = ＂+＂
+   discardBtn.tcolor = GetColorHex(currentColor)
+   discardBtn.bcolor = #ffffff // <--- CAMBIAR FONDO DE LA CARTA EN MESA
+   discardBtn.hcolor = GetColorHex(currentColor)
+  :
+   discardBtn.tcolor = GetColorHex(c)
+   discardBtn.bcolor = #ffffff // <--- CAMBIAR FONDO DE LA CARTA EN MESA
+   discardBtn.hcolor = GetColorHex(currentColor)
+    
+  discardBtn.text = disp
+  rootPanel.Add(discardBtn)
+  
+  ?gameStarted
+   btnDraw = ui.AddButton()
+   btnDraw.text = ＂DRAW＂
+   btnDraw.y = 6 // <--- CAMBIAR POSICION VERTICAL (Y) BOTON ROBAR
+   btnDraw.x = 7 // <--- CAMBIAR POSICION HORIZONTAL (X) BOTON ROBAR
+   btnDraw.w = 6
+   btnDraw.h = 3
+   btnDraw.SetPressed(PlayerDraw)
+   rootPanel.Add(btnDraw)
+  :
+   btnRestart = ui.AddButton()
+   btnRestart.text = ＂Reset＂
+   btnRestart.y = 6 // <--- CAMBIAR POSICION VERTICAL (Y) BOTON REINICIAR
+   btnRestart.x = 7 // <--- CAMBIAR POSICION HORIZONTAL (X) BOTON REINICIAR
+   btnRestart.w = 6
+   btnRestart.h = 3
+   btnRestart.SetPressed(Init)
+   rootPanel.Add(btnRestart)
+  
+  // Mano Jugador
+  handPanel = ui.AddPanel()
+  handPanel.y = 11 // <--- CAMBIAR POSICION VERTICAL (Y) INICIO DE TU MANO
+  handPanel.w = 0
+  handPanel.h = 0
+  rootPanel.Add(handPanel)
+  
+  for i = 0 .. pHand.Count() - 1
+    var card = pHand［i］
+    var b = ui.AddButton()
+    b.text = card
+    b.w = 4
+    b.h = 3
+    b.x = -3 + (i % 14) * 5 // <--- CALCULO POSICION X DE CADA CARTA (Columnas)
+    b.y = (i / 14) * 3     // <--- CALCULO POSICION Y DE CADA CARTA (Filas)
+    
+    var cc = string.Sub(card, 0, 1)
+    ?cc = ＂W＂ | cc = ＂+＂
+      b.tcolor = C_W
+      b.bcolor = #ffffff // <--- CAMBIAR FONDO DE TUS CARTAS (Especiales)
+    :
+      b.tcolor = GetColorHex(cc)
+      b.bcolor = #ffffff // <--- CAMBIAR FONDO DE TUS CARTAS (Normales)
+      
+    b.SetPressed(PlayerPlay)
+    handPanel.Add(b)
+
+  // Selector de Color
+  ?pickingColor
+    colorPanel = ui.AddPanel()
+    colorPanel.w = 20
+    colorPanel.h = 10
+    colorPanel.x = 1 // <--- CAMBIAR POSICION X PANEL COLOR
+    colorPanel.y = -5 // <--- CAMBIAR POSICION Y PANEL COLOR
+    colorPanel.color = #000000 // <--- CAMBIAR FONDO PANEL COLOR
+    rootPanel.Add(colorPanel)
+    
+    var cols = ［＂R＂, ＂G＂, ＂B＂, ＂Y＂］
+    var cx = 1
+    var cy = 1
+    for col : cols
+      var cb = ui.AddButton()
+      cb.text = col
+      cb.tcolor = GetColorHex(col)
+      cb.bcolor = #000000 // <--- CAMBIAR FONDO BOTONES COLOR
+      cb.w = 4
+      cb.h = 3
+      cb.x = cx
+      cb.y = cy
+      cb.SetPressed(PickColor)
+      colorPanel.Add(cb)
+      cx = cx+5
+
+  // Botón de Ayuda
+  var btnHelp = ui.AddButton()
+  btnHelp.text = "?"
+  btnHelp.w = 3
+  btnHelp.h = 2
+  btnHelp.x = 2
+  btnHelp.y = 0
+  btnHelp.SetPressed(ToggleHelp)
+  rootPanel.Add(btnHelp)
+
+  ?showHelp
+    var helpPanel = ui.AddPanel()
+    helpPanel.w = 34
+    helpPanel.h = 14
+    helpPanel.x = 1
+    helpPanel.y = 1
+    helpPanel.color = #000000
+    helpPanel.style = 4
+    rootPanel.Add(helpPanel)
+    
+    var helpTxt = ui.AddText()
+    helpTxt.text = "Card Info:\n\nS: Skip (Saltar)\nR: Reverse (Invertir)\n+2: Enemy Draws 2\nW: Wild (Color)\n+4: Wild + Draw 4"
+    helpTxt.align = center
+    helpTxt.x = 17
+    helpTxt.y = 2
+    helpPanel.Add(helpTxt)
+
+    var btnCloseHelp = ui.AddButton()
+    btnCloseHelp.text = "X"
+    btnCloseHelp.w = 3
+    btnCloseHelp.h = 2
+    btnCloseHelp.x = 31
+    btnCloseHelp.y = 0
+    btnCloseHelp.tcolor = #FF5555
+    btnCloseHelp.SetPressed(ToggleHelp)
+    helpPanel.Add(btnCloseHelp)
+
+// Bucle Principal
+?initialized = 0
+  Init()
+  initialized = 1
+
+?initialized = 1 & gameStarted
+  ?turn = 1
+    EnemyTurn()

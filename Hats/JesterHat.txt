@@ -1,0 +1,51 @@
+/*
+——————————————————JesterHat—————————————————————
+Original Creator: Telos6857
+Edited By: Icynx.001
+Current Version: 1.2
+
+Changelogs:
+1.2 - added a mirrored copy of JesterHat for
+turning around (By Icynx.001)
+1.1 - added a version for smallhead for the
+import version
+1.0 - Submitted to Stonejam
+*/
+
+?bighead
+ >h-4,-1,#yellow,°#######°
+ ?player.direction = 1
+  >h1,-2,#magenta,ascii
+,-.
+_(#
+asciiend
+  >h-3,-2,#green,ascii
+,-.
+#)_\
+asciiend
+ :
+  >h0,-2,#magenta,ascii
+#,-.
+/_(#
+asciiend
+  >h-3,-2,#green,ascii
+,-.
+#)_
+asciiend
+:
+ ?player.direction = 1
+  >h-2,0,#yellow,ascii
+###•
+•###•
+asciiend
+  >h0,0,#cyan,,
+  >h1,1,#red,¯
+  >h-1,1,#blue,`
+ :
+  >h-2,0,#yellow,ascii
+#•
+•###•
+asciiend
+  >h0,0,#cyan,.
+  >h-1,1,#red,¯
+  >h1,1,#blue,´

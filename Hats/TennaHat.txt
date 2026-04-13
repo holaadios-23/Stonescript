@@ -1,0 +1,127 @@
+//Tenna Hat//
+//By DetermiKnight//
+//v1.0///
+
+>h-7,-5,#white,ascii
+#####o   o 
+#_____\_/___
+/  .———————.\
+\  |    ==>||
+#\||   ._. ||
+##\'———————'/
+###—————————
+
+asciiend
+
+?armor > 0.0
+   >h-16,-9,#white,ascii
+###_
+#.'_'.
+#|/ \|
+#|| ||
+#|| ||
+#|| ||
+#|| ||
+//   \\
+||   ||
+\\   //
+#'———'
+asciiend
+   >h-16,-9,#rainbow,ascii
+#
+#
+###:
+###:
+###:
+###:
+###:
+##:::
+##:::
+##:::
+asciiend
+   >h-18,+1,#rainbow,ascii
+__
+|_ | | |\ |
+|  |_| | \|
+asciiend
+
+?hp < (maxhp/5)
+   >h-4,-3,#red,ascii
+.———————.
+|  \ /  |
+|  / \  |
+'———————'
+asciiend
+
+?debuffs.count > 0
+   >h-4,-3,#red,ascii
+.———————.
+|       |
+|       |
+'———————'
+asciiend
+   ?debuffs.GetCount(debuff_dot) > 0
+      >h-4,-3,#red,ascii
+#
+#
+#####φ
+asciiend
+
+   ?debuffs.GetCount(debuff_damage) > 0
+      >h-4,-3,#green,ascii
+#
+#
+##∞
+asciiend
+   
+   ?debuffs.GetCount(debuff_chill) > 0
+      >h-4,-3,#cyan,ascii
+#
+#
+######❄ 
+asciiend
+
+   ?debuffs.GetCount(puff_debuff_damage) > 0
+      >h-4,-3,#blue,ascii
+#
+#
+###♥
+
+   ?debuffs.GetCount(pallas_phase2_debuff) > 0
+      >h-4,-3,#yellow,ascii
+#
+#
+####*
+asciiend
+
+?buffs.count >0
+   ?buffs.GetCount(smite) > 0
+      ?buffs.GetTime(smite) > 0
+         >h-4,-3,#magenta,ascii
+.———————.
+| •     |
+asciiend
+
+      ?buffs.GetTime(smite) > 480
+         >h-4,-3,#magenta,ascii
+.———————.
+| ••    |
+asciiend
+
+      ?buffs.GetTime(smite) > 960
+         >h-4,-3,#magenta,ascii
+.———————.
+| •••   |
+asciiend
+
+      ?buffs.GetTime(smite) > 1440
+         >h-4,-3,#magenta,ascii
+.———————.
+| ••••  |
+asciiend
+
+      ?buffs.GetTime(smite) > 1920
+         >h-4,-3,#magenta,ascii
+.———————.
+| ••••• |
+asciiend

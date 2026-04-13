@@ -1,0 +1,3294 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)https://stonestoryrpg.com/stonescript/beta.html#import -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="Stonescript Manual" property="og:title">
+<meta content="All instructions for Stonescript, the programming language inside Stone Story RPG. Includes examples and tips to maximize your Mind Stone." property="og:description">
+<meta content="https://stonestoryrpg.com/mind_stone.png" property="og:image">
+<meta name="theme-color" content="#ffffff">
+<meta name="twitter:card" content="summary_large_image">
+<link type="application/json+oembed" href="https://stonestoryrpg.com/faq.json"> 
+
+<title>Stonescript Manual</title>
+
+<style type="text/css">
+	body {
+		background-color: #1a1a1a;
+		color: #cccccc;
+		font-family: monospace;
+		margin: 0;
+		padding: 10px;
+	}
+	a { color: #4da6ff; text-decoration: none; }
+	#content { max-width: 900px; margin: 0 auto; background: #222; padding: 20px; }
+	eg {
+		color: #707070;
+		display: block;
+		margin-left: 20px;
+		white-space: pre-wrap;
+	}
+	f { display: block; margin-bottom: 10px; }
+	table { width: 100%; border-collapse: collapse; }
+	td { padding: 5px; border-bottom: 1px solid #333; vertical-align: top; }
+	center { text-align: center; display: block; }
+	img { max-width: 100%; }
+</style>
+
+</head>
+<body><div id="content">
+<f>
+<div id="logo"><a href="https://stonestoryrpg.com/" target="_blank">Stone Story RPG</a></div>
+
+<answer><center>English | <a href="https://stonestoryrpg.com/jp/stonescript/beta.html">日本語</a></center></answer>
+<div id="title-separator"><!---------------------------></div>
+
+<center>· ·:·: Stonescript (Beta) :·:· ·</center>
+<div id="title-separator"><!---------------------------></div>
+<center><font color="#808080">v4.27.1 - 2026/01/15</font></center>
+<answer><center><a href="https://stonestoryrpg.com/stonescript">intro</a> | <a href="https://stonestoryrpg.com/stonescript/manual.html">manual</a> | beta  ·:·  <a href="https://stonestoryrpg.com/releasenotes/beta.html">release notes</a> | <a href="https://stonestoryrpg.com/faq.html">faq</a></center></answer>
+<center><font color="#808080">
+      _ ______________________ _            
+  ,:´      \____        __.---<font color="#ffffff">,.</font> `.         
+ :.!  __________\_______\__`--<font color="#ffffff">`´</font>__ \        
+ :' \ \--------------------------.\ \       
+ ':' · \ <font color="#ffffff">·:. :'· :.:·             </font>\\ \      
+  ':' \ \ <font color="#ffffff">:·' :·:.                 </font>\\ \     
+   ':' · \ <font color="#ffffff">.: ·:: '.:. ':'··:.      </font>\\ \    
+    ':' \ \ <font color="#ffffff">· :..                    </font>\\ \   
+     ':' · \ <font color="#ffffff">:·: ..': :·:. ·:: '.     </font>\\ \  
+      ':' \ \__________________________\\ \ 
+       ':' `     .         \         .     )
+        ':' . . . \ . . . . ' . . . . \ . .;
+          `·.;,;,;,;,;,;,;,;,;,;,;,;,;,;,:' 
+</font></center>
+</f>
+<font color="#bbbbbb">
+<f>Used in the Mind Stone to automate equipment choices. Stonescript is a minimalistic, yet powerful language inside of <a href="https://stonestoryrpg.com/" target="_blank">Stone Story RPG</a>.</f>
+
+<f>Need help? Want to collaborate on scripts? Visit <a href="https://discord.gg/StoneStoryRPG" target="_blank">our Discord</a>.<f>
+
+<f>This manual is the comprehensive reference of all available Stonescript features. Most of the examples can be copy/pasted directly into the Mind Stone, which is a great way to learn how they work.</f>
+</f></f></font>
+
+
+·:·:· Index ·:·:·
+
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#example">1. Example</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#basics">2. Basics</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#game-state">3. Game State</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#commands">4. Commands</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#search-filters">5. Search Filters</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#comparisons">6. Comparisons</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#variables">7. Variables</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#math-operations">8. Math Operations</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#functions">9. Functions</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#native-functions">10. Native Functions</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#import">11. Importing External Scripts</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#ascii-art">12. ASCII-art</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#loops">13. Loops</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#arrays">14. Arrays</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#custom-input">15. Custom Input</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#user-interface">16. User Interface</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#tips">17. Tips</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#default-script">18. Default script</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#ability_ids">Appendix A - Ability Cooldown IDs</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#sounds">Appendix B - Sound Effects</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#music">Appendix C - Music</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#ambient">Appendix D - Ambient Loops</a></f>
+<f>  <a href="https://stonestoryrpg.com/stonescript/beta.html#scripts">Appendix E - All importable scripts</a></f>
+
+
+<div id="example"><div id="separator"><!---------------------------></div>
+
+·:·:· Example ·:·:·
+<font color="#bbbbbb">
+// Equips the Shovel for Rocky Plateau.
+// In Caves of Fear it equips loadout 1,
+//   except against the boss, where the
+//   Grappling Hook and a 7 star War Hammer
+//   are used instead.
+// For Haunted Halls it uses two Wands, 
+//   specifying Poison for left hand and
+//   Vigor for the right hand. However,
+//   if the difficulty is over 5 stars it
+//   uses an enchanted +13 Vigor Staff.
+// Potion activates if hitpoints fall
+//   below 10
+<f>?loc=rocky
+ equip shovel
+?loc=cave
+ loadout 1
+ ?foe=bolesh
+  equip grap
+  equip hammer *7 D
+?loc=halls
+ equipL poison wand
+ equipR vigor wand
+ ?loc.stars &gt; 5
+  equip vigor staff +13
+?hp &lt; 10
+ activate potion
+</f>
+</font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="basics"><div id="separator"><!---------------------------></div>
+
+·:·:· Basics ·:·:·
+<font color="#bbbbbb">
+<table>
+  <tbody><tr>
+    <td style="min-width: 3em"> ?  </td>
+    <td>Evaluates a logical condition. If true, executes indented lines (if).<eg><br>E.g.<br>?loc = caves<br>  loadout 1</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> :  </td>
+    <td>Alternative logical branch, in case the '?' condition is false (else).<eg><br>E.g.<br>?loc = caves<br>  loadout 1<br>:<br>  loadout 2</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> :? </td>
+    <td>Alternative logical branch, with additional conditions (else-if).<eg><br>E.g.<br>?loc = caves<br>  loadout 1<br>:?loc = deadwood<br>  loadout 2<br>:<br>  loadout 3</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> // </td>
+    <td>A comment. All text to the right of '//' has no logical effect when the script executes.<eg><br>E.g.<br>?loc = caves<br>  loadout 1<br>//The above equips loadout 1 for Caves of Fear</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> /* */ </td>
+    <td>Block comment. All text between the symbols has no logical effect when the script executes.<eg><br>E.g.<br>/*<br>?loc = caves<br>  loadout 1<br>*/<br>This script does nothing, as all of it is inside the block comments.</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> ^  </td>
+    <td>Continue previous line.<eg><br>E.g.<br>?loc=caves |<br>^loc = mine<br>  equip repeating<br><br>//The above is equal to:<br>?loc=caves|loc=mine<br>  equip repeating</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="game-state"><div id="separator"><!---------------------------></div>
+
+·:·:· Game State ·:·:·
+<font color="#bbbbbb">
+<f>These questions tell you what's happening and what's right in front of the player.</f>
+
+<table>
+  <tbody><tr>
+    <td>?loc</td>
+    <td>The current location the player is visiting.<eg><br>E.g.<br>?loc = caves<br>  loadout 1</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.id</td>
+    <td>The unique identifier of the current location.<eg><br>E.g.<br>var id<br>id = loc.id<br>&gt;Exploring @id@</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.gp</td>
+    <td>The total gear power used during the current run.<eg><br>E.g.<br>&gt;`0,1,Run GP = @loc.gp@</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.name</td>
+    <td>The localized name of the current location.<eg><br>E.g.<br>&gt;Exploring @loc.name@</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.stars</td>
+    <td>The current location's difficulty.<eg><br>E.g.<br>?loc = caves<br>  ?loc.stars=4<br>    loadout 1<br>  ?loc.stars=5<br>    loadout 2</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.begin</td>
+    <td>Is true only on the first frame of a location, when time = 0, before any game simulation has run. Is not true after an Ouroboros loop. Useful for resetting variables.<eg><br>E.g.<br>var i<br>?loc.begin<br>  i = 0<br>  ?loc = caves<br>    i = -100</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.loop</td>
+    <td>Is true on the first frame of a run after an Ouroboros loop.<eg><br>E.g.<br>var loopCount = 0<br>?loc.loop<br>  loopCount++</eg></td>
+  </tr>
+  <tr>
+    <td>?loc.isQuest</td>
+    <td>True if the current location is a special location from a Legend or custom quest. False otherwise.<eg><br>E.g.<br>?loc.isQuest<br>  &gt;`0,1,We're in a special quest location</eg></td>
+  </tr>
+  <tr>
+    <td>loc.averageTime</td>
+    <td>The current location's average completion time. A location's average time is calculated in a weighted manner, where the latest completion time is worth more and older times are worth progressively less the older they are.<eg><br>E.g.<br>&gt;`0,2,Average time =<br>^ @loc.averageTime@ frames</eg></td>
+  </tr>
+  <tr>
+    <td>loc.bestTime</td>
+    <td>The current location's best completion time (your record, high-score).<eg><br>E.g.<br>&gt;`0,1,Best time =<br>^ @loc.bestTime@ frames</eg></td>
+  </tr>
+  <tr>
+    <td>?encounter.isElite</td>
+    <td>Tells you if the current encounter is an elite encounter or not.<eg><br>E.g.<br>&gt;`0,1,Elite = @encounter.isElite@</eg></td>
+  </tr>
+  <tr>
+    <td>?encounter.eliteMod</td>
+    <td>Tells you the special modifier, if any, for the current encounter.<eg><br>E.g.<br>&gt;`0,2,Modifier = @encounter.eliteMod@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe</td>
+    <td>The current foe being targeted by the player.<eg><br>E.g.<br>?foe = boo<br>  equip vigor staff</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.id</td>
+    <td>The unique ID (or type) of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.name</td>
+    <td>The localized name of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.damage</td>
+    <td>The damage per attack of the foe being targeted by the player.<eg><br>E.g.<br>&gt;`0,1,foe damage = @foe.damage@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.distance</td>
+    <td>The distance between the player and the foe being targeted.</td>
+  </tr>
+  <tr>
+    <td>?foe.z</td>
+    <td>The z position of the foe being targeted.</td>
+  </tr>
+  <tr>
+    <td>?foe.count</td>
+    <td>The number of foes within 46 units of the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.GetCount(int)</td>
+    <td>The number of foes within a specific number of units.</td>
+  </tr>
+  <tr>
+    <td>?foe.hp</td>
+    <td>The current hitpoints of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.maxhp</td>
+    <td>The maximum hitpoints of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.armor</td>
+    <td>The current armor of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.maxarmor</td>
+    <td>The maximum armor of the foe being targeted by the player.</td>
+  </tr>
+  <tr>
+    <td>?foe.buffs.count</td>
+    <td>The number of buffs (positive effects) on the foe being targeted.</td>
+  </tr>
+  <tr>
+    <td>?foe.buffs.string</td>
+    <td>A composite of information about all the buffs on the target foe.<eg><br>E.g.<br>?foe.buffs.count &gt; 0<br>  &gt;`0,3,Foe buffs = @foe.buffs.string@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.buffs.GetCount(str)</td>
+    <td>The number of a specific buff on the target foe.</td>
+  </tr>
+  <tr>
+    <td>?foe.buffs.GetTime(str)</td>
+    <td>The duration of a specific buff on the target foe.</td>
+  </tr>
+  <tr>
+    <td>?buffs.oldest</td>
+    <td>The ID of the oldest buff on the player<eg><br>E.g.<br>&gt;`0,1,Oldest buff: @buffs.oldest@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.debuffs.count</td>
+    <td>The number of debuffs (negative effects) on the foe being targeted.</td>
+  </tr>
+  <tr>
+    <td>?foe.debuffs.string</td>
+    <td>A composite of information about all the debuffs on the target foe.<eg><br>E.g.<br>?foe.debuffs.count &gt; 0<br>  &gt;`0,4,Foe debuffs = @foe.debuffs.string@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.debuffs.GetCount(str)</td>
+    <td>The number of a specific debuff on the target foe.<eg><br>E.g.<br>&gt;`0,1,Chill debuff count =<br>^ @foe.debuffs.GetCount("debuff_chill")@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.debuffs.GetTime(str)</td>
+    <td>The duration of a specific debuff on the target foe.<eg><br>E.g.<br>&gt;`0,2,Chill debuff time =<br>^ @foe.debuffs.GetTime("debuff_chill")@</eg></td>
+  </tr>
+    <tr><td>?debuffs.oldest</td>
+    <td>The ID of the oldest debuff on the player<eg><br>E.g.<br>&gt;`0,1,Oldest debuff: @debuffs.oldest@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.state</td>
+    <td>A number representing the target foe's current state.<eg><br>E.g.<br>?foe.state = 0<br>  &gt;`0,0,Foe is asleep</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.time</td>
+    <td>Elapsed number of frames in target foe's current state.<eg><br>E.g.<br>&gt;`0,0,Foe = @foe.name@:@foe.state@,@foe.time@</eg></td>
+  </tr>
+  <tr>
+    <td>?foe.level</td>
+    <td>The level number of the target foe.<eg><br>E.g.<br>&gt;`0,0,Foe = @foe.name@ is level @foe.level@</eg></td>
+  </tr>
+  <tr>
+    <td>?harvest</td>
+    <td>The next harvestable object, such as a tree or boulder.<eg><br>E.g.<br>?harvest=Boulder<br>  equip shovel</eg></td>
+  </tr>
+  <tr>
+    <td>?harvest.distance</td>
+    <td>The distance between the player and the nearest harvestable object.<eg><br>E.g.<br>?loc=Rocky &amp; harvest.distance &lt; 7<br>  equip shovel</eg></td>
+  </tr>
+  <tr>
+    <td>?harvest.z</td>
+    <td>The z position of the nearest harvestable object.<eg><br>E.g.<br>?loc=Rocky &amp; harvest.z &gt; 5<br>  equip shovel</eg></td>
+  </tr>
+  <tr>
+    <td>?input.x</td>
+    <td>The X position, on the ASCII grid, of the input device (mouse/touch).</td>
+  </tr>
+  <tr>
+    <td>?input.y</td>
+    <td>The Y position, on the ASCII grid, of the input device (mouse/touch).<eg><br>E.g.<br>&gt; (@input.x@, @input.y@)</eg></td>
+  </tr>
+  <tr>
+    <td>?item.left</td>
+    <td>The item equipped to the left hand.<eg><br>E.g.<br>&gt;`0,1,Left:@item.left@<br>&gt;`0,2,Right:@item.right@</eg></td>
+  </tr>
+  <tr>
+    <td>?item.right</td>
+    <td>The item equipped to the right hand.<eg><br>E.g.<br>?item.right = quarterstaff<br>  activate R</eg></td>
+  </tr>
+  <tr>
+    <td>?item.left.gp<br>?item.right.gp</td>
+    <td>The gear power value of the item equipped to the left or right hand.<eg><br>E.g.<br>&gt;`0,1,Left GP:@item.left.gp@<br>&gt;`0,2,Right GP:@item.right.gp@</eg></td>
+  </tr>
+  <tr>
+    <td>?item.left.id<br>?item.right.id</td>
+    <td>The ID of the item equipped to the left or right hand.<eg><br>E.g.<br>&gt;`0,1,Left ID:@item.left.id@<br>&gt;`0,2,Right ID:@item.right.id@</eg></td>
+  </tr>
+  <tr>
+    <td>?item.left.state<br>?item.left.time<br>?item.right.state<br>?item.right.time</td>
+    <td>The numeric representation for an equipped weapon's current state and elapsed frames within that state.<eg><br>E.g.<br>&gt;`0,1,@item.left.state@:@item.left.time@<br>&gt;`0,2,@item.right.state@:@item.right.time@</eg></td>
+  </tr>
+  <tr>
+    <td>?item.potion</td>
+    <td>The potion currently brewed. Includes "auto" if auto-refill is enabled on the Cauldron.<eg><br>E.g.<br>?item.potion ! empty &amp; item.potion = auto<br>  activate potion</eg></td>
+  </tr>
+  <tr>
+    <td>?pickup</td>
+    <td>The current pickup being targeted by the player.<eg><br>E.g.<br>?pickup<br>  equip star stone<br>:<br>  loadout 1</eg></td>
+  </tr>
+  <tr>
+    <td>?pickup.distance</td>
+    <td>The distance between the player and the pickup being targeted.<eg><br>E.g.<br>?pickup.distance &lt; 5<br>  equipL star stone</eg></td>
+  </tr>
+  <tr>
+    <td>?pickup.z</td>
+    <td>The z position of the pickup being targeted.<eg><br>E.g.<br>?pickup.z &gt; 7<br>  equipL star stone</eg></td>
+  </tr>
+  <tr>
+    <td>?armor</td>
+    <td>The player's current armor, rounded down.<br>E.g. if the armor says [2.4] ?armor evaluates to 2.</td>
+  </tr>
+  <tr>
+    <td>?armor.f</td>
+    <td>The player's current armor's fractional amount.<br>E.g. if the armor says [2.4] ?armor.f evaluates to 4.</td>
+  </tr>
+  <tr>
+    <td>?buffs.count</td>
+    <td>The number of buffs (positive effects) on the player.</td>
+  </tr>
+  <tr>
+    <td>?buffs.string</td>
+    <td>A composite of information about all buffs on the player.<eg><br>E.g.<br>?buffs.count &gt; 0<br>  &gt;`0,1,Player buffs = @buffs.string@</eg></td>
+  </tr>
+  <tr>
+    <td>?buffs.GetCount(str)</td>
+    <td>The number of a specific buff on the player.</td>
+  </tr>
+  <tr>
+    <td>?buffs.GetTime(str)</td>
+    <td>The duration of a specific buff on the player.</td>
+  </tr>
+  <tr>
+    <td>?debuffs.count</td>
+    <td>The number of debuffs (negative effects) on the player.</td>
+  </tr>
+  <tr>
+    <td>?debuffs.string</td>
+    <td>A composite of information about all debuffs on the player.<eg><br>E.g.<br>?debuffs.count &gt; 0<br>  &gt;`0,2,Player debuffs = @debuffs.string@</eg></td>
+  </tr>
+  <tr>
+    <td>?debuffs.GetCount(str)</td>
+    <td>The number of a specific debuff on the player.</td>
+  </tr>
+  <tr>
+    <td>?debuffs.GetTime(str)</td>
+    <td>The duration of a specific debuff on the player.</td>
+  </tr>
+  <tr>
+    <td>?hp</td>
+    <td>The player's current hitpoints.</td>
+  </tr>
+  <tr>
+    <td>?maxhp</td>
+    <td>The player's maximum hitpoints.</td>
+  </tr>
+  <tr>
+    <td>?maxarmor</td>
+    <td>The player's maximum armor, rounded down.</td>
+  </tr>
+  <tr>
+    <td>?pos.x</td>
+    <td>The player's current X position.</td>
+  </tr>
+  <tr>
+    <td>?pos.y</td>
+    <td>The player's current Y position.</td>
+  </tr>
+  <tr>
+    <td>?pos.z</td>
+    <td>The player's current Z position.</td>
+  </tr>
+  <tr>
+    <td>?ai.enabled</td>
+    <td>True if the AI is on, False if the AI is off (e.g. during a cinematic moment).</td>
+  </tr>
+  <tr>
+    <td>?ai.paused</td>
+    <td>True if the AI is temporarily suspended, such as when waiting for a treasure to drop.</td>
+  </tr>
+  <tr>
+    <td>?ai.idle</td>
+    <td>True if the player is idle, waiting for something such as an attack to complete.</td>
+  </tr>
+  <tr>
+    <td>?ai.walking</td>
+    <td>True if the player is moving.</td>
+  </tr>
+  <tr>
+    <td>?bighead</td>
+    <td>True if the player has Big Head enabled (Moondial).</td>
+  </tr>
+  <tr>
+    <td>?face</td>
+    <td>The player's current facial expression.<eg><br>E.g.<br>?face = "^^"<br>  &gt;Happy</eg></td>
+  </tr>
+  <tr>
+    <td>?key</td>
+    <td>The state of <a href="https://stonestoryrpg.com/stonescript/beta.html#custom-input">custom game input</a>.<eg><br>The following prints the current input:<br>&gt;@key@</eg></td>
+  </tr>
+  <tr>
+    <td>?res.stone<br>?res.wood<br>?res.tar<br>?res.ki<br>?res.bronze<br>?res.crystals</td>
+    <td>The player's current amount of resources in their inventory.<eg><br>E.g.<br>?loc = Deadwood<br>  &gt;Wood = @res.wood@<br><br>E.g.2<br>&gt;`0,1,#magenta, ♦ @res.crystals@</eg></td>
+  </tr>
+  <tr>
+    <td>?player.direction</td>
+    <td>Indicates the direction in which the player is facing. Returns a value of 1 for <eg>right</eg> and -1 for <eg>left</eg>.<eg><br>E.g.<br>?player.direction = 1<br>  &gt;`0,0,Walking right<br>:<br>  &gt;`0,0,Walking left</eg></td>
+  </tr>
+  <tr>
+    <td>player.framesPerMove</td>
+    <td>The amount of frames it takes the player to move one position forward.<eg><br>&gt;`0,1,Player Movement: @player.framesPerMove@</eg></td>
+  </tr>
+  <tr>
+    <td>player.moveX<br>player.moveZ<br>player.moveAddX<br>player.moveAddZ</td>
+    <td>Information about the player's current movement. <eg>moveX</eg> and <eg>moveZ</eg> represent speed (steps per second) in units of 30 (the game runs at 30fps). <eg>moveAddX</eg> and <eg>moveAddZ</eg> track the accumulated movement bonus that results in a step when the added amount reaches 30.<eg><br>&gt;`0,1,MoveX=@player.moveX@<br>&gt;`0,2,MoveZ=@player.moveZ@<br>&gt;`0,3,MoveAddX=@player.moveAddX@<br>&gt;`0,4,MoveAddZ=@player.moveAddZ@</eg></td>
+  </tr>
+  <tr>
+    <td>player.name</td>
+    <td>The name chosen by the player.<eg><br>This example prints the player's name above their head:<br>var name<br>var x<br>name = player.name<br>x = string.Size(name) / -2<br>&gt;o@x@,-2,@name@</eg></td>
+  </tr>
+  <tr>
+    <td>player.GetNextLegendName()</td>
+    <td>The next unlocked Legend quest the player hasn't completed yet.</td>
+  </tr>
+  <tr>
+    <td>?rng</td>
+    <td>Returns a random integer between 0 and 9999.<eg><br>E.g.<br>?rng &lt; 5000<br>  &gt;Heads!<br>:<br>  &gt;Tails!<br><br>E.g.2: Generates a random integer between 5 and 24:<br>var min = 5<br>var max = 24<br>var n = min + rng % (max - min + 1)</eg></td>
+  </tr>
+  <tr>
+    <td>?rngf</td>
+    <td>Returns a random floating-point number between 0 and 1.<eg><br>E.g.<br>&gt;random float = @rngf@<br><br>E.g.2: Generates a random float between 5.0 and 24.0:<br>var min = 5.0<br>var max = 24.0<br>var n = min + (max - min) * rngf</eg></td>
+  </tr>
+  <tr>
+    <td>?screen.i</td>
+    <td>The screen's position in-game, as an index that increses when the player reaches the right-side and it slides over.<eg><br>E.g.<br>&gt;`0,0,Screen index = @screen.i@</eg></td>
+  </tr>
+  <tr>
+    <td>?screen.x</td>
+    <td>The screen's position in-game.<eg><br>E.g.<br>&gt;`0,0,Screen position X = @screen.x@</eg></td>
+  </tr>
+  <tr>
+    <td>?screen.w</td>
+    <td>The width of the screen's ASCII grid.<eg><br>E.g.<br>var sw = screen.w<br>&gt;Screen width = @sw@</eg></td>
+  </tr>
+  <tr>
+    <td>?screen.h</td>
+    <td>The height of the screen's ASCII grid.<eg><br>E.g.<br>var sh = screen.h<br>&gt;Screen height = @sh@</eg></td>
+  </tr>
+  <tr>
+    <td>?summon.count</td>
+    <td>The number of summoned allies currently in game.<eg><br>E.g.<br>?summon.count = 0 &amp;<br>^ item.CanActivate()<br>  equipL talisman<br>  activate L</eg></td>
+  </tr>
+  <tr>
+    <td>summon.GetId(index = 0)</td>
+    <td>Returns the ID of the summon at a given index. The index parameter is optional and defaults to zero (first summon). Returns null if no summons are at that index.<eg><br>E.g.<br>?summon.GetId() ! "cinderwisp" &amp;<br>^ item.CanActivate()<br>  equipR fire talisman<br>  activate R</eg></td>
+  </tr>
+  <tr>
+    <td>summon.GetName(index = 0)</td>
+    <td>Returns the localized name of the summon at a given index. The index parameter is optional and defaults to zero (first summon). Returns null if no summons are at that index.<eg><br>E.g.<br>&gt;`0,1,Summon:@summon.GetName()@</eg></td>
+  </tr>
+  <tr>
+    <td>summon.GetVar(varName,<br>index = 0)</td>
+    <td>Returns the value for a custom variable on a summon. Different types of summons expose different variables, based on their unique abilities. The index parameter is optional and defaults to zero (first summon). Returns null if no summons are at that index. Shows an error if <f>varName</f> does not correspond to a valid variable.<eg><br>E.g.<br>?summon.GetId() = cinderwisp &amp;<br>^summon.GetVar("ignition") &gt; 2<br>  activate cinderwisp</eg></td>
+  </tr>
+  <tr>
+    <td>summon.GetState(index = 0)</td>
+    <td>Returns a number representing the current state of a summon. The index parameter is optional and defaults to zero (first summon). Returns -1 if no summons are at that index.<eg><br>E.g.<br>&gt;`0,1,Summon state:@summon.GetState()@</eg></td>
+  </tr>
+  <tr>
+    <td>summon.GetTime(index = 0)</td>
+    <td>Returns the elapsed number of frames in the current state of a summon. The index parameter is optional and defaults to zero (first summon). Returns -1 if no summons are at that index.<eg><br>E.g.<br>&gt;`0,1,Summon time:@summon.GetTime()@</eg></td>
+  </tr>
+  <tr>
+    <td>?totalgp</td>
+    <td>The total "Gear Power" of your inventory, calculated from item star levels and enchantment bonuses.<eg><br>E.g.<br>&gt;My gear power = @totalgp@</eg></td>
+  </tr>
+  <tr>
+    <td>?time</td>
+    <td>The current frame number of the location.<eg><br>E.g.<br>?time % 300 = 0<br>  &gt;Every 10 seconds you'll see this message</eg></td>
+  </tr>
+  <tr>
+    <td>?totaltime</td>
+    <td>The current frame number of the location, accumulated in case of boss sub-location.<eg><br>E.g.<br>&gt;`0,0,Current time = @totaltime@ frames</eg></td>
+  </tr>
+  <tr>
+    <td>time.msbn</td>
+    <td>Unix time represents the number of milliseconds that have elapsed since<br>1970-01-01T00:00:00Z (January 1, 1970, at 12:00 AM UTC). It does not take leap seconds into account. Returns a BigNumber<eg><br>E.g.<br>&gt;@time.msbn@</eg></td>
+  </tr>
+  <tr>
+    <td>time.year, time.month, time.day, time.hour, time.minute, time.second</td>
+    <td>The local system time on the player's computer.<eg><br>E.g.<br>&gt;`0,0,@time.year@/@time.month@/@time.day@<br>^ @time.hour@:@time.minute@:@time.second@</eg></td>
+  </tr>
+  <tr>
+    <td>utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second</td>
+    <td>The current UTC time.<eg><br>E.g.<br>var utcZ = utc.year*356*12*24*30 +<br>^utc.month*12*24 + utc.day*24+utc.hour<br>var timeZ = time.year*356*12*24*30 +<br>^time.month*12*24 + time.day*24+time.hour<br>var timeZone = timeZ - utcZ<br>?timeZone &lt; 0<br>  &gt;`0,0,Time Zone: UTC@timeZone@<br>:<br>  &gt;`0,0,Time Zone: UTC+@timeZone@</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="commands"><div id="separator"><!---------------------------></div>
+
+·:·:· Commands ·:·:·
+<font color="#bbbbbb">
+These tell the game to do something.
+
+<table>
+  <tbody><tr>
+    <td>activate (ability)</td>
+    <td>Activates an item ability. (ability) can have these values: potion, P, left, L, right, R. Also works with ability IDs<eg><br>E.g.<br>activate R<br>(activates the ability of the item equipped on the right side, such as the Hatchet)</eg></td>
+  </tr>
+  <tr>
+    <td>brew (ingredients)</td>
+    <td>Refills the potion bottle to the specified combination of ingredients. Executes only at the beginning of a run, at time 0. Ingredients can be <eg>stone</eg>, <eg>wood</eg>, <eg>tar</eg> or <eg>bronze</eg> and should be separated by <eg>+</eg>. Ingredient names can be written in English or in the language selected in the settings.<eg><br>E.g.<br>?loc.begin<br>  brew bronze + tar</eg></td>
+  </tr>
+  <tr>
+    <td>equip  (str)</td>
+    <td>Equips an item. (str) has a limit of 7 criteria. Two-handed items must use this form of the equip command.<eg><br>E.g.<br>equip vigor crossbow *8 +5</eg></td>
+  </tr>
+  <tr>
+    <td>equipL (str)</td>
+    <td>Equips an item to the left hand that best fits the given criteria.<eg><br>E.g.<br>equipL poison d_sword</eg></td>
+  </tr>
+  <tr>
+    <td>equipR (str)</td>
+    <td>Equips an item to the right hand that best fits the given criteria.<eg><br>E.g.<br>equipR vigor shield</eg></td>
+  </tr>
+  <tr>
+    <td>equip @var@</td>
+    <td>Equips an item based on criteria from a string variable. Equip and other item search commands support subtractive criteria.<eg><br>E.g.<br>var weaponName = "poison sword *10 -big"<br>equipR @weaponName@</eg></td>
+  </tr>
+  <tr>
+    <td>loadout (n)</td>
+    <td>Equips a specific loadout number.<eg><br>E.g.<br>?loc = caves<br>  loadout 1<br>?loc = deadwood<br>  loadout 2</eg></td>
+  </tr>
+  <tr>
+    <td>&gt; (str)</td>
+    <td>Prints a string to the top of the screen.<eg><br>E.g.<br>&gt;Hello World!</eg></td>
+  </tr>
+  <tr>
+    <td>&gt; @varName@</td>
+    <td>Prints a string with the value of a variable inserted. Multiple variables can be inserted into a single print. To insert, surround the variable's name with @.<eg><br>The following example prints information about the currently targeted foe:<br>var foeInfo<br>foeInfo = foe<br>&gt;FOE = @foeInfo@</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;(abcd</td>
+    <td>Shows a custom facial expression on the player. Requires Big Head.<eg><br>E.g.<br>&gt;( OwO</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;oX,Y,[#rrggbb,](str)</td>
+    <td>Advanced print relative to the player's position. X and Y are the coordinate offsets. #rrggbb is the color of the text in <a href="https://htmlcolorcodes.com/" target="_blank">hexadecimal notation</a>. Color can also be set with these constants: #white, #cyan, #yellow, #green, #blue and #red. To print in rainbow use #rainFF where the last 2 characters define the brightness.<eg><br>The following example writes "Let's go!" in red font, relative to the player's position, 6 to the left and 3 down:<br>&gt;o-6,3,#red,Let's go!</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;hX,Y,[#rrggbb,](str)</td>
+    <td>Similar to "&gt;o", however, draws on the same layer as the Big Head. Ideal for accessories such as hats.<eg><br>The following draws a yellow hat on the player. Works best if Big Head is enabled:<br>&gt;h-2,-3,#yellow,ascii<br>##_<br>#| |<br>_|_|_<br>asciiend</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;`X,Y,[#rrggbb,](str)</td>
+    <td>Advanced print relative to the upper-left corner of the screen.<eg><br>The following prints "Hello World!", but uses variables for the coordinates and the color:<br>var posX = 10<br>var posY = 5<br>var color = rainE1<br>&gt;`@posX@,@posY@,#@color@,Hello World!</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;cX,Y,[#rrggbb,](str)</td>
+    <td>Advanced print relative to the center of the screen. Similar to "&gt;`". Note that in all these the color is optional.<eg><br>This example demonstrates how the color is optional and defaults to white:<br>&gt;c0,0,Hello World!</eg></td>
+  </tr>
+  <tr>
+    <td>&gt;fX,Y,[#rrggbb,](str)</td>
+    <td>Advanced print relative to the target foe's head position.<eg><br>The following draws a red crosshairs on the targeted foe:<br>&gt;f-2,0,#ff0000,ascii<br>##!<br>-#·#-<br>##¡<br>asciiend</eg></td>
+  </tr>
+  <tr>
+    <td>var (variable)</td>
+    <td>Declares a variable that can be used in math, logical and string operations. See the <a href="https://stonestoryrpg.com/stonescript/beta.html#variables">variables section</a> for details about their lifecycle and behavior, that may differ from other languages.<eg><br>E.g.<br>var message = Hello World!<br>&gt;@message@</eg></td>
+  </tr>
+  <tr>
+    <td>func (function)</td>
+    <td>Declares a <a href="https://stonestoryrpg.com/stonescript/beta.html#functions">function</a> that can be called later.<eg><br>E.g.<br>func Print(message)<br>  &gt;@message@<br><br>Print(Hello World!)</eg></td>
+  </tr>
+  <tr>
+    <td>for v = a..b</td>
+    <td>Creates a <a href="https://stonestoryrpg.com/stonescript/beta.html#loops">loop</a> that iterates a variable 'v' from value 'a' to value 'b'. Code that appears inside the loop's scope will run multiple times.<eg><br>E.g.<br>var a<br>a = 0<br>for i = 1..5<br>  a = a + i<br>&gt;a = @a@</eg></td>
+  </tr>
+  <tr>
+    <td>import (script)</td>
+    <td>Loads and executes a singular copy of an <a href="https://stonestoryrpg.com/stonescript/beta.html#import">external script</a>.<eg><br>This example imports the fishing mini-game located at<br>(save-file folder)/Stonescript/Fishing.txt<br><br>import Fishing</eg></td>
+  </tr>
+  <tr>
+    <td>new (script)</td>
+    <td>Loads and executes an <a href="https://stonestoryrpg.com/stonescript/beta.html#import">external script</a> similar to 'import'. However, objects loaded with 'new' are each an individual copy and their script body will only execute one time.<eg><br>This example creates and prints a vector object:<br>var v = new Components/Vector<br>v.Init(10, 5)<br>&gt;Vector = @v@</eg></td>
+  </tr>
+  <tr>
+    <td>disable abilities</td>
+    <td>Prevents activation of potion and weapon abilities. Also greys out the HUD buttons.</td>
+  </tr>
+  <tr>
+    <td>enable abilities</td>
+    <td>Restores activation of abilities that were disabled by a previous call to "disable abilities".</td>
+  </tr>
+  <tr>
+    <td>disable banner</td>
+    <td>Prevents rendering of the horizontal banner that appears with the location name at the beginning and end of a location.</td>
+  </tr>
+  <tr>
+    <td>enable banner</td>
+    <td>Restores rendering of the horizontal banner with location name.</td>
+  </tr>
+  <tr>
+    <td>disable hud (opts)</td>
+    <td>Hides and disables the gameplay user interface elements. Accepts optional parameters, specifying the set of elements to disable: p = player health and debuffs, f = foe health and debuffs, a = ability buttons, r = resources, b = banner, u = utility belt.<eg><br>E.g.<br>disable hud // Disables all hud elements<br>E.g.2<br>disable hud ru // Disables only resources (r) and utility belt (u)</eg></td>
+  </tr>
+  <tr>
+    <td>enable hud (opts)</td>
+    <td>Brings back the user interface elements hidden by previous "disable hud" commands. Accepts the same optional parameters as the disable command.</td>
+  </tr>
+  <tr>
+    <td>disable loadout input</td>
+    <td>Prevents weapon loadouts from being saved or recalled with input keys.</td>
+  </tr>
+  <tr>
+    <td>enable loadout input</td>
+    <td>Restores the saving or recalling of weapon loadouts by means of input keys.</td>
+  </tr>
+  <tr>
+    <td>disable loadout print</td>
+    <td>Hides the messages that appear when a loadout is recalled.</td>
+  </tr>
+  <tr>
+    <td>enable loadout print</td>
+    <td>Brings back the printing of loadout messages.</td>
+  </tr>
+  <tr>
+    <td>disable npcDialog</td>
+    <td>Hides and auto-skips NPC dialog bubbles.</td>
+  </tr>
+  <tr>
+    <td>enable npcDialog</td>
+    <td>Brings back NPC dialog bubbles.</td>
+  </tr>
+  <tr>
+    <td>disable pause</td>
+    <td>Hides the pause button user interface. Pause is still available with the [P] shortcut.</td>
+  </tr>
+  <tr>
+    <td>enable pause</td>
+    <td>Brings back the pause button hidden by a previous "disable pause" command.</td>
+  </tr>
+  <tr>
+    <td>disable player</td>
+    <td>Hides the player. Has no effect on combat, this is only cosmetic.</td>
+  </tr>
+  <tr>
+    <td>enable player</td>
+    <td>Brings back the player rendering if it was hidden by a previous "disable player" command.</td>
+  </tr>
+  <tr>
+    <td>play (sound) (pitch)</td>
+    <td>Plays a <a href="https://stonestoryrpg.com/stonescript/beta.html#sounds">sound effect</a> with an optional pitch value. The pitch default value is 100 with higher numbers increasing the pitch and smaller numbers lowering it.<eg><br>E.g.<br>?key = primary<br>  play buy<br>?key = up<br>  play buy 200<br><br>E.g.2:<br>var pitch<br>?time%30 = 0<br>  pitch = rng/100 + 50<br>  &gt;@pitch@<br>  play buy @pitch@</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="search-filters"><div id="separator"><!---------------------------></div>
+
+·:·:· Search Filters ·:·:·
+<font color="#bbbbbb">
+These are used when evaluating foes, locations and items.
+
+<eg><f>E.g.:
+?foe = insect | foe = poison
+  loadout 3</f></eg>
+
+poison
+vigor
+aether
+fire
+air
+ice
+arachnid
+serpent
+insect
+machine
+humanoid
+elemental
+boss
+phase1
+phase2
+phase3
+spawner
+flying
+slow
+ranged
+explode
+swarm
+unpushable
+undamageable
+magic_resist
+magic_vulnerability
+immune_to_stun
+immune_to_ranged
+immune_to_debuff_damage
+immune_to_physical
+*[number]  star level (location or item)
++[number]  enchantment bonus (item only)
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="comparisons"><div id="separator"><!---------------------------></div>
+
+·:·:· Comparisons ·:·:·
+<font color="#bbbbbb">
+<f>Used in conjunction with game state to make decisions</f>
+
+<table>
+  <tbody><tr>
+    <td style="min-width: 3em"> =</td>
+    <td>Compares values equal or string contains.<eg><br>E.g.<br>?hp = maxhp<br>  loadout 2</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> !</td>
+    <td>Compares values not equal or string does not contain.<eg><br>E.g.<br>?foe ! poison<br>  equipL sword</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> &amp;</td>
+    <td>Logical AND operator.<eg><br>E.g.<br>?loc=caves &amp; foe=boss</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> |</td>
+    <td>Logical OR operator. If '&amp;' and '|' are mixed in a single complex expression, all '&amp;' operate first.<eg><br>E.g.<br>?foe=slow | foe.count&gt;3<br>  activate potion</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> &gt;</td>
+    <td>Greater-than compare. Can be used with a location's difficulty, number of foes, health, etc.<eg><br>E.g.<br>?foe.count &gt; 10<br>  equip shiny bardiche</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> &lt;</td>
+    <td>Less-than compare.<eg><br>E.g.<br>?hp &lt; 6<br>  activate potion</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> &gt;=</td>
+    <td>Greater-than or equal compare. The combination of '&gt;' and '=' into a single comparison.<eg><br>The following two examples are equivalent:<br><br>?loc.stars &gt;= 6<br>  equipR vigor shield<br><br>?loc.stars &gt; 6 | loc.stars = 6<br>  equipR vigor shield</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> &lt;=</td>
+    <td>Less-than or equal compare. The combination of '&lt;' and '=' into a single comparison.<eg><br>E.g.<br>?hp &lt;= 6<br>  activate potion</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="variables"><div id="separator"><!---------------------------></div>
+
+·:·:· Variables ·:·:·
+<font color="#bbbbbb">
+Variables are a way of storing value to use later. Declare a new variable with the keyword 'var'.
+
+<eg>E.g.:
+var myVar = 10</eg>
+(myVar is the name of the variable, and it's initialized with value 10)
+
+<eg>myVar = myVar + 5</eg>
+(myVar now equals 15)
+
+<eg>var secondVar = 3
+myVar = myVar - secondVar</eg>
+(Many variables can be combined in math operations. myVar now equals 12)
+
+
+When a variable is declared it is initialized only once, the first time 'var' executes.
+
+<eg>E.g.:
+var i = 0
+i++
+&gt;i = @i@</eg>
+In this example, variable 'i' is declared and starts with value 0. During each frame of the run, the value of 'i' increases by 1 and then is printed to the screen.
+
+Variables only reset to their initial value if you leave a location and begin a new run manually. They do not reset when the Ouroboros loops or when the Mind Stone is opened then closed again.
+
+String variables can optionally be declared with quotes. This allows special symbols and trailing spaces.
+<eg>E.g.:
+var a = 10
+var b = 5
+var myVar = a + " x " + b + " = " + (a * b)
+&gt;@myVar@</eg>
+(This example also demonstrates how to join strings with the '+' operator)
+
+Variables in imported scripts are contained within those scripts and their names won't collide with variables or functions in other scripts.
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="math-operations"><div id="separator"><!---------------------------></div>
+
+·:·:· Math Operations ·:·:·
+<font color="#bbbbbb">
+<f>Operators modify numbers. Can be used in conjunction with variables or directly in game state expressions.</f>
+
+<table>
+  <tbody><tr>
+    <td style="min-width: 3em"> +</td>
+    <td>Adds two numbers or variables together.<eg><br>E.g.:<br>var a = 2 + 3<br>(a equals 5)</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> -</td>
+    <td>Subtracts two numbers or variables from each other.<eg><br>E.g.:<br>?hp &lt; maxhp - 5<br>  equip vigor sword dL</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> *</td>
+    <td>Multiplies two numbers or variables together.<eg><br>E.g.:<br>var a = 2<br>var b = 5<br>a = a * b<br>// a equals 10<br><br>E.g.2:<br>var a = 2 * 0.4<br>// a equals 0.8</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> /</td>
+    <td>Divides one number or variable by another. In the case of integers, the result is rounded down.<eg><br>E.g.:<br>var a = 8<br>a = a / 4<br>// a equals 2<br><br>E.g.2:<br>var a = 5.0<br>a = a / 2<br>// a equals 2.5</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> ++</td>
+    <td>Increments a variable.<eg><br>E.g.:<br>var a = 3<br>a++<br>// a equals 4</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> --</td>
+    <td>Decrements a variable.<eg><br>E.g.:<br>var a = 3<br>a--<br>// a equals 2</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> %</td>
+    <td>Modulo. Gives the remainder of dividing one number by another.<eg><br>E.g.:<br>var a = 5 % 4<br>(a equals 1)<br><br>E.g.2:<br>?time % 8 &lt; 4<br>  &gt; \O)<br>?time % 8 &gt; 3<br>  &gt; (O/<br>// this draws an animated emoji</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> ( )</td>
+    <td>Parenthesis can be used to prioritize operations.<eg><br>E.g.:<br>var a = 2 * (3 - 1)<br>// a equals 4</eg></td>
+  </tr>
+  <tr>
+    <td style="min-width: 3em"> !</td>
+    <td>Negation. Inverts the value when used in front of a boolean expression.<eg><br>E.g.:<br>? !ai.enabled<br>  &gt;The AI is not enabled.</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="functions"><div id="separator"><!---------------------------></div>
+
+·:·:· Functions ·:·:·
+<font color="#bbbbbb">
+Custom functions serve an important organizational purpose to scripts as they grow in complexity. They make scripts easier to read and reduce repetition. When a function is declared its contents are not executed immediately. Instead, lines of script inside a function execute when the function is called at a later point.
+
+This example creates a counter that increases by 1 each frame. When any custom input key is pressed, ResetCounter() is called and the counter value goes back to zero:
+<f><eg>
+var count = 0
+count++
+&gt;Counter = @count@
+
+func ResetCounter()
+  count = 0
+
+?key=begin
+  ResetCounter()
+</eg>
+Another aspect of functions is that they can return a value. In this example we declare a simple function that calculates the duration of the main location (non-boss area):
+<eg>
+func NonBossDuration()
+  return totalTime - time
+
+var duration
+duration = NonBossDuration()
+&gt;Time was: @duration@
+</eg>
+Functions also accept any number of arguments/parameters, making them even more powerful, with the ability to operate on arbitrary input. Here, we declare a utility function that generates a random number within a range, then we use it to generate random numbers between 5 and 10:
+<eg>
+func RandomRange(min, max)
+  ?min &gt;= max
+    return min
+  return min + rng % (max - min + 1)
+
+var randomValue
+randomValue = RandomRange(5, 10)
+&gt;RNG: @randomValue@
+</eg>
+The prefix 'this' can be used inside a funtion when referencing variables that belong to the outside script. Use of 'this' is optional, and script variables can be accessed by a function without the prefix. However, in the following example the variable 'a' appears both inside and outside of the function, so 'this.a' is used for differentiation:
+<eg>
+var a = 1
+func TestScope(a)
+  &gt;Script var = @this.a@, function var = @a@
+
+TestScope(3)
+</eg>
+When functions call other functions, or themselves, this creates an execution stack that can build in size until the application crashes. To safeguard computer resources Stonescript has a stack limit of 215 and will throw an error if the limit is exceeded.
+</f></font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="native-functions"><div id="separator"><!---------------------------></div>
+
+·:·:· Native Functions ·:·:·
+<font color="#bbbbbb">
+While scripts can define their own functions, Stonescript comes with a set of pre-defined/native functions that behave similar to commands, but differ in that they are more clearly grouped by subject, can accept parameters and sometimes return a value.
+
+<table>
+  <tbody><tr><td>ambient<br>‾‾‾‾‾‾‾</td></tr>
+  <tr>
+    <td>?ambient<br><eg>Return string</eg></td>
+    <td>Returns a comma-separated list of all active ambient audio IDs.<br><eg>E.g.<br>&gt;`0,0,Ambient Layers = @ambient@</eg></td>
+  </tr>
+  <tr>
+    <td>ambient.Add(str)<br><eg>No return value</eg></td>
+    <td>Adds a layer of ambient audio, with the given sound ID. Up to 4 layers. If a 5th layer is added, the oldest layer is removed.<br><eg>E.g.<br>?loc.begin<br>  ambient.Add(ambient_crypt)</eg></td>
+  </tr>
+  <tr>
+    <td>ambient.Stop()<br><eg>No return value</eg></td>
+    <td>Clears all ambient layers.<br><eg>E.g.<br>?time = 3<br>  ambient.Stop()<br>  ambient.Add(ambient_mines)</eg></td>
+  </tr>
+  <tr><td><br>BigNumber<br>‾‾‾‾‾‾‾‾‾</td><td><br>BigNumbers are a special type of object that provide a way to work with large integers that exceed 32 bits. While they can only hold positive and negative whole number values, their arithmetic and comparison operations work with floats as well as integers and other BigNumbers.</td></tr>
+  <tr>
+    <td>b.Add(num)<br>b.Add(BigNumber)<br><eg>Returns itself</eg></td>
+    <td>Adds a number to a BigNumber (+)<br><eg>E.g.<br>var bn = math.BigNumber(12)<br>bn.Add(5)<br>&gt;@bn@<br>// 17</eg></td>
+  </tr>
+  <tr>
+    <td>b.Sub(num)<br>b.Sub(BigNumber)<br><eg>Returns itself</eg></td>
+    <td>Subtracts a number from a BigNumber (-)<br><eg>E.g.<br>var bn = math.BigNumber(12)<br>bn.Sub(5)<br>&gt;@bn@<br>// 7</eg></td>
+  </tr>
+  <tr>
+    <td>b.Mul(num)<br>b.Mul(BigNumber)<br><eg>Returns itself</eg></td>
+    <td>Multiplies a BigNumber by a number (*)<br><eg>E.g.<br>var myBigNum1 = math.BigNumber(12)<br>var myBigNum2 = math.BigNumber(12)<br>myBigNum1.Mul(5)<br>myBigNum2.Mul(1.5)<br>&gt;@myBigNum1@ @myBigNum2@<br>// 60 18</eg></td>
+  </tr>
+  <tr>
+    <td>b.Div(num)<br>b.Div(BigNumber)<br><eg>Returns itself</eg></td>
+    <td>Divides a BigNumber by a number (/)<br><eg>E.g.<br>var myBigNum1 = math.BigNumber(12)<br>var myBigNum2 = math.BigNumber(12)<br>myBigNum1.Div(5)<br>myBigNum2.Div(1.5)<br>&gt;@myBigNum1@ @myBigNum2@<br>// 2 8</eg></td>
+  </tr>
+  <tr>
+    <td>b.Eq(num)<br>b.Eq(BigNumber)<br><eg>Returns bool</eg></td>
+    <td>Determines if a BigNumber is equal to a number (=)<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>&gt;@bn.Eq(5)@ @bn.Eq(3)@<br>// true false</eg></td>
+  </tr>
+  <tr>
+    <td>b.Gt(num)<br>b.Gt(BigNumber)<br><eg>Returns bool</eg></td>
+    <td>Determines if a BigNumber is greater than a number (&gt;)<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>&gt;@bn.Gt(3)@ @bn.Gt(10)@<br>// true false</eg></td>
+  </tr>
+  <tr>
+    <td>b.Ge(num)<br>b.Ge(BigNumber)<br><eg>Returns bool</eg></td>
+    <td>Determines if a BigNumber is greater than or equal to a number (&gt;=)<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>&gt;@bn.Ge(3)@ @bn.Ge(5)@<br>// true true</eg></td>
+  </tr>
+  <tr>
+    <td>b.Lt(num)<br>b.Lt(BigNumber)<br><eg>Returns bool</eg></td>
+    <td>Determines if a BigNumber is less than a number (&lt;)<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>&gt;@bn.Lt(3)@ @bn.Lt(10)@<br>// false true</eg></td>
+  </tr>
+  <tr>
+    <td>b.Le(num)<br>b.Le(BigNumber)<br><eg>Returns bool</eg></td>
+    <td>Determines if a BigNumber is less than or equal to a number (&lt;=)<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>&gt;@bn.Le(10)@ @bn.Le(5)@<br>// true true</eg></td>
+  </tr>
+  <tr>
+    <td>b.ToFloat()<br><eg>Returns float</eg></td>
+    <td>Converts a big number to float value. Throws error if the number is too large or too small.<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>var fNumber = bn.ToFloat()<br>&gt;float = @fNumber@</eg></td>
+  </tr>
+  <tr>
+    <td>b.ToInt()<br><eg>Returns int</eg></td>
+    <td>Converts a big number to integer value. Throws error if the number is too large or too small.<br><eg>E.g.<br>var bn = math.BigNumber(5)<br>var iNumber = bn.ToInt()<br>&gt;integer = @iNumber@</eg></td>
+  </tr>
+  <tr>
+    <td>b.ToString()<br><eg>Returns string</eg></td>
+    <td>Returns a string representation of the BigNumber. Can be used to serialize it for storage.<br><eg>E.g.<br>var myBigNum = math.BigNumber("123456789123456789")<br>storage.Set("myBN", myBigNum.ToString())<br>---<br>var bnStr = storage.Get("myBN")<br>var myBigNum = math.BigNumber(bnStr)</eg></td>
+  </tr>
+  <tr>
+    <td>b.ToUI()<br><eg>Returns string</eg></td>
+    <td>Returns a shortened string representation of the number for use in user interfaces.<br><eg>E.g.<br>var myBigNum = math.BigNumber("123456789123456789")<br>&gt;@myBigNum.ToUI()@<br>// 123.5Qa</eg></td>
+  </tr>
+  <tr><td><br>color<br>‾‾‾‾‾</td><td><br>Colors in Stonescript are represented with a string in <a href="https://htmlcolorcodes.com/" target="_blank">hexadecimal notation</a>, such as <eg>#ff0000</eg> or with simplified presets such as <eg>#red</eg>.</td></tr>
+  <tr>
+    <td>color.FromRGB(r,g,b)<br><eg>Returns string</eg></td>
+    <td>Converts a color from three integer numbers (0 to 255) into a string.<br><eg>E.g.<br>var c = color.FromRGB(255, 0, 128)<br>&gt;`0,0,@c@, @c@</eg></td>
+  </tr>
+  <tr>
+    <td>color.ToRGB(string)<br><eg>Returns int[3]</eg></td>
+    <td>Converts a color from string to three integer numbers (0 to 255).<br><eg>E.g.<br>var c = color.Random()<br>var rgb = color.ToRGB(c)<br>var r = rgb［0］<br>var g = rgb［1］<br>var b = rgb［2］<br>&gt;`0,0,@c@, @c@ \n @r@ \n @g@ \n @b@</eg></td>
+  </tr>
+  <tr>
+    <td>color.Lerp(c1,c2,t)<br><eg>Returns string</eg></td>
+    <td>Interpolates linearly from color <eg>c1</eg> to color <eg>c2</eg> at time (percentage) <eg>t</eg>.<br><eg>E.g.<br>var c1 = "#ff4400"<br>var c2 = "#8888ff"<br>var t = 0.5<br>var c<br>t = math.sin(time*0.1) / 2 + 0.5<br>c = color.Lerp(c1, c2, t)<br>&gt;`0,1,@c@,@c@\n ██████</eg></td>
+  </tr>
+  <tr>
+    <td>color.Random()<br><eg>Returns string</eg></td>
+    <td>Returns a random color.<br><eg>E.g.<br>var c<br>c = color.Random()<br>&gt;`0,0,@c@,@c@\n ██████</eg></td>
+  </tr>
+  <tr><td>draw<br>‾‾‾‾</td></tr>
+  <tr>
+    <td>draw.Bg(x, y, color)<br><eg>No return value</eg></td>
+    <td>Sets the background color at a specific screen position.<br><eg>E.g.<br>draw.Bg(5, 4, #red)</eg></td>
+  </tr>
+  <tr>
+    <td>draw.Bg(x, y, color, w, h)<br><eg>No return value</eg></td>
+    <td>Sets the background color of a rectangular region on screen.<br><eg>E.g.<br>draw.Bg(5, 4, #cyan, 10, 6)</eg></td>
+  </tr>
+  <tr>
+    <td>draw.Box(x, y, w, h, color, style)<br><eg>No return value</eg></td>
+    <td>Draws a rectangular shape at the specified position and size. The rectangle's border is defined by color and a style number. Negative style numbers cause the center of the rectangle to be transparent. CAVEAT - At this time, advanced prints always draw on top of boxes.<br><eg>Use this example to explore the different styles by pressing Left/Right<br>var style = 1<br>?key = leftBegin<br>  style--<br>?key = rightBegin<br>  style++<br>draw.Box(10, 5, 30, 15, #333333, style)<br>&gt;`12,6,#ffffff,Style = @style@<br>&gt;`12,8,#888888,Press Left/Right\nto change style</eg></td>
+  </tr>
+  <tr>
+    <td>draw.Clear()<br><eg>No return value</eg></td>
+    <td>Clears the entire screen.</td>
+  </tr>
+  <tr>
+    <td>draw.GetSymbol(x, y)<br><eg>Returns string</eg></td>
+    <td>Returns the glyph at screen position (x, y).<br><eg>This example selects a screen coordinate and draws the symbol found there in the top left. The selection [ ] can be moved by the player:<br>var s<br>var x = 20<br>var y = 10<br>var drawX<br>?key=leftBegin<br>  x--<br>?key=rightBegin<br>  x++<br>?key=upBegin<br>  y--<br>?key=downBegin<br>  y++<br>s = draw.GetSymbol(x, y)<br>&gt;`0,1,Symbol = @s@<br>drawX = x - 1<br>&gt;`@drawX@,@y@,[#］<br></eg></td>
+  </tr>
+  <tr>
+    <td>draw.Player()<br>draw.Player(x,y)<br><eg>No return value</eg></td>
+    <td>Draws the player character, with all equipment and addons, at a specific point in the script. Optional offset values x, y. For drawing to an absolute screen position, see the <eg>screen</eg> namespace and derive offsets that convert from the player's local position to screen position.</td>
+  </tr>
+  <tr><td><br>int<br>‾‾‾</td></tr>
+  <tr>
+    <td>int.Parse(str)<br><eg>Returns integer</eg></td>
+    <td>Converts a string of a number into an integer value. If the given string is not a number an error is thrown.<br><eg>E.g.<br>var s = "999"<br>var i = int.Parse(s)<br>i++</eg></td>
+  </tr>
+  <tr>
+    <td>event.GetObjectiveId(int)<br><eg>Returns string</eg><br><br>event.GetObjectiveProgress<br>(int)<br>event.GetObjectiveGoal(int)<br><eg>Returns int</eg></td>
+    <td>Returns information about active objectives in a community or seasonal event. Pass the index of the desired objective. Events are usually limited to a maximum of 3 active objectives, therefore the first parameter would be 0, 1 or 2.<br><eg>E.g.<br>var id<br>var p<br>var g<br>id = event.GetObjectiveId(0)<br>p = event.GetObjectiveProgress(0)<br>g = event.GetObjectiveGoal(0)<br>&gt;`0,1,@id@:@p@/@g@</eg></td>
+  </tr>
+  <tr><td>item<br>‾‾‾‾</td></tr>
+  <tr>
+    <td>item.CanActivate()<br><eg>Returns boolean</eg></td>
+    <td>Returns true if it's possible to activate item abilities. False otherwise. In some gameplay situations all ability activations are disabled, even if they are not on cooldown, such as moments before a boss fight or during a cinematic.<br><eg>E.g.<br>?item.CanActivate()<br>  equip Bardiche<br>  activate R</eg></td>
+  </tr>
+  <tr>
+    <td>item.CanActivate(str)<br><eg>Returns boolean</eg></td>
+    <td>Returns true if it's possible to activate a specific item. Will only ever be true if the item is equipped. Some items can have mechanics that don't allow them to be activated unless specific criteria are met. This is a sub-set of item.GetCooldown(), as an item's cooldown may be zero and it cannot be activated, but it will never be possible to activate an item that is on cooldown.<br><eg>E.g.<br>equip bardiche<br>?item.GetCooldown("skeleton_arm") &lt;= 0<br>  equip skeleton arm<br>  ?item.CanActivate("skeleton_arm")<br>    activate R</eg></td>
+  </tr>
+  <tr>
+    <td>item.GetCooldown(str)<br><eg>Returns integer</eg></td>
+    <td>Returns the remaining cooldown time (in frames) for a given ability.<br>See <a href="https://stonestoryrpg.com/stonescript/beta.html#ability_ids">Appendix A</a> for all available ability strings. NOTE: Invalid ability strings will return -1. Some abilities from weapons that have not been used yet will return -1.<br><eg>E.g.<br>?foe = boss &amp; item.GetCooldown("bardiche") &lt;= 0<br>  equip bardiche<br>  activate R</eg>
+  </td></tr>
+  <tr>
+    <td>item.GetCount(str)<br><eg>Returns integer</eg></td>
+    <td>Returns the number of copies of an item in the inventory. Returns 0 if no item is found.<br><eg>E.g.<br>var searchCriteria = "sword *0 -big -socket"<br>var swordCount = item.GetCount(searchCriteria)<br>&gt;I have @swordCount@ basic swords
+  </eg></td></tr>
+  <tr>
+    <td>item.GetLoadoutL(int)<br>item.GetLoadoutR(int)<br><eg>Returns string</eg></td>
+    <td>Returns the items in a specific loadout. The integer parameter is the loadout number to query. Returns a blank string if that loadout has no item in that slot.<br><eg>E.g.<br>&gt;`0,1,Left: @item.GetLoadoutL(1)@<br>&gt;`0,2,Right: @item.GetLoadoutR(1)@
+  </eg></td></tr>
+  <tr>
+    <td>item.GetTreasureCount()<br><eg>Returns integer</eg></td>
+    <td>Returns the current number of treasure chests in your inventory.
+  </td></tr>
+  <tr>
+    <td>item.GetTreasureLimit()<br><eg>Returns integer</eg></td>
+    <td>Returns the total space for treasure chests in your inventory. In other words, the maximum capacity.<br><eg>E.g.<br>var trs<br>var max<br>trs = item.GetTreasureCount()<br>max = item.GetTreasureLimit()<br>&gt;`0,2,Treasures: @trs@/@max@
+  </eg></td></tr>
+  <tr><td>key<br>‾‾‾</td><td><br>The key namespace allows for the customization of standard game inputs and shortcuts. This system is based on <eg>actions (abbreviated "act")</eg> and <eg>keys</eg>, where each action corresponds to a type of input/shortcut and each key corresponds to a physical key press. The list of all possible keys that can be assigned to actions can be found <a href="https://docs.unity3d.com/ScriptReference/KeyCode.html" target="_Blank">here</a>. Changes to action bindings persist between runs (they currently do not save to storage). For optimization purposes, it is recommended to not change bindings every frame.<br>
+<table>
+  <tbody><tr>
+    <td>Action<br>------</td>
+    <td>Default Key<br>-----------</td>
+    <td>Default Key 2<br>-------------</td>
+    <td><br></td>
+  </tr>
+  <tr>
+    <td>Pause</td>
+    <td>P</td>
+    <td>Space</td>
+  </tr>
+  <tr>
+    <td>Leave</td>
+    <td>L</td>
+  </tr>
+  <tr>
+    <td>Inventory</td>
+    <td>I</td>
+  </tr>
+  <tr>
+    <td>Mindstone</td>
+    <td>M</td>
+  </tr>
+  <tr><td></td></tr>
+  <tr>
+    <td>Potion</td>
+    <td>Q</td>
+  </tr>
+  <tr>
+    <td>ItemLeft</td>
+    <td>E</td>
+  </tr>
+  <tr>
+    <td>ItemRight</td>
+    <td>R</td>
+  </tr>
+  <tr><td></td></tr>
+  <tr>
+    <td>Up</td>
+    <td>W</td>
+    <td>UpArrow</td>
+  </tr>
+  <tr>
+    <td>Down</td>
+    <td>S</td>
+    <td>DownArrow</td>
+  </tr>
+  <tr>
+    <td>Left</td>
+    <td>A</td>
+    <td>LeftArrow</td>
+  </tr>
+  <tr>
+    <td>Right</td>
+    <td>D</td>
+    <td>RightArrow</td>
+  </tr>
+  <tr><td></td></tr>
+  <tr>
+    <td>Primary</td>
+    <td>Return</td>
+    <td>KeypadEnter</td>
+  </tr>
+  <tr>
+    <td>Back</td>
+    <td>X</td>
+  </tr>
+  <tr>
+    <td>Ability1</td>
+    <td>LeftShift</td>
+    <td>RightShift</td>
+  </tr>
+  <tr>
+    <td>Ability2</td>
+    <td>LeftControl</td>
+    <td>RightControl</td>
+  </tr>
+  <tr>
+    <td>BumpL</td>
+    <td>Z</td>
+  </tr>
+  <tr>
+    <td>BumpR</td>
+    <td>C</td>
+  </tr>
+  <tr><td></td></tr>
+  <tr>
+    <td>Dynamic1</td>
+    <td>F</td>
+  </tr>
+  <tr>
+    <td>Dynamic2</td>
+    <td>T</td>
+  </tr>
+  <tr>
+    <td>Dynamic3</td>
+    <td>G</td>
+  </tr>
+  <tr>
+    <td>Dynamic4</td>
+    <td>V</td>
+  </tr>
+  <tr>
+    <td>Dynamic5</td>
+    <td>B</td>
+  </tr>
+</tbody></table></td>
+  </tr><tr>
+    <td>key.Bind(act, key1)<br>key.Bind(act, key1, key2)<br><eg>No return value</eg></td>
+    <td>Assigns a new set of keys to a specific action. If another action already has one of those keys, then the key already in use is abandoned for the original action. Up to two keys may be assigned to an action.<br><eg>E.g.<br>?loc.begin<br>  key.Bind("Potion", "P")<br>  // In this example, the "P" key that originally is assigned to Pause, no longer pauses the game and activates the potion instead. Also, the Potion's original "Q" key no longer works. "Q" is bound to no action.</eg></td>
+  </tr>
+  <tr>
+    <td>key.GetKeyAct(key)<br><eg>Returns string</eg></td>
+    <td>Returns the action bound to a given key. Returns "None" if the given key is not bound to any actions.</td>
+  </tr>
+  <tr>
+    <td>key.GetActKey(act)<br><eg>Returns string</eg></td>
+    <td>Returns the first key bound to a given action. Returns "None" if the given action has no keys bound to it.</td>
+  </tr>
+  <tr>
+    <td>key.GetActKey2(act)<br><eg>Returns string</eg></td>
+    <td>Returns the second key bound to a given action. Returns "None" if the given action does not have a secondary key bound to it.</td>
+  </tr>
+  <tr>
+    <td>key.GetActLabel(act)<br><eg>Returns string</eg></td>
+    <td>Returns a user-facing label that represents the first key bound to a given action. The current implementation returns the first letter of the bound key, which can be confusing in cases such as "LeftShift".</td>
+  </tr>
+  <tr>
+    <td>key.ResetBinds()<br><eg>no return value</eg></td>
+    <td>Resets all actions to their default key bindings.</td>
+  </tr>
+  <tr><td><br>loc<br>‾‾‾</td></tr>
+  <tr>
+    <td>loc.Leave()<br><eg>No return value</eg></td>
+    <td>Causes the run to be abandoned as if the player had pressed to leave manually.</td>
+  </tr>
+  <tr>
+    <td>loc.Pause()<br><eg>No return value</eg></td>
+    <td>Causes the run to be paused as if the player had pressed the pause button manually.</td>
+  </tr>
+  <tr><td><br>math<br>‾‾‾‾</td><td><br>The math API works with both integers and floating-point (float) numbers. When a number is delcared with a decimal period, it's implied to be a float <eg>(e.g. var a = 0.5)</eg>. If there is no decimal number, then it's treated as an integer <eg>(e.g. var a = 2)</eg>.</td></tr>
+  <tr>
+    <td>math.Abs(num)<br><eg>Returns number</eg></td>
+    <td>Returns the absolute value of a given number.<br><eg>E.g.<br>var number = -2<br>number = math.Abs(number)<br>// number now equals 2</eg></td>
+  </tr>
+  <tr>
+    <td>math.Acos(num)<br><eg>Returns number</eg></td>
+    <td>Returns the arc-cosine of a number, in radians. The input bounds are -1 to 1. If the input value is out of bounds then "NaN" is returned.<br><eg>E.g.<br>var number = math.Acos(-1)<br>// number equals π</eg></td>
+  </tr>
+  <tr>
+    <td>math.Asin(num)<br><eg>Returns number</eg></td>
+    <td>Returns the arc-sine of a number, in radians. The input bounds are -1 to 1. If the input value is out of bounds then "NaN" is returned.<br><eg>E.g.<br>var number = math.Asin(1)<br>// number equals π/2</eg></td>
+  </tr>
+  <tr>
+    <td>math.Atan(num)<br><eg>Returns number</eg></td>
+    <td>Returns the arc-tangent of a number, in radians.<br><eg>E.g.<br>var number = math.Atan(2)<br>// number equals 1.107149</eg></td>
+  </tr>
+  <tr>
+    <td>math.Atan2(y, x)<br><eg>Returns number</eg></td>
+    <td>Returns the angle, in radians, between the x-axis and the line from the origin to the point (x,y)<br><eg>E.g.<br>var number = math.Atan2(3, 2)<br>// number equals 0.9827937</eg></td>
+  </tr>
+  <tr>
+    <td>math.BigNumber()<br>math.BigNumber(number)<br>math.BigNumber(str)<br><eg>Returns BigNumber</eg></td>
+    <td>Creates a new BigNumber object from a float or int, or parses a string into a BigNumber object.<br><eg>E.g.<br>var myBigNum = math.BigNumber("500")<br>myBigNum.Add(500).Mul(1000).Mul(1000).Mul(1000)<br>&gt;@myBigNum@<br>// 1000000000000</eg></td>
+  </tr>
+  <tr>
+    <td>math.Ceil(num)<br><eg>Returns number</eg></td>
+    <td>Rounds a number up, to the first whole number greater than it.<br><eg>E.g.<br>var number = math.Ceil(4.2)<br>// number equals 5.0</eg></td>
+  </tr>
+  <tr>
+    <td>math.CeilToInt(num)<br><eg>Returns integer</eg></td>
+    <td>Rounds a number up, to the first integer greater than it.<br><eg>E.g.<br>var number = math.CeilToInt(4.2)<br>// number equals 5</eg></td>
+  </tr>
+  <tr>
+    <td>math.Clamp(num, min, max)<br><eg>Returns number</eg></td>
+    <td>Constrains a number to within the range 'min' and 'max'. If the number is already within the range then it will be returned without change.<br><eg>E.g.<br>var number = 50<br>number = math.Clamp(number, 0, 10)<br>// number has been clamped down and will equal 10</eg></td>
+  </tr>
+  <tr>
+    <td>math.Cos(num)<br><eg>Returns number</eg></td>
+    <td>Returns the cosine of a given radian angle.<br><eg>E.g.<br>var number = math.Cos(0)<br>// number equals 1</eg></td>
+  </tr>
+  <tr>
+    <td>math.e<br><eg>float</eg></td>
+    <td>The constant <eg>e</eg>, also known as Euler's number, approximately 2.71828<br><eg>E.g.<br>&gt;E = @math.e@<br>// prints the value of e to the screen</eg></td>
+  </tr>
+  <tr>
+    <td>math.Exp(num)<br><eg>Returns number</eg></td>
+    <td>Returns <eg>e</eg> raised to a given power.<br><eg>E.g.<br>var number = math.Exp(3)<br>// number equals 20.08554</eg></td>
+  </tr>
+  <tr>
+    <td>math.Floor(num)<br><eg>Returns number</eg></td>
+    <td>Rounds a number down, to the first whole number smaller than it.<br><eg>E.g.<br>var number = math.Floor(2.7)<br>// number equals 2.0</eg></td>
+  </tr>
+  <tr>
+    <td>math.FloorToInt(num)<br><eg>Returns integer</eg></td>
+    <td>Rounds a number down, to the first integer smaller than it.<br><eg>E.g.<br>var number = math.FloorToInt(2.7)<br>// number equals 2</eg></td>
+  </tr>
+  <tr>
+    <td>math.Lerp(a, b, t)<br><eg>Returns number</eg></td>
+    <td>Performs a linear interpolation, from value <eg>a</eg> to <eg>b</eg> at time (percentage) <eg>t</eg>.<br><eg>E.g.<br>var number = math.Lerp(0.0, 20.0, 0.75)<br>// number equals 15.0<br><br>E.g.2:<br>var n = 0.0<br>?key = Begin<br>  n = 0.0<br>n = math.Lerp(n, 100, 0.02)<br>&gt;n = @n@<br>// Variable n eases towards 100, at 2% per frame. When a key is pressed it resets</eg></td>
+  </tr>
+  <tr>
+    <td>math.Log(num, base)<br><eg>Returns number</eg></td>
+    <td>Returns the logarithm of a number at a given base.<br><eg>E.g.<br>var number = math.Log(5, 2)<br>// number equals 2.321928</eg></td>
+  </tr>
+  <tr>
+    <td>math.Max(num1, num2)<br><eg>Returns number</eg></td>
+    <td>Returns the largest of the two numbers.<br><eg>E.g.<br>var number = math.Max(3, 10)<br>// number equals 10</eg></td>
+  </tr>
+  <tr>
+    <td>math.Min(num1, num2)<br><eg>Returns number</eg></td>
+    <td>Returns the smallest of the two numbers.<br><eg>E.g.<br>var number = math.Min(3, 10)<br>// number equals 3</eg></td>
+  </tr>
+  <tr>
+    <td>math.pi<br><eg>float</eg></td>
+    <td>The constant π, approximately 3.1415926<br><eg>E.g.<br>&gt;PI = @math.pi@<br>// prints the value of π to the screen</eg></td>
+  </tr>
+  <tr>
+    <td>math.Pow(num, p)<br><eg>Returns number</eg></td>
+    <td>Returns the number raised to a power.<br><eg>E.g.<br>var number = math.Pow(3, 2)<br>// number equals 9</eg></td>
+  </tr>
+  <tr>
+    <td>math.Round(num)<br><eg>Returns number</eg></td>
+    <td>Rounds a number to the nearest whole number.<br><eg>E.g.<br>var number = math.Round(2.7)<br>// number equals 3.0</eg></td>
+  </tr>
+  <tr>
+    <td>math.RoundToInt(num)<br><eg>Returns integer</eg></td>
+    <td>Rounds a number to the nearest whole integer.<br><eg>E.g.<br>var number = math.RoundToInt(2.7)<br>// number equals 3</eg></td>
+  </tr>
+  <tr>
+    <td>math.Sign(num)<br><eg>Returns number</eg></td>
+    <td>Returns -1 if the given number is negative. Otherwise, returns 1.<br><eg>E.g.<br>var sign = math.Sign(-21)<br>var n = 10 * sign<br>// n equals -10</eg></td>
+  </tr>
+  <tr>
+    <td>math.Sin(num)<br><eg>Returns number</eg></td>
+    <td>Returns the sine of a given radian angle.<br><eg>E.g.<br>var number = math.Sin(math.pi / 2)<br>// number equals 1</eg></td>
+  </tr>
+  <tr>
+    <td>math.Sqrt(num)<br><eg>Returns number</eg></td>
+    <td>Returns the square root of a number.<br><eg>E.g.<br>var number = math.Sqrt(9)<br>// number equals 3</eg></td>
+  </tr>
+  <tr>
+    <td>math.Tan(num)<br><eg>Returns number</eg></td>
+    <td>Returns the tangent of a given radian angle.<br><eg>E.g.<br>var number = math.Tan(2)<br>// number equals -2.18504</eg></td>
+  </tr>
+  <tr>
+    <td>math.ToDeg(num)<br><eg>Returns number</eg></td>
+    <td>Converts a radian number to degrees.<br><eg>E.g.<br>var number = math.ToDeg(2 * math.pi)<br>// number equals 360</eg></td>
+  </tr>
+  <tr>
+    <td>math.ToRad(num)<br><eg>Returns number</eg></td>
+    <td>Converts a degrees number to radians.<br><eg>E.g.<br>var number = math.ToRad(360)<br>// number equals 2π</eg></td>
+  </tr>
+  <tr><td></td></tr>
+  <tr><td>music<br>‾‾‾‾‾</td></tr>
+  <tr>
+    <td>?music<br><eg>Return string</eg></td>
+    <td>Returns the ID of the currently playing music.<br><eg>E.g.<br>&gt;`0,0,Current Music = @music@</eg></td>
+  </tr>
+  <tr>
+    <td>music.Play(str)<br><eg>No return value</eg></td>
+    <td>Plays a music, with the given sound ID. There can only be one music playing at a time.<br><eg>E.g.<br>?loc.begin | loc.loop<br>  music.Play(temple_0)</eg></td>
+  </tr>
+  <tr>
+    <td>music.Stop()<br><eg>No return value</eg></td>
+    <td>Stops all music.<br><eg>E.g.<br>?!string.Equals(music, "")<br>  music.Stop()</eg></td>
+  </tr>
+  <tr><td></td></tr>
+  <tr><td>player<br>‾‾‾‾‾‾</td></tr>
+  <tr>
+    <td>player.ShowScaredFace(num)<br><eg>No return value</eg></td>
+    <td>If the player has big-head enabled, their facial expression will change to scared for a given amount of time.<eg><br>E.g.<br>?key = primaryBegin<br>  player.ShowScaredFace(1)</eg></td>
+  </tr>
+  <tr><td></td></tr>
+  <tr><td>screen<br>‾‾‾‾‾‾</td></tr>
+  <tr>
+    <td>screen.FromWorldX(int)<br><eg>Returns integer</eg></td>
+    <td>Converts a value on the X-axis from world-space to screen-space.</td>
+  </tr>
+  <tr>
+    <td>screen.FromWorldZ(int)<br><eg>Returns integer</eg></td>
+    <td>Converts a value from the world-space Z-axis to screen-space Y-axis.<eg><br>E.g.<br>var x<br>var y<br>x = screen.FromWorldX(pos.x)<br>y = screen.FromWorldZ(pos.z - pos.y)<br>&gt;`0,1,Player position on screen: @x@,@y@</eg></td>
+  </tr>
+  <tr>
+    <td>screen.ToWorldX(int)<br><eg>Returns integer</eg></td>
+    <td>Converts a value on the X-axis from screen-space to world-space.</td>
+  </tr>
+  <tr>
+    <td>screen.ToWorldZ(int)<br><eg>Returns integer</eg></td>
+    <td>Converts a value from the screen-space Y-axis to world-space Z-axis.<eg><br>E.g.<br>var x<br>var y<br>var z<br>x = input.x<br>y = input.y<br>&gt;`0,1,Screen position of cursor: @x@,@y@<br><br>x = screen.ToWorldX(input.x)<br>z = screen.ToWorldZ(input.y)<br>&gt;`0,2,World position of cursor: @x@,@z@</eg></td>
+  </tr>
+  <tr>
+    <td>screen.Next()<br><eg>No return value</eg></td>
+    <td>For locations that are multi-screen, moves the camera one screen forward in relation to the player.<eg><br>E.g.<br>?key = rightBegin<br>  screen.Next()</eg></td>
+  </tr>
+  <tr>
+    <td>screen.Previous()<br><eg>No return value</eg></td>
+    <td>For locations that are multi-screen, moves the camera one screen back in relation to the player.<eg><br>E.g.<br>?key = leftBegin<br>  screen.Previous()</eg></td>
+  </tr>
+  <tr>
+    <td>screen.ResetOffset()<br><eg>No return value</eg></td>
+    <td>Resets the camera to follow the player, undoing changes made by screen.Next() and screen.Previous()<eg><br>E.g.<br>var lastScreenI = -1<br>?lastScreenI ! screen.i<br>  screen.ResetOffset()<br>lastScreenI = screen.i</eg></td>
+  </tr>
+  <tr><td>storage<br>‾‾‾‾‾‾‾</td><td>Values saved into permanent storage persist when you leave a location, as well as when the game is shut down. They are not part of your primary_save, existing instead in a series of separate files within the Stonescript folder. Imported scripts access storage in isolation from each other, allowing different modules to use the same keys without modifying each other's data.</td></tr>
+  <tr>
+    <td>storage.Delete(string)<br><eg>No return value</eg></td>
+    <td>Deletes any value that may exist at the specified key.<br><eg>E.g.<br>storage.Delete("highscore")</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Get(string)<br><eg>Returns value</eg></td>
+    <td>Retrieves a permanent value stored at the specified key.<br><eg>E.g.<br>var value = storage.Get("highscore")<br>?value<br>  &gt;High Score = @value@<br>:<br>  &gt;No High Score found.</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Get(string, value)<br><eg>Returns value</eg></td>
+    <td>Retrieves a permanent value stored at the specified key. If it's not found, returns the second parameter as a default value.<br><eg>E.g.<br>var value = storage.Get("highscore", 0)<br>&gt;High Score = @value@</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Has(string)<br><eg>Returns boolean</eg></td>
+    <td>Returns <eg>true</eg> if the specified key exists in permanent storage; <eg>false</eg> otherwise.<br><eg>E.g.<br>?storage.Has("highscore")<br>  var value = storage.Get("highscore")<br>  &gt;High Score = @value@<br>:<br>  &gt;No High Score found.</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Incr(string)<br><eg>Returns integer</eg></td>
+    <td>Increases by 1 the value stored at the specified key, then returns the new value.<br><eg>E.g.<br>?gameOver<br>  storage.Incr("stat_TimesPlayed")</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Keys()<br><eg>Returns array</eg></td>
+    <td>Retrieves an array of strings containing all the storage keys available in the current context.<br><eg>E.g.<br>var a<br>?time % 30 = 0<br>  a = storage.Keys()<br>  for i = 0 .. a.Count()-1<br>    &gt;Key @i@ = @a[i]@</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Incr(string, integer)<br><eg>Returns integer</eg></td>
+    <td>Increases the value stored at the specified key by a given amount, then returns the new value.<br><eg>E.g.<br>var amount<br>?foundCoins<br>  amount = rng%5 + 5<br>  storage.Incr("coins", amount)</eg></td>
+  </tr>
+  <tr>
+    <td>storage.Set(string, value)<br><eg>No return value</eg></td>
+    <td>Saves a value to permanent storage at a specified key.<br><eg>E.g.<br>var score = 1000<br>storage.Set("highscore", score)</eg></td>
+  </tr>
+  <tr><td>string<br>‾‾‾‾‾‾</td></tr>
+  <tr>
+    <td>string.Break(string, integer)<br><eg>Returns array</eg></td>
+    <td>Breaks a string into multiple strings, given a max width.<eg><br>E.g.<br>var s = "The brown fox jumps over the lazy dog"<br>var a = string.Break(s, 14)<br>for i = 0 .. a.Count()-1<br>  &gt;`0,@i@,@a[i]@</eg></td>
+  </tr>
+  <tr>
+    <td>string.Capitalize(str)<br><eg>Returns string</eg></td>
+    <td>Changes the first letter of a string to be upper-case.<eg><br>E.g.<br>var a = "foo"<br>a = string.Capitalize(a)<br>&gt;@a@<br>(Prints "Foo")</eg></td>
+  </tr>
+  <tr>
+    <td>string.Equals(str1, str2)<br><eg>Returns boolean</eg></td>
+    <td>Takes two string parameters and returns true if they are exactly the same. Returns false otherwise. Case sensitive.<eg><br>E.g.<br>var a = "foo"<br>?string.Equals(a, "foo")<br>  &gt;The strings are equal<br>:<br>  &gt;They are NOT equal<br>// The strings are equal in this case. string.Equals() evaluates to true</eg></td>
+  </tr>
+  <tr>
+    <td>string.Format(str1, ...)<br><eg>Returns string</eg></td>
+    <td>Modifies a string by replacing format-templates with the values of the other parameters, then returns the final composed string. This is a powerful function that supports lots of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.string.format?view=net-5.0" target="_Blank">formatting options</a>.<eg><br>E.g.<br>var str = "My name is {0} and I have {1} power!"<br>var result = string.Format(<br>^  str,<br>^  player.name,<br>^  totalgp<br>^)<br>&gt;@result@</eg></td>
+  </tr>
+  <tr>
+    <td>string.IndexOf(str, criteria)<br><eg>Returns integer</eg></td>
+    <td>Takes a string variable and a string criteria as parameters and finds the position of the criteria inside the string. Returns -1 if not found.<eg><br>E.g.<br>var a = Hello World!<br>var index = string.IndexOf(a, llo)<br>// index equals 2</eg></td>
+  </tr>
+  <tr>
+    <td>string.IndexOf(str, criteria, startAt)<br><eg>Returns integer</eg></td>
+    <td>Takes a string variable, a string criteria and a starting index as parameters. Finds the position of the criteria inside the string, but begins the search at 'startAt'. Returns -1 if not found.<eg><br>E.g.<br>var a = Hello World!<br>var index = string.IndexOf(a, llo, 4)<br>// index equals -1 because the search began at position 4<br>// therefore 'llo' was not found</eg></td>
+  </tr>
+  <tr>
+    <td>string.Join(s, [])<br>string.Join(s, [], int)<br>string.Join(s, [], int,int)<br><eg>Returns string</eg></td>
+    <td>Takes an array of strings <eg>[]</eg> and combines it into a single string with the separator <eg>s</eg>. Optional integer parameters can be passed that specify the <eg>starting index</eg> and <eg>number of elements</eg> to combine. If no index parameters are provided, the entire array is combined.<eg><br>E.g.<br>var a = ［"Hello", "World", "!"］<br>var b = string.Join(";", a)<br>&gt;`0,0,@b@<br>// Prints "Hello;World;!"<br><br>E.g.2<br>var a = ［"Hello", "World", "!"］<br>var b = string.Join(";", a, 1)<br>&gt;`0,0,@b@<br>// Prints "World;!"<br><br>E.g.3<br>var a = ［"Hello", "World", "!"］<br>var b = string.Join(";", a, 0, 2)<br>&gt;`0,0,@b@<br>// Prints "Hello;World"</eg></td>
+  </tr>
+  <tr>
+    <td>string.Size(str)<br><eg>Returns integer</eg></td>
+    <td>Takes a string variable as parameter and calculates how long it is, in number of glyphs.<eg><br>E.g.<br>var a = Hello World!<br>var size = string.Size(a)<br>&gt;size = @size@</eg></td>
+  </tr>
+  <tr>
+    <td>string.Split(str)<br>string.Split(str, s…)<br>string.Split(str, s…, bool)<br>string.Split(str, bool)<br><eg>Returns array</eg></td>
+    <td>Takes a string and breaks it down into an array of strings, given a set of string separators <eg>s…</eg>. If no separators are provided, then the string is broken wherever there is a space. An optional boolean parameter specifies if empty entries should be discarded.<eg><br>E.g.<br>var a = string.Split("Hello World !")<br>for i = 0 .. a.Count()-1<br>  &gt;`0,@i@,［@i@］ = @a［i］@<br>// Breaks up the string into: "Hello", "World", "!"<br><br>E.g.2<br>var a = string.Split("Hello World !", " ", "l")<br>for i = 0 .. a.Count()-1<br>  &gt;`0,@i@,［@i@］ = @a［i］@<br>// Breaks up the string into: "He", " ", "o", "Wor", "d", "!"<br><br>E.g.3<br>var a<br>a = string.Split("Hello World !","l","r",true)<br>for i = 0 .. a.Count()-1<br>  &gt;`0,@i@,［@i@］ = @a［i］@<br>// Breaks up the string into: "He", "o Wo", "d !"</eg></td>
+  </tr>
+  <tr>
+    <td>string.Sub(str, startAt)<br><eg>Returns string</eg></td>
+    <td>Takes a string variable and a starting index as parameters and splits the string from that point forward.<eg><br>E.g.<br>var a = Hello World!<br>var subString = string.Sub(a, 6)<br>&gt;substring = @subString@<br>// subString equals "World!"</eg></td>
+  </tr>
+  <tr>
+    <td>string.Sub(str, startAt, length)<br><eg>Returns string</eg></td>
+    <td>Takes a string variable, a starting index and a length as parameters and splits the string from that starting point, stopping at the given length.<eg><br>E.g.<br>var a = Hello World!<br>var subString = string.Sub(a, 6, 3)<br>&gt;substring = @subString@<br>// subString equals "Wor"</eg></td>
+  </tr>
+  <tr>
+    <td>string.ToLower(str)<br><eg>Returns string</eg></td>
+    <td>Changes all letters in a string to lower-case.<eg><br>E.g.<br>var a = "Foo"<br>a = string.ToLower(a)<br>&gt;@a@<br>// Prints "foo" to the screen</eg></td>
+  </tr>
+  <tr>
+    <td>string.ToUpper(str)<br><eg>Returns string</eg></td>
+    <td>Changes all letters in a string to upper-case.<eg><br>E.g.<br>var a = "Foo"<br>a = string.ToUpper(a)<br>&gt;@a@<br>// Prints "FOO" to the screen</eg></td>
+  </tr>
+  <tr><td>sys<br>‾‾‾</td><td>NOTE: The sys file URLs are not functioning as intended at the moment.</td></tr>
+  <tr>
+    <td>sys.cacheRemoteFiles<br><eg>boolean</eg></td>
+    <td>Indicates if files imported remotely should be cached between runs. Default is <eg>true</eg>. If set to false, then remote scripts will re-download when you begin play from the Locations screen. It can be useful to change this during development and iteration of new scripts that are deployed remotely. This global property persists between runs.<eg><br>E.g.<br>// We use the "up" key as an input to toggle<br>// remote caching on/off during rapid iteration<br>?key = upBegin<br>  sys.cacheRemoteFiles = !sys.cacheRemoteFiles<br>  ?sys.cacheRemoteFiles<br>    &gt;Remote caching ENABLED<br>  :<br>    &gt;Remote caching DISABLED</eg></td>
+  </tr>
+  <tr>
+    <td>sys.fileUrl<br><eg>string (get only)</eg></td>
+    <td>Getter for the current file path to be used when importing scripts. The default value depends on your device. On PC the default value is <eg>local</eg>. On mobile the default is <eg>https://StonestoryRPG.com/stonescript/</eg><eg><br>E.g.<br>&gt;`0,1,fileUrl = @sys.fileUrl@</eg></td>
+  </tr>
+  <tr>
+    <td>sys.SetFileUrl(str)<br><eg>No return value</eg></td>
+    <td>Changes the origin of imported scripts when using the commands <eg>import</eg> or <eg>new</eg>. Can only be called on the Mind Stone and will error if written on an imported script. Accepts any URL as a remote location, but also accepts the values <eg>"local"</eg> and <eg>"remote"</eg> as shortcuts to easily point at your local drive or to the official Stone Story RPG repository, respectively. If <eg>null</eg> is passed as parameter, then the file URL resets to the default value for your device. This global property persists between runs.<eg><br>E.g.<br>sys.SetFileUrl(<br>^"https://MyCoolDomain.com/scripts/")<br>import MyCombatScript</eg></td>
+  </tr>
+  <tr>
+    <td>sys.MindConnect()<br><eg>No return value</eg></td>
+    <td>(Experimental feature) Works only when <eg>sys.MindConnect()</eg> is the only line of text in your Mind Stone. Enables an interface that waits for a connection from other programs, such as a python script. Once connected, the external program can run Stonescript commands and evaluate game state variables.<br>Learn more here:<br><a href="https://github.com/artificial-potato/SSRPGInterface">https://github.com/artificial-potato/SSRPGInterface</a>
+  </td></tr>
+  <tr>
+    <td>sys.isMobile<br><eg>Returns bool</eg></td>
+    <td>Returns <eg>true</eg> if the users is on Android or iOS.
+  </td></tr>
+  <tr>
+    <td>sys.isPC<br><eg>Returns bool</eg></td>
+    <td>Returns <eg>true</eg> if the users is on Win/Mac/Linux.
+  </td></tr>
+  <tr>
+    <td>sys.os<br><eg>Returns string</eg></td>
+    <td>The user's operating system, such as "Android", "iOS", "Linux", "OSX" or "Windows".
+  </td></tr>
+  <tr><td>Text Localization<br>‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾</td><td>Stonescript supports 12 languages as of this writing. A few operations allow custom scripts to adapt to the player's chosen language.</td></tr>
+  <tr>
+  </tr><tr>
+    <td>te.language<br><eg>string</eg></td>
+    <td>The code for the language selected by the player in settings. Possible values: EN, PT-BR, ZH-CN, ZH-TW, FR, DE, RU, ES-LA, ES-EU, JP, KR and TK.<eg><br>E.g.<br>var lang = te.language<br>&gt;Language = @lang@</eg></td>
+  </tr>
+  <tr>
+    <td>te.xt(str)<br><eg>Returns string</eg></td>
+    <td>Translates a given English text into the player's selected language. If a translated version is not found, then the input text is returned instead. Alternatively, a text identifier (TID) can be used as input--albeit the exhausting list of TIDs is beyond the scope of this manual.<eg><br>E.g.<br>var button = ui.AddButton()<br>button.text = te.xt(Play)<br>// Change your language in settings to see this example at work</eg></td>
+  </tr>
+  <tr>
+    <td>te.GetTID(str)<br><eg>Returns string</eg></td>
+    <td>Returns the text identifier (TID) for a given text. The input text is expected in the language selected by the player.<eg><br>E.g.<br>var tid = te.GetTID("Play")<br>&gt;`0,1,@tid@<br>// Prints tid_button_play to the screen</eg></td>
+  </tr>
+  <tr>
+    <td>te.ToEnglish(str)<br><eg>Returns string</eg></td>
+    <td>Translates a given text from the player's selected language into the original English text. If a translated version is not found, then the input text is returned instead.<eg><br>E.g.<br>&gt;`0,1,@te.ToEnglish("Jogar")@<br>// If Portuguese is chosen in settings it will print "Play"<br>// otherwise it will print "Jogar"</eg></td>
+  </tr>
+  <tr><td>time<br>‾‾‾‾</td></tr>
+  <tr>
+    <td>time.FormatCasual(int)<br>time.FormatCasual(int,bool)<br><eg>Returns string</eg></td>
+    <td>Converts an amount of frames into a human-readable string representation of time, such as "1m 23s". The second parameter (bool) is optional; If 'true', then precision is maximized in the result.<eg><br>E.g.<br>&gt;`0,0,Current time =<br>^ @time.FormatCasual(totaltime, true)@</eg></td>
+  </tr>
+  <tr>
+    <td>time.FormatDigital(int)<br>time.FormatDigital(int,bool)<br><eg>Returns string</eg></td>
+    <td>Converts an amount of frames into a human-readable string representation of time, such as "1:23". The second parameter (bool) is optional; If 'true', then precision is maximized in the result.<eg><br>E.g.<br>&gt;`0,0,Current time =<br>^ @time.FormatDigital(totaltime, true)@</eg></td>
+  </tr>
+  <tr><td>UI<br>‾‾</td><td><br>See the <a href="https://stonestoryrpg.com/stonescript/beta.html#user-interface">User Interface</a> section for details about Stonescript's advanced UI system. Miscellaneous functions of the <eg>ui</eg> namespace:</td></tr>
+  <tr>
+    <td>ui.OpenInv()<br><eg>No return value</eg></td>
+    <td>Opens the inventory screen.</td>
+  </tr>
+  <tr>
+    <td>ui.OpenMind()<br><eg>No return value</eg></td>
+    <td>Opens the Mind Stone screen.</td>
+  </tr>
+  <tr>
+    <td>ui.ShowBanner(str)<br>ui.ShowBanner(str,str)<br><eg>No return value</eg></td>
+    <td>Displays the animated banner with up to two messages. The banner animation restarts each time ui.ShowBanner() is called.<eg><br>E.g.<br>?time = 120<br>  ui.ShowBanner("Hello World!")</eg></td>
+  </tr>
+  <tr><td>Other<br>‾‾‾‾‾</td></tr>
+  <tr>
+    <td>Type(var)<br><eg>Returns string</eg></td>
+    <td>Evaluates the type of a variable and returns a string representation. Possible types include 'string', 'int', 'bool', 'function', 'object' and 'null'.<eg><br>E.g.<br>var a = 0<br>?Type(a) = int<br>  &gt;Variable 'a' is an integer.</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="import"><div id="separator"><!---------------------------></div>
+
+·:·:· Importing External Scripts ·:·:·
+<font color="#bbbbbb">
+Your script doesn't have to be all in the Mind Stone. Stonescript supports the loading of external files through the 'import' and 'new' keywords. For external scripts to work they must be located in your <a href="https://stonestoryrpg.com/faq.html#Technical%20Help">save-file folder</a>, inside a /Stonescript folder and end in '.txt'.
+
+In the most basic example an external script is imported and runs as if it were directly in your Mind Stone, making this a convenient way to organize farming scripts:
+<eg>
+import Rocky
+import Deadwood
+import Caves
+import Forest
+</eg>
+When a script is imported it's copied into its own container and returns as a reference. Variables declared in the external script are isolated and don't interact with variables in other scripts. In this example, a printing utility script offers simplified services:
+<eg><f>
+// PrintUtil.txt
+func LowerLeft(x, y, color, message)
+  y = y + screen.h
+  &gt;`@x@,@y@,@color@,@message@
+
+func LowerRight(x, y, color, message)
+  x = x + screen.w
+  y = y + screen.h
+  &gt;`@x@,@y@,@color@,@message@
+
+// Main script in Mind Stone
+var print = import PrintUtil
+disable hud
+print.LowerLeft(0,-1,#ffffff,"Health: " + hp)
+</f></eg>
+Advanced solutions can import the same script multiple times using the 'new' command, for example, to implement componentization or an Object Oriented paradigm:
+<eg><f>
+// Vector.txt
+var x = 0
+var y = 0
+
+func init(_x, _y)
+  x = _x
+  y = _y
+
+func subtract(otherVect)
+  x = x - otherVect.x
+  y = y - otherVect.y
+
+// Main script in Mind Stone
+var vectFrom = new Components/Vector
+var vectTo = new Components/Vector
+
+vectFrom.init(5, 4)
+vectTo.init(8, 2)
+vectTo.subtract(vectFrom)
+
+&gt;x = @vectTo.x@, y = @vectTo.y@
+</f></eg>
+External scripts can implement a 'ToString()' function, allowing their direct use in advanced print commands:
+<eg><f>
+// Vector.txt
+var x = 0
+var y = 0
+
+func init(_x, _y)
+  x = _x
+  y = _y
+
+func ToString()
+  return "(" + x + ", " + y + ")"
+
+// Main script in Mind Stone
+var v = import Components/Vector
+v.init(3,5)
+&gt;Vector = @v@
+</f></eg>
+External scripts can be imported from subfolders:
+<eg><f>
+import Games/Blackjack
+import Cosmetics/PetFrog
+import Cosmetics/Hats
+</f></eg>
+While similar, there are two important differences between 'import' and 'new'. With 'import' the same object is returned each time. If you import the same script from multiple places they will all be using the same object. Scripts imported with 'new' are unique copies, but their script body will only run 1 time as opposed to every frame.
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="ascii-art"><div id="separator"><!---------------------------></div>
+
+·:·:· ASCII-art ·:·:·
+<font color="#bbbbbb">
+In Stonescript, custom ASCII-art can be embedded within the scripts and drawn on screen with the advanced print commands. There are a few methods to do this and some glyphs have special behavior:
+<f>
+#  - Blank space. Transparency. Does not draw.
+\n - Line break. Causes the draw to continue on the next line. WARNING: This is an expensive operator and should not be used for breaking lines in large drawings. Use the ascii/asciiend block instead.
+</f>
+
+Method 1 - Advanced print
+
+This example draws a green circle to the top-left of the screen.
+<eg><f>
+&gt;`1,0,#green,ascii
+#.-.
+(   )
+#`-´
+asciiend
+</f></eg>
+
+Method 2 - Variables
+
+This example saves the art for a spooky fish into a variable, then draws it to the top-left of the screen in red color.
+<eg><f>
+var fishSprite
+fishSprite = ascii
+###(°_##
+#_/_ o\#
+#´  `'"#
+asciiend
+
+&gt;`0,3,#red,@fishSprite@
+</f></eg></font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="loops"><div id="separator"><!---------------------------></div>
+
+·:·:· Loops ·:·:·
+<font color="#bbbbbb"><f>
+
+Loops allow a section of code to run multiple times. To create a loop use the 'for' keyword in the form:
+<eg>
+for v = a..b
+</eg>
+The variable 'v' begins the loop with value 'a' and increases in value until it reaches 'b', then the loop ends:
+<eg>
+for i = 1..5
+  &gt;`0,@i@,i = @i@
+</eg>
+The iteration variable 'v' should not be declared prior to the 'for' and is contained to the scope of the loop. However, the begin and end values 'a' and 'b' can be declared prior to the loop:
+<eg>
+var min = 1
+var max = 4
+var sum
+sum = 0
+for j = min..max
+  sum = sum + j
+&gt;sum = @sum@
+</eg>
+Loops can also go in the opposite direction, as well as use negative numbers:
+<eg>
+var g
+g = ""
+for k = 5..-2
+  g = g + k
+&gt;g = @g@
+</eg>
+Loops can be nested inside each other, as well as inlined with math expressions to form complex algorithms:
+<eg>
+for x = 1..9
+  for y = x/2 .. x/2 + 6
+    &gt;`@x@,@y@,*
+</eg>
+To break out of the loop early, modify the iteration variable so that it's out of range:
+<eg>
+var n
+n = ""
+for i = 1..5
+  ?i = 3
+    i = -1
+  n = n + i
+&gt;n = @n@
+</eg>
+Similarly, break out of the loop with the <eg>break</eg> command:
+<eg>
+for i = 1..5
+  ?i = 3
+    break
+</eg>
+Loops also support the <eg>continue</eg> command. When called, instructions below the <eg>continue</eg> are skipped and the loop continues looping:
+<eg>
+var n
+n = ""
+for i = 1..5
+  ?i = 3
+    continue
+  n = n + i
+&gt;n = @n@
+</eg>
+It's possible to loop through elements of an <a href="https://stonestoryrpg.com/stonescript/beta.html#arrays">array</a> using this form:
+<eg>
+var a = [1, 2, 3]
+var n
+n = ""
+for value : a
+  n = n + value
+&gt;n = @n@
+</eg></f></font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="arrays"><div id="separator"><!---------------------------></div>
+
+·:·:· Arrays ·:·:·
+<font color="#bbbbbb"><f>
+Arrays are a special type of variable. They provide a way to sequentially organize values and objects into a collection that is assigned to a single variable.
+
+<table>
+  <tbody><tr>
+    <td>Operation<br>---------</td>
+    <td>Description<br>-----------</td>
+  </tr>
+  <tr>
+    <td>a = []</td>
+    <td>Initializes a new array. See below for more information.</td>
+  </tr>
+  <tr>
+    <td>a[integer]</td>
+    <td>Reads the value at a given position.<br><eg>E.g.:<br>var myArray = [10, 3]<br>?myArray[1] = 3<br>  &gt;Yes, the value at [1] equals 3</eg></td>
+  </tr>
+  <tr>
+    <td>a.Add(value)</td>
+    <td>Adds a new value/object to the end of the array.<br><eg>E.g.:<br>var myArray = []<br>myArray.Add(10)</eg></td>
+  </tr>
+  <tr>
+    <td>a.Clear()</td>
+    <td>Removes all elements from the array, making it empty. This is more efficient than re-declaring the array with [].<br><eg>E.g.:<br>var myArray = [10, 3]<br>myArray.Clear()</eg></td>
+  </tr>
+  <tr>
+    <td>a.Contains(value)</td>
+    <td>Determines if a given value is inside the array. Returns true if found; false otherwise.<br><eg>E.g.:<br>var myArray = [10, 3]<br>?myArray.Contains(3)<br>  &gt;Yes</eg></td>
+  </tr>
+  <tr>
+    <td>a.Count()</td>
+    <td>Returns the number of elements in the array.<br><eg>E.g.:<br>var myArray = ["apple","banana"]<br>var size = myArray.Count()<br>&gt;Array size = @size@</eg></td>
+  </tr>
+  <tr>
+    <td>a.Emplace(integer, value)</td>
+    <td>Replaces the value at a given position with a new value.<br><eg>E.g.:<br>var myArray = [10, 3]<br>myArray.Emplace(0, 4)<br>var value = myArray[0]<br>&gt;Value at [0] is now @value@</eg></td>
+  </tr>
+  <tr>
+    <td>a.IndexOf(value)</td>
+    <td>Searches for a given value inside the array. Returns an integer indicating the position of the first occurrance of the value. If the value is not found returns -1.<br><eg>E.g.:<br>var myArray = [10, 3]<br>var index = myArray.IndexOf(3)<br>&gt;Found at position @index@</eg></td>
+  </tr>
+  <tr>
+    <td>a.Insert(integer, value)</td>
+    <td>Adds a new value/object to a specific position of the array. Elements to the right are shifted to the next position.<br><eg>E.g.:<br>var myArray = [10, 3]<br>myArray.Insert(1, "apple")<br>// The array is now [10, "apple", 3]</eg></td>
+  </tr>
+  <tr>
+    <td>a.RemoveAt(integer)</td>
+    <td>Removes an element in the array from a specific position. Returns the value removed.<br>Zero-based: <eg>myArray.RemoveAt(0)</eg> removes the first element.<br>Elements to the right are shifted to the previous position.<br><eg>E.g.:<br>var myArray = [1, 2, 3]<br>myArray.RemoveAt(1)<br>// The array is now [1, 3]</eg></td>
+  </tr>
+  <tr>
+    <td>a.Sort()</td>
+    <td>Organizes the array's elements into ascending order. If the array contains objects of different types it will still be sorted, but no expected results are defined and elements are not guaranteed to be grouped by type.<br><eg>E.g.:<br>var myArray = ["Cherry", 2, "Apple", 1, true, false, "Banana", 3]<br>var value<br><br>myArray.Sort()<br><br>for i = 0 .. myArray.Count() - 1<br>  value = myArray[i]<br>  &gt;`0,@i@,@value@</eg></td>
+  </tr>
+</tbody></table>
+
+Here are some of the different ways to initialize and use arrays:
+<eg>
+var emptyCollection = []
+
+var magicNumbers = [10, 3, 0, 15, -7]
+
+var someStrings = ["apple", "banana", "cherry"]
+
+var sameButMultiLine = [
+  "apple",
+  "banana",
+  "cherry",
+]
+
+var redeclaredEachFrame
+redeclaredEachFrame = [] // Not good for the PC
+
+var clearedEachFrame = []
+clearedEachFrame.Clear() // Better for CPU &amp; memory
+
+var clearedEachLoop = []
+?loc.begin | loc.loop
+  clearedEachLoop.Clear()
+
+var multiDimensional = [[], [], []]
+
+var objectCollection = [
+  new Components/Float,
+  new Components/Float,
+  new Components/Vector,
+]
+
+var animationFrames = [ascii
+───┼
+  O/
+ /|
+ / \
+asciiend
+^,ascii
+   ---.
+  O    \
+ /|\┼───
+ / \
+asciiend
+^]
+</eg>
+
+Looping through arrays:
+<eg>
+var myArray = ["Apple", "Banana", "Cherry"]
+var count
+var value
+
+count = myArray.Count()
+?count &gt; 0
+  for i = 0 .. count - 1
+    value = myArray[i]
+    &gt;`0,@i@,@value@
+
+// This example prints fruit names to the left of the screen
+</eg>
+
+Multi-dimensional access:
+<eg>
+var a = [[1,2], [3,4]]
+var value
+
+value = a[1][0]
+&gt;Found value @value@ at (1, 0)
+</eg></f></font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="custom-input"><div id="separator"><!---------------------------></div>
+
+·:·:· Custom Input ·:·:·
+<font color="#bbbbbb">
+Stonescript can read player inputs by use of the ?key game state. This can be used to drive advanced behaviors, such as different modes for the AI, but custom inputs allow the creation of entirely new experiences layered on top of Stone Story.
+
+<eg><f>In this example, the @ symbol can be moved across the screen like the main character in a classic Rogue-like game. The key codes (leftBegin, etc) refer to the initial downpress of the button.
+
+var x = 0
+var y = 0
+
+?key = leftBegin
+  x--
+  ?x &lt; 0
+    x = 0
+?key = rightBegin
+  x++
+
+?key = upBegin
+  y--
+  ?y &lt; 0
+    y = 0
+?key = downBegin
+  y++
+
+&gt;`@x@,@y@,#ffffff,@
+</f></eg>
+
+Table with all the available key codes:
+
+<table>
+  <tbody><tr>
+    <td>Held<br>----</td>
+    <td>Pressed<br>-------</td>
+    <td>Released<br>--------</td>
+	<td>Default PC<br>----------</td>
+  </tr>
+  <tr>
+    <td>left</td>
+    <td>leftBegin</td>
+    <td>leftEnd</td>
+	<td>A or ←</td>
+  </tr>
+  <tr>
+    <td>right</td>
+    <td>rightBegin</td>
+    <td>rightEnd</td>
+	<td>D or →</td>
+  </tr>
+  <tr>
+    <td>up</td>
+    <td>upBegin</td>
+    <td>upEnd</td>
+	<td>W or ↑</td>
+  </tr>
+  <tr>
+    <td>down</td>
+    <td>downBegin</td>
+    <td>downEnd</td>
+	<td>S or ↓</td>
+  </tr>
+  <tr>
+	<td>primary</td>
+	<td>primaryBegin</td>
+	<td>primaryEnd</td>
+	<td>LMB, Return</td>
+  </tr>
+  <tr>
+	<td>back</td>
+	<td>backBegin</td>
+	<td>backEnd</td>
+	<td>X</td>
+  </tr>
+  <tr>
+	<td>ability1</td>
+	<td>ability1Begin</td>
+	<td>ability1End</td>
+	<td>Shift</td>
+  </tr>
+  <tr>
+	<td>ability2</td>
+	<td>ability2Begin</td>
+	<td>ability2End</td>
+	<td>Control</td>
+  </tr>
+  <tr>
+	<td>bumpL</td>
+	<td>bumpLBegin</td>
+	<td>bumpLEnd</td>
+	<td>Z</td>
+  </tr>
+  <tr>
+	<td>bumpR</td>
+	<td>bumpRBegin</td>
+	<td>bumpREnd</td>
+	<td>C</td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="user-interface"><div id="separator"><!---------------------------></div>
+
+·:·:· User Interface ·:·:·
+<font color="#bbbbbb">
+Buttons, text, animations... Stonescript provides a system for building complex layouts and high performance User Interfaces. An invisible "root" Panel exists by default, at the base of the system. Various other UI elements can be added to the root Panel, including additional Panels, forming a tree structure. All elements are drawn together, in a single step, in the order in which they are added.
+<eg><f>
+root
+│
+├─ Panel
+│  ├─ Text
+│  ├─ ASCII-art
+│  └─ Button
+│
+├─ Panel
+│  ├─ Panel
+|  |  └─ Text
+...
+</f></eg>
+
+<table>
+  <tbody><tr><td>UI<br>‾‾</td><td>Call functions in the <eg>ui</eg> namespace to build the interface.</td></tr>
+  <tr>
+    <td>ui.root<br><eg>Panel</eg></td>
+    <td>The base UI object on top of which the entire tree is built.<eg><br>E.g.<br>disable hud<br>ui.root.visible = true</eg></td>
+  </tr>
+  <tr>
+    <td>ui.AddAnim(string)<br><eg>Returns Anim</eg></td>
+    <td>Adds an Anim object to the root Panel. Accepts an animation sprite sheet as parameter.<eg><br>E.g.<br>?loc.begin<br>  ui.AddAnim(ascii<br>\o)<br>%%<br>(o/<br>asciiend)</eg></td>
+  </tr>
+  <tr>
+    <td>ui.AddButton()<br><eg>Returns Button</eg></td>
+    <td>Adds a Button object to the root Panel.<eg><br>E.g.<br>func OnPressed()<br>  &gt; Hello World!<br><br>?loc.begin<br>  var button = ui.AddButton()<br>  button.y = 1<br>  button.text = Press me<br>  button.SetPressed(OnPressed)</eg></td>
+  </tr>
+  <tr>
+    <td>ui.AddPanel()<br><eg>Returns Panel</eg></td>
+    <td>Adds a Panel object to the root Panel. Panels are an important object type, serving as containers for other elements.<eg><br>E.g.<br>?loc.begin<br>  var p = ui.AddPanel()<br>  p.color = #red</eg></td>
+  </tr>
+  <tr>
+    <td>ui.AddStyle()<br><eg>Returns int</eg></td>
+    <td>Adds a new style that can be used for drawing rectangular Components such as Panels and Buttons. Returns an ID number of the new style. Is protected against the same style being added multiple times, in which case nothing changes and the same ID is returned. Because different scripts may all call ui.AddStyle(), it's recommended to save the ID as a variable instead of hard-coding style numbers into the script.<eg><br>E.g.<br>var customStyle = ui.AddStyle("<br>^123<br>^456<br>^789")<br>?loc.begin<br>  var p = ui.AddPanel()<br>  p.style = customStyle</eg></td>
+  </tr>
+  <tr>
+    <td>ui.AddText()<br>ui.AddText(string)<br><eg>Returns Text</eg></td>
+    <td>Adds a Text object to the root Panel.<eg><br>E.g.<br>?loc.begin<br>  var t = ui.AddText()<br>  t.text = "Hello World!"</eg></td>
+  </tr>
+  <tr>
+    <td>ui.Clear()<br><eg>No return value</eg></td>
+    <td>Removes all UI elements from the main container.<eg><br>E.g.<br>?key = backBegin<br>  ui.Clear()</eg></td>
+  </tr>
+  <tr><td><br>Component<br>‾‾‾‾‾‾‾‾‾</td><td><br>Component is a base type for all other UI types. This means that other elements (Panels, Text, Buttons and Anim) all have the following properties:</td></tr>
+  <tr>
+    <td>component.x<br><eg>integer</eg></td>
+    <td>The X position of the component relative to its docked position.</td>
+  </tr>
+  <tr>
+    <td>component.y<br><eg>integer</eg></td>
+    <td>The Y position of the component relative to its docked position.</td>
+  </tr>
+  <tr>
+    <td>component.w<br><eg>integer</eg></td>
+    <td>The component's width. Default value varies by object type.<br><eg>E.g.<br>button.w = string.Size(button.text) + 4<br>// Sizes a button to fit its current text, +2 on each side</eg></td>
+  </tr>
+  <tr>
+    <td>component.h<br><eg>integer</eg></td>
+    <td>The component's height. Default value is 5.<br><eg>E.g.<br>panel.h = panel.parent.h<br>// Sets the height of a panel to match the height of its parent panel</eg></td>
+  </tr>
+  <tr>
+    <td>component.absoluteX<br>component.absoluteY<br><eg>integer<br>read-only</eg></td>
+    <td>The component's position relative to the screen.<br><eg>E.g.<br>var t<br>?loc.begin<br>  var p = ui.AddPanel()<br>  p.anchor = bottom_right<br>  p.dock = bottom_right<br>  t = ui.AddText("Foo")<br>  p.Add(t)<br>`0,1,Relative pos = @t.x@,@t.y@<br>&gt;`0,2,Absolute pos = @t.absoluteX@,@t.absoluteY@</eg></td>
+  </tr>
+  <tr>
+    <td>component.anchor<br><eg>string</eg></td>
+    <td>Auto-layout property representing the internal pivot of the component. This guides the UI system on how to position the component relative to itself. Default value is "center_center". Possible values: top_left, top_center, top_right, center_left, center_center, center_right, bottom_left, bottom_center and bottom_right.</td>
+  </tr>
+  <tr>
+    <td>component.dock<br><eg>string</eg></td>
+    <td>Auto-layout property similar to <eg>anchor</eg>. However, <eg>dock</eg> represents the external pivot, or position inside the parent where to position the component. If in doubt, use the same value for both <eg>anchor</eg> and <eg>dock</eg>, which is the most common situation.<br><eg>E.g.<br>?loc.begin<br>  var p = ui.AddPanel()<br>  p.anchor = top_right<br>  p.dock = top_right<br>  p.w = 20<br>  p.h = 9<br>  var t = ui.AddText("HelloWorld!")<br>  t.anchor = left_bottom<br>  t.dock = bottom_left<br>  t.x = 2<br>  t.h = t.lines.Count() + 1<br>  p.Add(t)</eg></td>
+  </tr>
+  <tr>
+    <td>component.ax<br><eg>string</eg></td>
+    <td>The X part of the <eg>anchor</eg>. Possible values: left, center and right.</td>
+  </tr>
+  <tr>
+    <td>component.ay<br><eg>string</eg></td>
+    <td>The Y part of the <eg>anchor</eg>. Possible values: top, center and bottom.</td>
+  </tr>
+  <tr>
+    <td>component.dx<br><eg>string</eg></td>
+    <td>The X part of the <eg>dock</eg>. Possible values: left, center and right.</td>
+  </tr>
+  <tr>
+    <td>component.dy<br><eg>string</eg></td>
+    <td>The Y part of the <eg>dock</eg>. Possible values: top, center and bottom.<br><eg>E.g.<br>var p<br>?loc.begin<br>  p = ui.AddPanel()<br>  p.ax = right<br>  p.ay = top<br>  p.dx = right<br>  p.dy = top</eg></td>
+  </tr>
+  <tr>
+    <td>component.parent<br><eg>Panel<br>read-only</eg></td>
+    <td>Reference to the component's parent Panel. May refer to the <eg>root</eg> Panel if the component was created but never added to another Panel. When <eg>panel.Add(component)</eg> is called the component's parent changes.</td>
+  </tr>
+  <tr>
+    <td>component.visible<br><eg>multi type<br>bool/string</eg></td>
+    <td>Visibility of the component. Default value is "inherit". Possible values: true, false and inherit. If set to 'true', the component will always be visible, ignoring the status of its parent. If set to 'false', the component will be invisible, regardless of its parent. However, if set to 'inherit', the component will follow the visibility of its parent.</td>
+  </tr>
+  <tr>
+    <td>component.Recycle()<br><eg>No return value</eg></td>
+    <td>Removes the component from its parent Panel. It will be repurposed in future ui.Add_() calls. Any variable references to the recycled element should be nulled or reassigned to avoid bugs.</td>
+  </tr>
+  <tr><td><br>Panel &gt; Component<br>‾‾‾‾‾</td><td><br>Panels are rectangular Components that serve as containers for other Components. A chain of Panels added to each other form a tree structure.</td></tr>
+  <tr>
+    <td>panel.children<br><eg>Component[]</eg></td>
+    <td>Array with all the child components that have been added to the Panel with <eg>panel.Add()</eg>.</td>
+  </tr>
+  <tr>
+    <td>panel.clip<br><eg>bool</eg></td>
+    <td>Indicates if the bounds of Panel should be used to contrain the drawing of child components. If true, parts of child components that fall outside of the Panel's bounds will not draw.<br><eg>E.g.<br>var p<br>?loc.begin<br>  p = ui.AddPanel()<br>  p.w = 4<br>  p.h = 3<br>  var t = ui.AddText("The quick brown fox jumps<br>^ over the lazy dog.")<br>  p.Add(t)<br><br>?time%30 &lt; 15<br>  p.clip = true<br>:<br>  p.clip = false</eg></td>
+  </tr>
+  <tr>
+    <td>panel.color<br><eg>string</eg></td>
+    <td>The panels color, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.</td>
+  </tr>
+  <tr>
+    <td>panel.style<br><eg>int</eg></td>
+    <td>ID number of the Panel's current style. Default value is 1. Possible values from -8 to 8. Additional styles can be added with <eg>ui.AddStyle()</eg></td>
+  </tr>
+  <tr>
+    <td>panel.Add(Component)<br>panel.Add(Component, int)<br><eg>No return value</eg></td>
+    <td>Adds a Component to a Panel. The Component becomes a child of the Panel and the Panel becomes the parent of the Component. The order in which elements are added to a Panel affects the draw order. Components may be inserted to a specific sorting position by use of the optional integer parameter. No integer parameter means the Component is added as the last child of the Panel. This function can also be used for changing the draw order of Components that are already children of the Panel.</td>
+  </tr>
+  <tr>
+    <td>panel.Clear()<br><eg>No return value</eg></td>
+    <td>Removes all UI elements from the Panel. Components removed this way are recycled into the UI system and will be repurposed in future ui.Add_() calls. Any variable references to those elements should be nulled or reassigned to avoid bugs.</td>
+  </tr>
+  <tr>
+    <td>panel.Remove(Component)<br>panel.Remove(int)<br><eg>No return value</eg></td>
+    <td>Removes a specific Component from a Panel or removes the Component at a specified index number. Components removed this way are recycled into the UI system and will be repurposed in future ui.Add_() calls. Any variable references to those elements should be nulled or reassigned to avoid bugs.</td>
+  </tr>
+  <tr><td><br>Text &gt; Component<br>‾‾‾‾</td><td><br>Multi-line text box. Supports color metadata.</td></tr>
+  <tr>
+    <td>text.align<br><eg>string</eg></td>
+    <td>The alignment/justification of the text inside the box. Default value is "left". Possible values: left, center and right.</td>
+  </tr>
+  <tr>
+    <td>text.color<br><eg>string</eg></td>
+    <td>The color of the text, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.</td>
+  </tr>
+  <tr>
+    <td>text.lines<br><eg>string[]</eg></td>
+    <td>Array of strings that are the broken-down lines of text after the Text box has formatted its contents. Excludes color metadata.</td>
+  </tr>
+  <tr>
+    <td>text.text<br><eg>string</eg></td>
+    <td>The full contents of the Text box. A subsection of the text may be colored with the metadata [color=#rrggbb][/color].<br><eg>E.g.<br>?loc.begin<br>  var t = ui.AddText()<br>  t.text = "Hello [color=#red]World[/color]!"</eg></td>
+  </tr>
+  <tr><td><br>Button &gt; Component<br>‾‾‾‾‾‾</td></tr>
+  <tr>
+    <td>button.text<br><eg>string</eg></td>
+    <td>The text that appears inside the button.<br><eg>E.g.<br>button.text = player.name<br>// Put your name on the button!</eg></td>
+  </tr>
+  <tr>
+    <td>button.tcolor<br><eg>string</eg></td>
+    <td>The color of the text inside the button, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.<br><eg>E.g.<br>button.tcolor = #ff0000<br>// Sets the button text color to red</eg></td>
+  </tr>
+  <tr>
+    <td>button.bcolor<br><eg>string</eg></td>
+    <td>The color of the button's border, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.<br><eg>E.g.<br>&gt;@button.bcolor@<br>button.bcolor = #880000<br>// Prints the border's current color, then sets it to a dark red</eg></td>
+  </tr>
+  <tr>
+    <td>button.hcolor<br><eg>string</eg></td>
+    <td>The color of the button's highlight when it's pressed, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.<br><eg>E.g.<br>?loc.begin<br>  var b = ui.AddButton()<br>  b.hcolor = #yellow</eg></td>
+  </tr>
+  <tr>
+    <td>button.sound<br><eg>string</eg></td>
+    <td>The <a href="https://stonestoryrpg.com/stonescript/beta.html#sounds">sound effect</a> that plays when the button is pressed. Default is "confirm".<br><eg>E.g.<br>button.sound = buy<br>// Changes the button so it plays the buying sound when pressed</eg></td>
+  </tr>
+  <tr>
+    <td>button.style<br><eg>int</eg></td>
+    <td>ID number of the Buttons's current style. Default value is 1. Possible values from -8 to 8. Additional styles can be added with <eg>ui.AddStyle()</eg></td>
+  </tr>
+  <tr>
+    <td>button.SetPressed(f)<br><eg>function callaback</eg></td>
+    <td>Assigns a function to be called when the button is pressed. The function can have any number of parameters (even no parameters). When the function is called, the first parameter will be a reference to the button itself.<br><eg>E.g.<br>var button1<br>var button2<br>func OnPressed(btn)<br>  ?btn = button1<br>    &gt;Button1 was pressed<br>  :<br>    &gt;Button2 was pressed<br><br>?loc.begin<br>  button1 = ui.AddButton()<br>  button1.y = 1<br>  button1.SetPressed(OnPressed)<br><br>  button2 = ui.AddButton()<br>  button2.y = 6<br>  button2.SetPressed(OnPressed)</eg></td>
+  </tr>
+  <tr>
+    <td>button.SetDown(f)<br><eg>function callaback</eg></td>
+    <td>Similar to .SetPressed(), .SetDown() assigns a function to be called when the button press begins (first user contact).</td>
+  </tr>
+  <tr>
+    <td>button.SetUp(f)<br><eg>function callaback</eg></td>
+    <td>Similar to .SetPressed(), .SetUp() assigns a function to be called when a depress ends on top of the button (last user contact).<br><eg>E.g.<br>func OnDown()<br>  &gt; Down!<br><br>func OnUp()<br>  &gt; Up!<br><br>?loc.begin<br>  var button = ui.AddButton()<br>  button.y = 1<br>  button.text = Press me<br>  button.SetDown(OnDown)<br>  button.SetUp(OnUp)</eg></td>
+  </tr>
+  <tr><td><br>Anim &gt; Component<br>‾‾‾‾</td><td><br>ASCII sprite-sheet animations that can be added to UI.</td></tr>
+  <tr>
+    <td>anim.color<br><eg>string</eg></td>
+    <td>The animation's color, in <a href="https://htmlcolorcodes.com/" target="_blank">RGB hexadecimal format</a>.</td>
+  </tr>
+  <tr>
+    <td>anim.duration<br><eg>int</eg></td>
+    <td>Time length of the animation, in frames.</td>
+  </tr>
+  <tr>
+    <td>anim.flipX<br><eg>bool</eg></td>
+    <td>If true, flips the art horizontally, over its pivot.</td>
+  </tr>
+  <tr>
+    <td>anim.flipY<br><eg>bool</eg></td>
+    <td>If true, flips the art vertically, over its pivot.</td>
+  </tr>
+  <tr>
+    <td>anim.frame<br><eg>int</eg></td>
+    <td>Current animation frame being drawn. Can be changed to set an animation to a specific frame.</td>
+  </tr>
+  <tr>
+    <td>anim.gamePause<br><eg>bool</eg></td>
+    <td>If true, the animation automatically pauses playback if the player pauses the game and resumes playback if the player exits the pause screen.</td>
+  </tr>
+  <tr>
+    <td>anim.loop<br><eg>bool</eg></td>
+    <td>If true, the animation will restart from the begining as soon as it reaches the end of its duration.</td>
+  </tr>
+  <tr>
+    <td>anim.playing<br><eg>bool<br>read-only</eg></td>
+    <td>True if the animation is currently playing.</td>
+  </tr>
+  <tr>
+    <td>anim.paused<br><eg>bool<br>read-only</eg></td>
+    <td>True if the animation is playing, but has been paused with a call to <eg>anim.Pause()</eg>.</td>
+  </tr>
+  <tr>
+    <td>anim.pivotX<br>anim.pivotY<br><eg>int</eg></td>
+    <td>Additional pivot offset that can be used for fine-tuning where the ASCII-art draws in relationship to its position.</td>
+  </tr>
+  <tr>
+    <td>anim.playOnStart<br><eg>bool</eg></td>
+    <td>If true, the animation will begin playing as soon as possible.</td>
+  </tr>
+  <tr>
+    <td>anim.AddLayer(string)<br><eg>Returns Anim</eg></td>
+    <td>Adds a new ASCII sprite on top of this one. As the animation plays (or its frame is changed with <eg>anim.frame</eg>) all layers stay in sync. Each layer has their own set of properties for color, pivot, etc. Advantages of using animation layers for complex ASCII-art include improved performance and better code quality. If the animation is recycled all layers clean up simultaneously.<eg><br>E.g.<br>var a = ui.AddAnim(asciiArtA)<br>var layer2 = a.AddLayer(asciiArtB)<br>layer2.color = #bbbbbb</eg></td>
+  </tr>
+  <tr>
+    <td>anim.Load(string)<br><eg>No return value</eg></td>
+    <td>Assigns a new ASCII sprite sheet.</td>
+  </tr>
+  <tr>
+    <td>anim.Pause()<br><eg>No return value</eg></td>
+    <td>Suspends playback of the animation at its current frame. A subsequent call to <eg>anim.Play()</eg> resumes playback.</td>
+  </tr>
+  <tr>
+    <td>anim.Play()<br><eg>No return value</eg></td>
+    <td>Begins playing the animation, or resumes playback in case it had been paused.<br><eg>E.g.<br>var dance<br>?loc.begin<br>  dance = ui.AddAnim(ascii<br>(O/<br>%%<br>\O)<br>asciiend)<br>  dance.duration = 20<br>  dance.loop = true<br>  dance.Play()</eg></td>
+  </tr>
+  <tr>
+    <td>anim.Stop()<br><eg>No return value</eg></td>
+    <td>Suspends playback and sets the animation back to its first frame.</td>
+  </tr>
+  <tr><td><br>Canvas &gt; Component<br>‾‾‾‾‾‾</td><td><br>Container optimized for drawing arbitrary glyphs and colors.</td></tr>
+  <tr>
+    <td>canvas.blend<br><eg>string</eg></td>
+    <td>The blend mode of the canvas, when composed with elements behind it. Possible values: Opaque, Multiply, Divide, Add, Subtract. Default value is "opaque".<br><eg>E.g.<br>var filter1 = ui.AddCanvas()<br>var filter2 = ui.AddCanvas()<br>filter1.w = screen.w<br>filter1.h = screen.h<br>filter2.w = screen.w<br>filter2.h = screen.h<br><br>filter1.blend = multiply
+<br>filter1.SetFG(#aa5555)<br>filter1.SetBG(#dddddd)<br><br>filter2.blend = add
+<br>filter2.SetFG(#aa6600)<br>filter2.SetBG(#662200)</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.Get(int,int)<br><eg>Returns string</eg></td>
+    <td>Returns the glyph at a specific position x,y on the canvas.</td>
+  </tr>
+  <tr>
+    <td>canvas.Set(str)<br><eg>No return value</eg></td>
+    <td>Fills the entire canvas with a given glyph.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set("X")</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.Set(int,int,str)<br><eg>No return value</eg></td>
+    <td>Changes a specific position x,y on the canvas to a given glyph.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set(0, 0, "A")</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.Set(int,int, fg,str)<br>canvas.Set(int,int, fg,bg,str)<br><eg>No return value</eg></td>
+    <td>Overloads for changing a canvas at a specific position, while simultaneously setting the foreground and background colors.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  for x = 0..canvas.w<br>    for y = 0..canvas.h<br>      var fg = color.Random()<br>      var bg = color.Random()<br>      canvas.Set(x, y, fg, bg, ▄)</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.SetFG(color)<br><eg>No return value</eg></td>
+    <td>Sets a foreground color to the entire canvas.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set("R")<br>  canvas.SetFG(#red)</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.SetFG(int,int, color)<br><eg>No return value</eg></td>
+    <td>Changes the foreground color at a specific position x,y.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set("X")<br>  canvas.SetFG(2, 1, #ff00ff)<br></eg></td>
+  </tr>
+  <tr>
+    <td>canvas.SetBG(color)<br><eg>No return value</eg></td>
+    <td>Sets a background color to the entire canvas.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set("g")<br>  canvas.SetBG(#00aa00)</eg></td>
+  </tr>
+  <tr>
+    <td>canvas.SetBG(int,int, color)<br><eg>No return value</eg></td>
+    <td>Changes the background color at a specific position x,y.<br><eg>E.g.<br>?loc.begin<br>  var canvas = ui.AddCanvas()<br>  canvas.Set("X")<br>  canvas.SetBG(2, 1, #yellow)</eg></td>
+  </tr>
+</tbody></table></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="tips"><div id="separator"><!---------------------------></div>
+
+·:·:· Tips ·:·:·
+<font color="#bbbbbb">
+<f>Space (indentation) matters when defining what happens as a result of '?' comparisons (scope).</f>
+
+<f>The script can be changed in the middle of a run by pressing 'M' on your keyboard.</f>
+
+<f>The Power button in the top-right of the Mind Stone turns the script ON/OFF.</f>
+
+<f>If multiple equip Commands are called, whichever comes last will occur.</f>
+
+<f>The script executes 30 times per second (once per frame).</f>
+
+<f>To experiment with different scripts it's recommended to copy them into an external text editor, such as Notepad.</f>
+
+<f>Common shortcuts such as Ctrl+A, Ctrl+C and Ctrl+V are useful.</f>
+
+<f>Holding the Tab key in-game gives you a lot of information about game state and shows a list of recent Stonescript errors.</f>
+
+<f>A print command can be broken into multiple lines by using '\n' in the text.</f>
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="default-script"><div id="separator"><!---------------------------></div>
+
+·:·:· Default script ·:·:·
+<font color="#bbbbbb"><f>
+import UI/MindstoneButton
+
+?hp &lt; 7
+  activate potion
+?loc = caves
+  equipL sword
+  equipR shield
+  ?foe = boss
+    equip crossbow
+</f></font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="ability_ids"><div id="separator"><!---------------------------></div>
+
+·:·:· Appendix - Ability Cooldown IDs ·:·:·
+<font color="#bbbbbb"><f>
+<table>
+  <tbody><tr>
+    <td>Item<br>----</td>
+    <td>Cooldown ID<br>-----------</td>
+    <td><br></td>
+  </tr>
+  <tr>
+    <td>Æther Talisman</td>
+    <td>"talisman_aether"</td>
+  </tr>
+  <tr>
+    <td>Bardiche</td>
+    <td>"bardiche"</td>
+  </tr>
+  <tr>
+    <td>Bashing Shield</td>
+    <td>"bash"</td>
+  </tr>
+  <tr>
+    <td>Blade of the Fallen God</td>
+    <td>"blade"</td>
+  </tr>
+  <tr>
+    <td>Cinderwisp Devour</td>
+    <td>"cinderwisp"</td>
+  </tr>
+  <tr>
+    <td>Cultist Mask</td>
+    <td>"mask"</td>
+  </tr>
+  <tr>
+    <td>Dashing Shield</td>
+    <td>"dash"</td>
+  </tr>
+  <tr>
+    <td>Fire Talisman</td>
+    <td>"talisman_fire"</td>
+  </tr>
+  <tr>
+    <td>Hatchet</td>
+    <td>"hatchet"</td>
+  </tr>
+  <tr>
+    <td>Heavy Hammer</td>
+    <td>"heavy_hammer"</td>
+  </tr>
+  <tr>
+    <td>Lollipop Wand</td>
+    <td>"lollipop_wand"</td>
+  </tr>
+  <tr>
+    <td>Mind Stone</td>
+    <td>"mind"</td>
+  </tr>
+  <tr>
+    <td>Quarterstaff</td>
+    <td>"quarterstaff"</td>
+  </tr>
+  <tr>
+    <td>Skeleton Arm</td>
+    <td>"skeleton_arm"</td>
+  </tr>
+  <tr>
+    <td>Voidweaver Devour</td>
+    <td>"voidweaver"</td>
+  </tr>
+  <tr>
+    <td>Calamity Wand</td>
+    <td>"wand_aether"</td>
+  </tr>
+  <tr>
+    <td>Explosive Wand</td>
+    <td>"wand_fire"</td>
+  </tr>
+  <tr>
+    <td>Frost Wand</td>
+    <td>"wand_ice"</td>
+  </tr>
+  <tr>
+    <td>Plague Wand</td>
+    <td>"wand_poison"</td>
+  </tr>
+  <tr>
+    <td>Reset Wand</td>
+    <td>"wand_vigor"</td>
+  </tr>
+  <tr>
+    <td>Gravity Wand</td>
+    <td>"wand_stone"</td>
+  </tr>
+  <tr>
+    <td>Grasping Staff</td>
+    <td>"staff_aether"</td>
+  </tr>
+  <tr>
+    <td>Infernal Staff</td>
+    <td>"staff_fire"</td>
+  </tr>
+  <tr>
+    <td>Eternity Staff</td>
+    <td>"staff_ice"</td>
+  </tr>
+  <tr>
+    <td>Berserker Staff</td>
+    <td>"staff_poison"</td>
+  </tr>
+  <tr>
+    <td>Prevention Staff</td>
+    <td>"staff_vigor"</td>
+  </tr>
+  <tr>
+    <td>Acrobatic Staff</td>
+    <td>"staff_stone"</td>
+  </tr>
+  <tr>
+    <td>Shovel</td>
+    <td>"shovel"</td>
+  </tr>
+</tbody></table>
+</f></font>
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="sounds"><div id="separator"><!---------------------------></div>
+
+·:·:· Appendix - Sound Effects ·:·:·
+<font color="#bbbbbb">
+Stonescript can play sound effects from the game, based on custom logic.
+
+<eg><f>In this example, the 'unequip' sound is played whenever the player loses health:
+
+var lasthp = hp
+?hp &lt; lasthp
+  play unequip
+lasthp = hp</f></eg>
+
+Most sounds have variations that either play randomly or sequentially. If the same sound is played more than once in a single frame it will be ignored. If more than 5 sounds are played per second they will be throttled.
+
+Here is the full list of sounds available in Stone Story RPG:
+
+acronian_cultist_power_up
+air_hiss
+ant_attack
+ant_death
+ant_hill
+ant_walk
+auggie_voice
+bang_go_forward
+bardiche_cast
+bat_attack
+bat_attack_small
+bat_death
+bat_death_small
+bat_wing
+bat_wing_small
+bearer3_talk
+bearer4_talk
+bearer4_talk_evolving
+bearer5_talk
+bearer_attack
+bearer_attack_hit
+bearer_death
+bearer_evolving
+bearer_scream
+bearer_stealing
+bearer_super_attack
+bell_ringer_attack
+bell_ringer_attack_hit
+blade_drag
+blade_glow
+blade_pallas_attack
+blade_raise
+bomb_cart_explosion
+bomb_cart_fuse
+bomb_cart_move
+boo_voice
+booklet_close
+booklet_open
+booklet_turn_page
+bronze_gate_close
+bronze_gate_locked
+bronze_gate_open
+bronze_guardian_attack1
+bronze_guardian_attack2
+bronze_guardian_attack3
+bronze_guardian_attack4
+bronze_guardian_death
+bronze_guardian_ears_ring
+bronze_guardian_fuse
+bronze_guardian_helmet
+bronze_guardian_power_up
+bronze_guardian_pulling_hammer
+bronze_guardian_removing_hammer
+bronze_guardian_steps
+bronze_guardian_turbine
+buy
+click
+confirm
+controller_death
+controller_whip_attack
+controller_whip_hit
+cross_deadwood_bump
+cross_deadwood_row
+cross_deadwood_splash
+crossbow_cast
+crossbow_hit
+cult_guard_attack
+cult_guard_attack_hit
+cult_marksman_attack
+cult_marksman_attack_hit
+cult_sorcerer_attack
+cult_sorcerer_attack_hit
+cultist_death
+devolved_talk
+dog_bark
+dominotaur_awake
+dominotaur_death
+dominotaur_whip_attack
+dominotaur_whip_hit
+dysangelos_guidance
+dysangelos_guidance_1
+dysangelos_guidance_2
+dysangelos_guidance_3
+dysangelos_intro_talk
+elementalist_aether_attack
+elementalist_aether_attack_hit
+elementalist_aether_blink
+elementalist_death
+elementalist_evolving
+elementalist_fire_attack
+elementalist_fire_attack_hit
+elementalist_fire_blink
+elementalist_ice_attack
+elementalist_ice_attack_hit
+elementalist_ice_blink
+elementalist_poison_attack
+elementalist_poison_attack_hit
+elementalist_poison_blink
+elementalist_vigor_attack
+elementalist_vigor_attack_hit
+elementalist_vigor_blink
+epilogue_devolving
+epilogue_talk
+epliogue_player_evolves
+equip
+error
+falling_stonefolk
+fire_beast_1
+fire_beast_2
+fire_elemental_attack
+fire_elemental_attack_hit
+fire_elemental_awake
+fire_elemental_death
+fire_geyser
+fire_orbs
+first_controller
+fissure_break_apart
+fissure_unmake
+flying_serpent_loop
+frog
+ghost_attack
+ghost_attack_small
+ghost_death
+ghost_death_small
+ghost_loop
+ghost_loop_small
+ghost_tomb_death
+giant_ice_elemental_attack
+grappling_cast
+grappling_hit
+grappling_idle
+hammer_cast
+hammer_hit
+hans_scream
+hans_talk_intro
+hans_talk_reward
+hatchet_cast
+hatchet_hit
+haunted_gate_key_bounce_1
+haunted_gate_key_bounce_2
+haunted_gate_key_bounce_3
+haunted_gate_key_into_gate
+haunted_gate_npc_voice
+haunted_gate_opening
+haunted_gate_point_lost
+haunted_gate_shuffle
+haunted_gate_shuffle_fast
+haunted_gate_torch_off
+haunted_gate_torch_on
+haunted_gate_try_to_open
+ice_elemental_attack
+ice_elemental_attack_hit
+ice_elemental_awake
+ice_elemental_death
+ice_pillar
+insta_kill
+key_drop
+ki_eater_attack
+ki_eater_attack_hit
+ki_eater_awake
+ki_eater_death
+ki_gobbler_attack
+ki_gobbler_attack_hit
+ki_gobbler_awake
+ki_gobbler_death
+ki_slerper_attack
+ki_slerper_attack_hit
+ki_slerper_awake
+ki_slerper_death
+ki_slerper_walk
+level_up
+life_gain
+logo_full
+logo_short
+lost_item_boost
+mask_summon_1
+mask_summon_2
+metal_drop
+mindstone_found
+mindstone_off
+mindstone_on
+mine_walker_attack_a
+mine_walker_attack_b
+mine_walker_attack_hit
+mine_walker_awake
+mine_walker_death
+mine_walker_helmet_break
+mine_walker_step
+morel_punch
+mosquito_attack
+mosquito_death
+mosquito_loop
+mushroom_boss_awake
+mushroom_boss_death
+mushroom_boss_fat_slam
+mushroom_boss_punch
+mushroom_boss_shoot
+mushroom_boss_split
+nagaraja_attack_eat
+nagaraja_attack_lick
+nagaraja_attack_swallow
+nagaraja_awake_roar
+nagaraja_awake_swallow
+nagaraja_awake_tongue_1
+nagaraja_awake_tongue_2
+nagaraja_choir
+nagaraja_dead
+nagaraja_poison_attack
+nagaraja_poison_attack_hit
+nagaraja_tongue_damaged
+nagaraja_tongue_lift
+nagaraja_tongue_smell
+nagaraja_tongue_wrap
+nagaraja_wail
+nagaraja_wail_brick
+open_note
+paint_splat
+pallas_voice
+perfected_attack
+perfected_attack_hit
+perfected_death
+perfected_defense
+perfected_energy_ball
+perfected_energy_ball_hit
+perfected_fly_end
+perfected_fly_loop
+perfected_fly_start
+perfected_summon
+perfected_talk
+pickup_bronze
+pickup_stone
+pickup_success
+pickup_tar
+pickup_wood
+player_death
+player_hit
+player_kick
+player_punch
+poison_adept_attack
+poison_adept_attack_hit
+poison_powerup
+potion_berserk
+potion_cleansing
+potion_defensive
+potion_experience
+potion_healing
+potion_invisibility
+potion_lightning
+potion_lucky
+potion_strength
+potion_vampiric
+progress_1
+progress_2
+progress_3
+progress_4
+progress_5
+progress_6
+progress_7
+progress_8
+progress_9
+prompt_choice
+quarterstaff_cast
+quest_stone_jump
+quest_stone_unlock
+ranting_tree_halt
+ranting_tree_talk_again
+ranting_tree_talk_avenge
+ranting_tree_talk_extra
+ranting_tree_talk_get_out
+ranting_tree_talk_halt
+ranting_tree_talk_how_dare
+ranting_tree_talk_impressive
+ranting_tree_talk_very_well
+scarab_awake
+scarab_bite
+scarab_death
+scarab_horn
+scarab_wings
+scorpion_death
+scotty_a_pleasure
+scotty_a_worthy_opponent
+scotty_deuced
+scotty_failte_back
+scotty_getting_good
+scotty_grr
+scotty_guess_which
+scotty_hell_be_back
+scotty_intro
+scotty_lets_harden
+scotty_make_ye_guess
+scotty_noo_jist
+scotty_out_of_treasure
+scotty_perhaps_the_rules
+scotty_pick_some_treasure
+scotty_shall_we_up
+scotty_there_he_is
+scotty_we_have_wee_use
+scotty_well_met
+scotty_well_then
+scotty_wizard
+scotty_wrong_choice
+scout_arrives
+scout_dialog
+scout_focus
+scout_leaves
+scout_wing
+serpent_attack
+serpent_death
+serpent_handler_release
+serpent_hiss
+serpent_slither
+shield_dash
+shop_door_enter
+shop_door_open
+shovel_cast
+sightstone_cast
+skeletimmy_attack
+skeletimmy_death
+skeleton_boss_arm1
+skeleton_boss_arm2
+skeleton_boss_arm_reconnect
+skeleton_boss_arm_woosh
+skeleton_boss_attack
+skeleton_boss_awake
+skeleton_boss_bone_bounce
+skeleton_boss_death
+skeleton_boss_hand_slam
+skeleton_boss_idle
+skeleton_boss_legs_die
+skeleton_boss_summon_minions
+skeletony_attack
+skeletony_awake_a
+skeletony_awake_b
+skeletony_death
+skeletony_walk
+slave_npc
+slave_outro_chatter
+slave_outro_transition
+slave_outro_voice
+smithy_hammer
+smithy_hammer_fail
+snail_attack
+snail_attack_small
+snail_death
+snail_death_small
+snail_walk
+soul_stone
+soul_stone_drop
+spider_attack
+spider_boss_attack
+spider_boss_awake
+spider_boss_death
+spider_death
+spider_death_small
+spider_eggs_spawn
+spider_walk
+stone_throw_cast
+stone_throw_hit
+sword_cast
+sword_hit
+talisman_reveal
+temple_npc_chant
+temple_npc_clear_throat
+temple_npc_talk
+torch_cast
+torch_hit
+torch_idle
+treasure_close
+treasure_drop
+treasure_drop_common
+treasure_drop_epic
+treasure_drop_giant
+treasure_drop_humble
+treasure_drop_rare
+treasure_item_blue
+treasure_item_cyan
+treasure_item_green
+treasure_item_lost
+treasure_item_pop
+treasure_item_rainbow
+treasure_item_red
+treasure_item_show
+treasure_item_yellow
+treasure_open
+tree_boss_attack
+tree_boss_awake
+tree_boss_death
+tree_boss_idle
+tree_boss_spike
+triskelion_fuse
+ui_starfirst
+ui_starnew
+ui_starold1
+ui_starold2
+ui_starold3
+ui_starold4
+unequip
+uulaa_voice
+wand_aether_cast
+wand_aether_hit
+wand_air_cast
+wand_air_hit
+wand_cast
+wand_drop
+wand_fire_cast
+wand_fire_hit
+wand_hit
+wand_ice_cast
+wand_ice_hit
+wand_poison_cast
+wand_poison_hit
+wand_vigor_cast
+wand_vigor_hit
+waterfall_hook_hit
+waterfall_land
+waterfall_rope_grab
+waterfall_rope_swing
+waterfall_splash
+worm_rider_hop
+xp_tick
+yeti_attack
+yeti_attack_flick
+yeti_attack_hit
+yeti_awake_blow
+yeti_awake_explosion
+yeti_awake_inhale
+yeti_awake_lick
+yeti_blow
+yeti_blow_ice_wall
+yeti_death
+yeti_inhale
+yeti_inhale_lick
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="music"><div id="separator"><!---------------------------></div>
+
+·:·:· Appendix - Music ·:·:·
+<font color="#bbbbbb">
+Stonescript can play music tracks from the game, based on custom logic. Available tracks depend on the platform.
+<eg><f>
+?loc.begin | loc.loop
+  music.Play(temple_0)</f></eg>
+
+Here is the full list of music available in Stone Story RPG:
+
+<eg>Boiling Mine</eg>
+bronze_guardian_3
+bronze_guardian_4
+bronze_guardian_5
+bronze_guardian_cyan
+bronze_mine_0
+bronze_mine_1
+bronze_mine_2
+bronze_mine_3
+bronze_mine_4
+bronze_mine_5
+bronze_mine_cyan
+slave_outro_climb
+slave_outro_loop
+
+<eg>Caves of Fear</eg>
+caustic_caves
+spider_boss
+
+<eg>Deadwood</eg>
+cross_deadwood_river
+cross_deadwood_wind
+deadwood_0
+deadwood_1
+deadwood_2
+deadwood_3
+deadwood_4
+deadwood_5
+deadwood_cyan
+tree_boss
+waterfall_descent
+poena
+
+<eg>Haunted Halls</eg>
+skeleton_boss
+undead_crypt_0
+undead_crypt_1
+undead_crypt_2
+undead_crypt_3
+undead_crypt_4
+undead_crypt_5
+undead_crypt_cyan
+undead_crypt_intro
+
+<eg>Icy Ridge</eg>
+bridge_broken
+bridge_crossing
+icy_ridge_0
+icy_ridge_1
+icy_ridge_2
+icy_ridge_3
+icy_ridge_4
+icy_ridge_5
+icy_ridge_cyan
+yeti
+
+<eg>Mushroom Forest</eg>
+fire_loop
+fungus_forest_0
+fungus_forest_1
+fungus_forest_2
+fungus_forest_3
+fungus_forest_4
+fungus_forest_5
+fungus_forest_cyan
+mushroom_boss
+mushroom_boss_cyan
+shop
+
+<eg>Rocky Plateau</eg>
+rocky_plateau_0
+rocky_plateau_1
+rocky_plateau_2
+rocky_plateau_3
+rocky_plateau_4
+rocky_plateau_5
+rocky_plateau_epilogue
+rocky_plateau_fight
+rocky_plateau_talk
+
+<eg>Temple</eg>
+nagaraja
+temple_0
+temple_1
+temple_2
+temple_3
+temple_4
+temple_5
+temple_cyan
+
+<eg>Events</eg>
+event_fall
+event_hamartia
+event_spring
+event_stonejam
+event_summer
+event_winter
+
+<eg>Other</eg>
+credits
+main_menu
+bone_factory
+osteophone
+uulaa
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="ambient"><div id="separator"><!---------------------------></div>
+
+·:·:· Appendix - Ambient Loops ·:·:·
+<font color="#bbbbbb">
+Stonescript can play multiple layers of background ambient audio, based on custom logic.
+<eg><f>
+?loc.begin
+  ambient.Stop()
+  ambient.Add(ambient_crypt)</f></eg>
+
+Here is the full list of ambient audio available in Stone Story RPG:
+
+ambient_mines
+ambient_caves
+ambient_bronze_gate
+ambient_deadwood
+ambient_mushroom
+ambient_bridge
+ambient_icy
+ambient_cave
+ambient_rocky
+ambient_temple
+ambient_crypt
+ambient_haunted_gate
+ambient_pallas
+waterfall_a
+waterfall_b
+waterfall_c
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<div id="scripts"><div id="separator"><!---------------------------></div>
+
+·:·:· Appendix - All importable scripts ·:·:·
+<font color="#bbbbbb">
+import Chisel
+import CozyCave
+import Fishing
+import TrainAdventure
+
+import Cosmetics/Acrocorn
+import Cosmetics/AcronianGuardian
+import Cosmetics/AuroraBorealis
+import Cosmetics/BadApple
+import Cosmetics/Beach
+import Cosmetics/Bolesh
+import Cosmetics/CaveParty
+import Cosmetics/ChristmasTree
+import Cosmetics/ChrWings
+import Cosmetics/ConfettiHead
+import Cosmetics/CultGroup
+import Cosmetics/DragonWorm
+import Cosmetics/Drill
+import Cosmetics/Explosion
+import Cosmetics/FireFly
+import Cosmetics/Fireworks
+import Cosmetics/FrogInvasion
+import Cosmetics/Giftbag
+import Cosmetics/Infected
+import Cosmetics/Knight
+import Cosmetics/Mech
+import Cosmetics/MineManager
+import Cosmetics/MushroomAnt
+import Cosmetics/MushroomHead
+import Cosmetics/Party
+import Cosmetics/PartyNoisemaker
+import Cosmetics/Portobello
+import Cosmetics/PumpkinCarving
+import Cosmetics/Pumpkins
+import Cosmetics/quips
+import Cosmetics/SantaFlyingSleigh
+import Cosmetics/SillyGoose
+import Cosmetics/SleepyStonehead
+import Cosmetics/SpookyScarySkeletons
+import Cosmetics/SpringBloom
+import Cosmetics/StoneClause
+import Cosmetics/StoneheadFall
+import Cosmetics/StoneHeadless
+import Cosmetics/StonePhone
+import Cosmetics/SuperStoneHead
+import Cosmetics/TheSun
+import Cosmetics/Turret
+import Cosmetics/TwinSuns
+import Cosmetics/WavyScarf
+import Cosmetics/WitchBroom
+
+import Foes/FlowerFoes
+import Foes/PallasCrown
+import Foes/PumpkinWraith
+import Foes/SurferGuardian
+
+import Games/2048
+import Games/Arena
+import Games/Asteroids
+import Games/Blackjack
+import Games/BurgerRush
+import Games/cColorTetris
+import Games/cGomoku
+import Games/cTetris
+import Games/DigitsPuzzle
+import Games/FeedABat
+import Games/FlyupText
+import Games/FrogBog
+import Games/FrogJump
+import Games/GetawayDriver
+import Games/GrowPlants
+import Games/KillerRPG
+import Games/Metallophone
+import Games/Minesweeper
+import Games/PlayingCards
+import Games/Simon
+import Games/Snake
+import Games/SpearThrowing
+import Games/SSRPGIdle
+import Games/StoneasaurGame
+import Games/StoneBoxman
+import Games/StoneDungeon
+import Games/Stonemon
+import Games/Sudoku
+import Games/SudokuEnchant
+import Games/SwordGame
+import Games/TowerDefense
+import Games/WhackaMole
+
+import Hats/CatHat
+import Hats/ChefHat
+import Hats/DefectFaceplate
+import Hats/DiscoVisor
+import Hats/Enchanthead
+import Hats/Headphones
+import Hats/Helmet
+import Hats/HrimnirHair
+import Hats/IroncladMask
+import Hats/JesterHat
+import Hats/LanternTalisman
+import Hats/MushroomHat
+import Hats/PirateHat
+import Hats/ReindeerHead
+import Hats/SantaHat
+import Hats/ShuffleHat
+import Hats/SilentSkull
+import Hats/Skully
+import Hats/StarCloak
+import Hats/Treeman
+import Hats/WitchHat
+
+import Pets/Bear
+import Pets/BlackHole
+import Pets/Boo
+import Pets/Bunny
+import Pets/CatBalloon
+import Pets/CavePets
+import Pets/Chick
+import Pets/Crab
+import Pets/Cranius
+import Pets/Dog
+import Pets/Dracula
+import Pets/Dragon
+import Pets/Fly
+import Pets/FoesNoMore
+import Pets/Frog
+import Pets/JackOLantern
+import Pets/LegsTurkey
+import Pets/Mushroom
+import Pets/Panda
+import Pets/Pomeranian
+import Pets/RoyaltyDeliverer
+import Pets/Skully
+import Pets/Snail
+import Pets/SnowBunny
+import Pets/Snowman
+import Pets/Spider
+import Pets/SpringBuddy
+import Pets/Stonehead
+import Pets/Sun
+import Pets/TarPusher
+import Pets/Wisp
+
+import UI/A2S
+import UI/BetterInfo2
+import UI/BetterText
+import UI/BorderClock
+import UI/BossBar
+import UI/BossHealthBar
+import UI/BragMeter
+import UI/Calculator
+import UI/CDTime
+import UI/ClickAbilities
+import UI/damageFlash
+import UI/DragController
+import UI/FaceHUD
+import UI/FoeStateTracker
+import UI/FreeChestTracker
+import UI/InfoFloat
+import UI/LiveSplit
+import UI/MindstoneButton
+import UI/MiniMap
+import UI/MusicBox
+import UI/OkamiroyUtils
+import UI/PefWindow
+import UI/PlayerStateTracker
+import UI/RecordPlayer
+import UI/ScrollText
+import UI/StealMeter
+import UI/ToolBelt
+import UI/VisualStatusEffects
+import UI/ChiselFiles/Additional Documentation
+import UI/ChiselFiles/SetLayer
+import UI/FancyUI/colour
+import UI/FancyUI/fancyui
+import UI/FancyUI/print
+
+import Weapons/ArmorGenerator
+import Weapons/EmbueDaggers
+import Weapons/LanternTalisman
+import Weapons/MajPack
+import Weapons/MajVines
+import Weapons/PsyCrusher
+import Weapons/RecoilKick
+import Weapons/RootBats
+import Weapons/Scythe
+import Weapons/ShockwaveWhip
+import Weapons/SpellBook
+</font>
+
+<a href="https://stonestoryrpg.com/stonescript/beta.html#"><font color="#505050">^Back to top</font></a>
+</div>
+
+<font color="#505050">
+Copyright Martian Rex, Inc. 2020
+
+</font>
+</div>
+
+<br>
+
+<style>#myIframe { position:absolute; top: 0px; left: 0px; } @media print {  #myIframe { min-width: 100% ;   max-width: 100%;  width: 100%;  border: none; } body {width: 21cm; height: 100%; max-width: 21cm; }  html {height: 100%; width: 21cm; max-width: 21cm;}  @page { margin: 0.4;} }</style></body></html>

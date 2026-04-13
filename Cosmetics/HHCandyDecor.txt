@@ -1,0 +1,285 @@
+﻿//*******************************
+// Haunted Halls Candy Decor
+//*******************************
+// Version: 1.0
+//
+// Designed and verified on
+// SSRPG v4.20.2
+//
+// Author:
+// Created by TeumessianSven
+// on the Stone Story RPG
+// Discord
+//
+//
+// Description:
+// ------------
+// Small tweaks to the Haunted
+// Halls to celebrate the 
+// return of one of the 
+// tastiest items in the game: 
+// CANDY! 
+//
+//
+//   )     (
+//  ((_´¯`_;)
+//   ¯¯\_/¯¯
+//   /¯'v'¯\
+//  />oVyo<y\
+// ( ¡¯¯¯¯¯¡ )
+//  `-`───´-´
+//   /  _  \
+//  ( / ))\ )
+//   \\ (_//->
+//   /(   )\
+//
+//      __     __
+//     /-´\.-./`-\
+// __.´-´ ((_)) `-`.__
+// `--´--.)) (´.--`--´
+//  >o< _/'( ' \_ >o<
+//   ¯¯`-´(   )`-´¯¯
+//        |   |
+//        '   '
+//       /     \
+//      /_______\
+//        '-＂-'
+//
+//
+// Warning:
+// ------------------------
+// Since this code constantly
+// searches the screen for 
+// the statue locations, it
+// may cause lag on slower 
+// systems.
+//
+// Quickstart Instructions:
+// ------------------------
+// Copy this code and paste
+// into your mindstone, and
+// that's it!
+//
+// Advanced Instructions:
+// ----------------------
+// The following variables 
+// can be modified and the 
+// following functions used 
+// to tailor your decor: 
+//
+//
+// Configurables:
+// ----------------------
+//
+// candy1color: Angels Left Candy Color
+//
+// candy2color: Angels Right Candy Color
+//
+// bowlcolor: Demons Bowl Color
+//
+// candycolor1: Demons Bowl Candy Colors
+// candycolor2
+// candycolor3
+// candycolor4
+// candycolor5
+//
+//
+// Functions for Tailoring:
+// ------------------------
+//
+// After setting the colors, use
+// UpdateColors() to implement them.
+//
+//
+// Enjoy!
+//
+//
+//*******************************
+// Version Information
+//*******************************
+//
+// 1.0: Initial Release
+//
+//*******************************
+
+//*******************************
+// User Configurable Variables 
+//*******************************
+
+var candy1color = #a85b0c
+var candy2color = #a85b0c
+var bowlcolor   = #808080 //#565656
+var candycolor1 = #a85b0c
+var candycolor2 = #20660b
+var candycolor3 = #ff217c
+var candycolor4 = #5a00b3
+var candycolor5 = #a85b0c
+
+
+//*******************************
+// ASCII Art
+//*******************************
+
+var bowlart = ascii
+#>oVyo<y
+#¡¯¯¯¯¯¡
+##`───´#
+asciiend
+
+var candyart = ascii
+>o<
+asciiend
+
+var Transparent = ui.AddStyle("
+^###
+^###
+^###")
+
+
+//*******************************
+// Global Variables
+//*******************************
+
+var candy1 = null
+var candy2 = null
+var bowl = null
+
+var initialized = 0
+
+//Max Search Boundaries
+var fbi = 6//4
+var lbi = screen.h/2-4//screen.h/2
+var fbj = 0
+var lbj = screen.w-1
+
+//Current Search Boundaries
+var fi = 4
+var li = screen.h/2
+var fj = 1
+var lj = screen.w
+
+var p1 = ［
+＂_＂, ＂_＂, ＂.＂, //Angel Identifying Chars
+＂'＂, ＂v＂, ＂'＂, //Demon Identifying Chars
+1, 2,  //Angel Candy Offset
+-3, 1］//Demon Sign/Bowl Offset
+
+
+//*******************************
+// Functions
+//*******************************
+
+func InitArt()
+  candy1 = ui.AddAnim(candyart)
+  candy1.anchor = top_left
+  candy1.dock = top_left
+  candy1.color = candy1color
+
+  candy2 = ui.AddAnim(candyart)
+  candy2.anchor = top_left
+  candy2.dock = top_left
+  candy2.color = candy2color
+
+  bowl = ui.AddPanel()
+  bowl.anchor = top_left
+  bowl.dock = top_left
+  bowl.style = Transparent
+  bowl.w = 9
+  bowl.h = 3
+
+  var anim = ui.AddAnim(bowlart)
+  anim.color = bowlcolor
+  bowl.Add(anim)
+
+  var text = ui.AddText()
+  text.w = 7
+  text.h = 1
+  text.y = -1
+  text.color = bowlcolor
+  text.text = "[color=" + candycolor1 + "]>o[/color]" +
+             ^"[color=" + candycolor2 + "]V[/color]" +
+             ^"[color=" + candycolor3 + "]y[/color]" +
+             ^"[color=" + candycolor4 + "]o<[/color]" +
+             ^"[color=" + candycolor5 + "]y[/color]"
+  bowl.Add(text)
+//
+
+
+func PlaceDecor()
+  candy1.visible = false
+  candy2.visible = false
+  bowl.visible = false
+
+  for i = fi..li
+    for j = fj..lj
+      // Check for Angel
+      ?draw.GetSymbol(j,i) = p1［0］ &
+      ^draw.GetSymbol(j+1,i) = p1［1］ &
+      ^draw.GetSymbol(j+2,i) = p1［2］ 
+        fi = i - 2
+        li = i + 2
+        fj = j - 3
+        lj = j + 3
+        candy1.x = j + p1［6］
+        candy1.y = i + p1［7］
+        candy2.x = j + p1［6］ + 14
+        candy2.y = i + p1［7］
+        candy1.visible = inherit
+        candy2.visible = inherit
+        return
+
+      // Check for Demon
+      :?draw.GetSymbol(j,i) = p1［3］ &
+      ^draw.GetSymbol(j+1,i) = p1［4］ &
+      ^draw.GetSymbol(j+2,i) = p1［5］
+        fi = i - 2
+        li = i + 2
+        fj = j - 3
+        lj = j + 3
+        bowl.x = j + p1［8］
+        bowl.y = i + p1［9］
+        bowl.visible = inherit
+        return
+
+  fi = fbi
+  li = lbi
+  fj = fbj
+  lj = lbj
+
+  return
+// 
+
+func UpdateColors()
+  candy1.color = candy1color
+  candy2.color = candy2color
+  bowl.children[0].color = bowlcolor
+  bowl.children[1].text = "[color=" + candycolor1 + "]>o[/color]" +
+                         ^"[color=" + candycolor2 + "]V[/color]" +
+                         ^"[color=" + candycolor3 + "]y[/color]" +
+                         ^"[color=" + candycolor4 + "]o<[/color]" +
+                         ^"[color=" + candycolor5 + "]y[/color]"
+//
+
+
+//*******************************
+// Main Code 
+//*******************************
+
+?time <= 1 | initialized = 0
+  ?string.Equals(loc.id, ＂undead_crypt＂)
+    InitArt()
+    initialized = 1
+  :
+    initialized = -1
+    candy1.visible = false
+    candy2.visible = false
+    bowl.visible = false
+:?initialized > 0
+  PlaceDecor()
+//
+
+
+//*******************************
+// End of File
+//*******************************
+  

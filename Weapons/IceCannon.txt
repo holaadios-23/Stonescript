@@ -1,0 +1,82 @@
+//-----IceCannon-----\\
+//by:Ditsaid v1.0
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 1
+ >h-3,1,#FF9400,ascii
+‹❄≡══╤══］◘
+##
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 1
+ >h-3,1,#FF3A00,ascii
+##≡#####］
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 2
+ >h-3,1,#FF9400,ascii
+‹❄═≡══╤］─◘
+##
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 2
+ >h-3,1,#FF3A00,ascii
+###≡###］
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 3
+ >h-3,1,#FF9400,ascii
+‹❄══≡╤］──◘
+##
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 3
+ >h-3,1,#FF3A00,ascii
+####≡#］
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 1
+ >h-1,1,#white,ascii
+####
+ |/'    
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 2
+ >h-1,1,#white,ascii
+####
+ |/´
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 3
+ >h-1,1,#white,ascii
+####
+ |//
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >= 1
+ >h-3,1,#02E5FF,ascii
+#❄
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >=2
+ >h-4,1,#02E5FF,ascii
+##+
+#`
+asciiend
+
+?item.right = ice socketed_Crossbow &
+^item.right.state >=3
+ >h-4,1,#02E5FF,ascii
+.#x
+#,
+.
+asciiend

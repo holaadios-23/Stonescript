@@ -1,0 +1,12 @@
+// 
+//         -:-:-  #PRISMATIC -:-:-
+//               By Obsidian 
+//yes its so basic vote for me pleasee
+
+//HOW TO USE
+// >`X,Y,@prismatic@,yourtexthere
+var prismatic = color.Random()
+?time % 30 = 0
+  prismatic = color.Random()
+
+//basic, useless and pretty :3 

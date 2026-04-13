@@ -1,0 +1,359 @@
+/*\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+       Bird
+       v1.0
+ by Incoherent Toast
+
+Bird pet that follows the player. 
+It flies to any location the player clicks/taps.
+And it will eat fire flies if they're imported (Cosmetics/FireFly)
+
+import Pets/Bird
+
+If you want to tweak the colours you can do so like this:
+
+var Bird = import Pets/Bird
+Bird.Bird.color = #123456
+Bird.ChestLayer.color = #BB5000
+?!loc.begin
+  import Pets/Bird
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
+var TakeOffBG = ascii
+
+#####,-.
+###,'. '>
+##/  /,'
+,'/'\
+####``
+%%
+
+#######,-.
+###.´¯`  '>
+##/   / ,'
+#/  ,' /
+#´´##,
+%%
+
+#.``._#,-.
+;     `  '>
+`.      ,'
+##`-,/ /
+####,,'
+asciiend
+
+var TakeOffFG = ascii
+
+#####,-.
+###### '>
+###  #,'
+####\
+####``
+%%
+
+#######,-.
+#######  '>
+###   # ,'
+##  ## /
+#####,
+%%
+
+#######,-.
+#     #  '>
+##      ,'
+###### /
+####,,'
+asciiend
+
+var LandBG = ascii
+
+#.``._#,-.
+;     `  '>
+`.      ,'
+##`-,/ /
+####,,'
+%%
+
+#######,-.
+###.´¯`  '>
+##/   / ,'
+#/  ,' /
+#´´#,,'
+%%
+
+#.``._#,-.
+;     `  '>
+`.      ,'
+##`-,/ /
+####,,'
+%%
+
+#######,-.
+###.´¯`  '>
+##/   / ,'
+#/  ,' /
+#´´#,,'
+%%
+
+#####,-.
+###,'. '>
+##/  /,'
+,'/'\
+####``
+asciiend
+
+var LandFG = ascii
+
+#######,-.
+#     #  '>
+##      ,'
+####,# /
+####,,'
+%%
+
+#######,-.
+#######  '>
+###   # ,'
+##  ## /
+####,,'
+%%
+
+#######,-.
+#     #  '>
+##      ,'
+####,# /
+####,,'
+%%
+
+#######,-.
+#######  '>
+###   # ,'
+##  ## /
+####,,'
+%%
+
+#####,-.
+###### '>
+###  #,'
+####\
+####``
+asciiend
+
+var FlyingBG = ascii
+###.`.
+##;   `.,-.
+##`. `    '>
+###`,_ _,'
+###'##¯ 
+%%
+
+####.--.,-.
+##/,','   '>
+####,_ _,'
+###'##¯
+%%
+
+########,-.
+##``,´¯`  '>
+###/    ;'
+###;'`./
+asciiend
+
+var FlyingFG = ascii
+
+########,-.
+##########'>
+####,_ _,'
+###'##¯ 
+%%
+
+########,-.
+##########'>
+#####_ _,'
+###'##¯
+%%
+
+########,-.
+##``####  '>
+########;'
+########
+asciiend
+
+var Timer = 0
+
+var RunFunc = Stand
+var BirdXPosition
+var BirdYPosition
+var BirdYVector = 0
+var BirdXVector = 1
+var ResetPosition
+var Bird
+
+var FF = import Cosmetics/FireFly
+var Boom = import Cosmetics/Explosion
+var ExplosionsEnabled = false
+
+var FlyX
+var FlyY
+var TargetAquired = 0
+
+var PlayerX
+PlayerX = pos.x
+
+var Init = true
+?loc.loop
+  StartUp()
+
+var ChestLayer
+
+func StartUp()
+  Init = false
+  TargetAquired = 0
+  Bird = ui.AddAnim(TakeOffBG)
+  Bird.loop = false
+  Bird.gamePause = true
+  Bird.duration = 4
+  Bird.anchor = top_left
+  Bird.dock = top_left
+  Bird.pivotX = 4
+  BirdXPosition = pos.x + 10
+  BirdYPosition = pos.z - 5
+  Bird.y = BirdYPosition
+  Bird.color = #303020
+  ChestLayer = Bird.AddLayer(TakeOffFG)
+  ChestLayer.pivotX = 4
+  ChestLayer.color = #906010
+  ResetPosition = true
+
+func Stand()
+  return
+
+func FlyInit()
+  RunFunc = TakeOff
+  Bird.Load(TakeOffBG)
+  ChestLayer.Load(TakeOffFG)
+  Bird.loop = false
+  Bird.duration = 4
+  Bird.Play()
+
+func TakeOff()
+  ?!Bird.playing
+    Bird.Load(FlyingBG)
+    ChestLayer.Load(FlyingFG)
+    Bird.loop = true
+    Bird.Play()
+    RunFunc = Fly
+
+func Fly()
+  Timer--
+  ?time % 3 = 0
+     play hatchet_cast 100
+  ?Timer = 0
+    Bird.Load(LandBG)
+    ChestLayer.Load(LandFG)
+    Bird.loop = false
+    Bird.duration = 8
+    Bird.Stop()
+    Bird.Play()
+  MoveFoward()
+
+func MoveFoward()
+  BirdXPosition += BirdXVector
+  ?BirdYVector ! 0 & math.Abs(BirdYVector) < 90
+    ?time % (90/BirdYVector) = 0
+      ?BirdYVector > 0 
+        BirdYPosition--
+      :
+        BirdYPosition++
+      Bird.y = BirdYPosition
+
+func FlyToPoint(x,y)
+  Timer = (math.Abs(screen.ToWorldX(x) - BirdXPosition)*2) / 5
+  ?screen.ToWorldX(x) < BirdXPosition
+    BirdXVector = -1
+    Bird.flipX = true
+    ChestLayer.flipX  = true
+  :
+    BirdXVector = 1
+    Bird.flipX = false
+    ChestLayer.flipX  = false
+  FlyInit()
+  BirdYVector = (BirdYPosition - (screen.ToWorldZ(y) -5))*2
+
+func RandRange(Min, Max)
+  var Range = Max - Min + 1
+  return (rng % Range) + Min
+
+func Run()
+  ?Init
+    StartUp()
+
+  ?ExplosionsEnabled
+    Boom.ExplosionStatus()
+
+  ?rng > 9700
+    var RandSound = RandRange(1, 3) 
+    play haunted_gate_shuffle_fast 230
+    ?math.Clamp(Bird.x,0,screen.w) = Bird.x
+      >`@Bird.x@,@Bird.y@,Peep!
+
+  ?Bird.playing
+    ?Bird.duration = 8 & time % 3 = 0
+      MoveFoward()
+    :
+      MoveFoward()
+  Bird.x = screen.FromWorldX(BirdXPosition)
+
+  ?Timer
+    RunFunc()
+    return
+
+  ?!Bird.playing 
+    ?pos.x < BirdXPosition
+      Bird.flipX = true
+      ChestLayer.flipX  = true
+    :
+      Bird.flipX = false
+      ChestLayer.flipX  = false
+
+  ?FF.FlyListCount > 0 & TargetAquired = 0
+    ?!Bird.playing
+      ?rng > 9050 
+        var Rand = RandRange(0, FF.FlyListCount-1)
+        FlyX = FF.FlyList[Rand].BasePanel.x
+        ?FlyX > 30 & FlyX < 100
+          TargetAquired = Rand
+
+  ?TargetAquired > 0
+      FlyX = FF.FlyList[TargetAquired].BasePanel.x + 4
+      FlyY = FF.FlyList[TargetAquired].BasePanel.y + 2
+      FlyToPoint(FlyX,FlyY)
+      ?math.Abs(Bird.x - FlyX) < 5 & math.Abs(Bird.y - FlyY) < 3
+        var PointX = RandRange(screen.w/2,screen.w)
+        for a = 0..1
+          a--
+          ?math.Abs(PointX - Bird.x) < 5
+             PointX = RandRange(screen.w/2,screen.w)
+          :
+            break
+        FlyToPoint(PointX,screen.FromWorldZ(pos.z + RandRange(-3,3)))
+        FF.FlyList[TargetAquired].XBaseMove -= 100
+        ?ExplosionsEnabled
+          Boom.Explosion(FlyX,FlyY)
+        TargetAquired = 0
+        play pickup_tar 200
+  :?key = "PrimaryBegin"
+    ?!Bird.playing | true
+      FlyToPoint(input.x, input.y)
+  :?PlayerX - BirdXPosition > 20
+    ?!Bird.playing
+      Timer = 30
+      BirdXVector = 1
+      FlyInit()
+      BirdYVector = BirdYPosition - (pos.z + RandRange(-10,3))
+
+  ?time ! totaltime & ResetPosition
+    ?loc=harder
+      BirdXPosition = PlayerX - 20
+      ResetPosition = false
+
+Run()

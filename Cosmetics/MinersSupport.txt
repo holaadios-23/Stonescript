@@ -1,0 +1,146 @@
+/*Made by StoneMan (GaelDavino)
+ Version 1.0 
+ Copy & paste or import*/
+
+
+var animframes1 = ［ascii
+#######o>##
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o>##
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/#
+######/|##
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend］
+var i = 0
+>h-25,1,#FFFFFF,@animframes1［i］@
+?totaltime % 7 = 0
+  i++
+?i >= animframes1.Count()
+  i = 0
+
+
+var animframes2 = ［ascii
+#######o>#
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o>##
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend］
+var i = 0
+>h-35,3,#FFFFFF,@animframes2［i］@
+?totaltime % 7 = 0
+  i++
+?i >= animframes2.Count()
+  i = 0
+
+var animframes3 = ［ascii
+#######o>#
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o>##
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend］
+var i = 0
+>h-35,-1,#FFFFFF,@animframes3［i］@
+?totaltime % 7 = 0
+  i++
+?i >= animframes3.Count()
+  i = 0
+
+var animframes4 = ［ascii
+#######o>#
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o>##
+######/|###
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+#######o/##
+######/|###
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend］
+var i = 0
+>h-46,1,#FFFFFF,@animframes4［i］@
+?totaltime % 7 = 0
+  i++
+?i >= animframes4.Count()
+  i = 0
+
+
+>h-25,-3,#FFFFFF,ascii
+ _______________
+|¡FOR THE TORCH!|
+/¯¯¯¯¯¯¯|¯¯¯¯¯¯¯
+asciiend
+
+
+
+var animframes5 = ［ascii
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend,ascii
+.#~#.|¯¯¯¯|
+#####()--()
+asciiend,ascii
+~#.#~|¯¯¯¯|
+#####()--()
+asciiend］
+var i = 0
+>h-8,3,#FFFFFF,@animframes5［i］@
+?totaltime % 7 = 0
+  i++
+?i >= animframes5.Count()
+  i = 0

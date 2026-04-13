@@ -1,0 +1,71 @@
+//*******************************
+// Coffee Weapons
+//*******************************
+// Version: 1.0
+//
+// Author:
+// Gemini Code Assist
+//
+// Description:
+// ------------
+// ¿Cansado de la violencia? ¿Necesitas una pausa?
+// Este script reemplaza tus armas con una
+// reconfortante taza de café.
+//
+// ¡Disfruta de tu bebida caliente en la batalla!
+//
+// Quickstart Instructions:
+// ------------------------
+// 1. Guarda este archivo como CoffeeWeapons.txt
+//    en tu carpeta Stonescript/Cosmetics/
+// 2. Añade la siguiente línea a tu Piedra Mental:
+//    import Cosmetics/CoffeeWeapons
+//
+//*******************************
+
+// --- Variables de Configuración ---
+
+// Color de la taza de café
+var coffeeCupColor = #966F33 // Un bonito color marrón
+
+// Color del vapor
+var steamColor = #E0E0E0
+
+// --- Variables Internas ---
+var steamAnim
+var coffeeCup
+var initialized = false
+
+// --- Inicialización ---
+func Init()
+    ?initialized
+        return
+
+    // Arte ASCII para la taza de café
+    coffeeCup = ascii
+ _
+( `)
+ \=)
+  `-/
+asciiend
+
+    // Animación para el vapor
+    steamAnim = ui.AddAnim(ascii
+( (
+ ) )
+%%
+ ) )
+( (
+asciiend)
+    steamAnim.duration = 40
+    steamAnim.loop = true
+    steamAnim.color = steamColor
+    steamAnim.Play()
+
+    initialized = true
+
+// --- Bucle Principal ---
+Init()
+
+draw.Overhead(0, -2, coffeeCupColor, coffeeCup)
+draw.Overhead(0, -5, steamAnim)

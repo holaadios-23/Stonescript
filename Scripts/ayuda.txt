@@ -1,0 +1,126 @@
+
+import UI/MindstoneButton
+
+//import Timer
+//import prints
+
+var aacItems=［＂trisk＂,＂star＂］
+?item.right.state=3
+ ?item.left.state=-1
+  equipR @aacItems ［time%2］@
+  equip @item.right@
+ :
+  equipR @aacItems［0］@
+  equipR @item.right@
+?item.left.state=3
+ equipL @aacItems［1］@
+ equipL @item.left@
+
+
+var fd
+fd = foe.distance
+var igc = item.GetCooldown
+var ica = item.CanActivate
+
+func Staff()
+ ?ica() & igc(＂quarterstaff＂)=0
+  equip quarterstaff
+  activate R
+  return true
+ return false
+
+func dah()
+ ?igc(＂dash＂)<=0
+  equipR dash
+ :?igc(＂bash＂)<=0
+  equipR bash
+
+func BladeAt(i)
+ return screen.i=i & fd<29 & Blade()
+
+var waitToBlade=0
+func Blade()
+ ?igc(＂blade＂)<=0
+  waitToBlade++
+  screen.Next()
+  ?waitToBlade>18
+   equip blade
+   activate R
+   screen.ResetOffset()
+   waitToBlade=0
+  return true
+ return false
+
+func fire(x)
+ return talisman("fire_talisman","cinderwisp",x)
+
+func aet(x)
+ return talisman("aether_talisman","voidweaver",x)
+
+func talisman(name,s,x)
+ ?totaltime>1 & (summon.GetId()!s)=x
+  equipR @name@
+  equipl trisk
+  ?item.GetCooldown(name)=0
+   activate R
+  return true
+ return false
+
+func bardiche()
+ return exec(＂bardiche＂,＂bardiche＂)
+
+func heavy()
+ return exec(＂heavy_hammer＂,＂heavy＂)
+
+func mask()
+ return exec(＂mask＂,＂mask＂)
+
+func exec(k,v)
+ ?ica() & (igc(k)<=0 | item.right=v &
+ ^item.right.state=2)
+  equip @v@
+  activate R 
+  return true
+ return false
+
+var moonJTime=0
+func moonju(w1,w2)
+ ?buffs.string=berserk
+  ?moonJTime%4=0
+   equipR moon
+   equipL @w1@
+  ?moonJTime%4=1
+   equipR @w1@
+   equipL @w2@
+  :?moonJTime%4=2
+   equipR moon
+   equipL @w2@
+  :
+   equipR @w2@
+   equipL @w1@
+ //: //non berserk
+  moonJTime++
+
+func Moondial(w1,w2)
+ var f=3
+ ?buffs.string=berserk
+  f=2
+ var step=totaltime%f
+ ?step=0
+  equipL moon
+  equipR @w1@
+ :?step=1
+  equipL moon
+  equipR @w2@
+ :?step=2
+  equipR @w1@
+  equipL @w2@
+
+var I = 0
+?loc.loop
+ I++
+
+?loc = rocky
+ ?I= 0
+  equipR mask
+  

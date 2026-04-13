@@ -1,0 +1,486 @@
+﻿//*******************************
+// PetSeagull
+//*******************************
+// Version: 1.0
+//
+// Designed and verified on
+// SSRPG v4.17.2
+//
+// Author:
+// Created by TeumessianSven
+// on the Stone Story RPG
+// Discord
+//
+//
+// Description:
+// ------------
+// Travel the world with
+// a pet seagull in tow! He's
+// a little shy so he won't get
+// too close, but you might have
+// stuff he wants so he's going
+// to follow you on your 
+// adventures. Just be careful 
+// not to get pooped on!
+//
+//       _
+//     _('═.
+// _.:¯_)_)
+//  ¯¯││
+//    ^^
+//       _
+//     _('═.
+// ─.:¯_)_)
+//   '¯||
+//   … ^^
+// 
+// …──…… _
+//  ¯── ¯\\ _
+//    ¯─_ \('═.
+//   ─═:´'_`_)
+//      ¯¯|| 
+//        ^^
+//
+// Quickstart Instructions:
+// ------------------------
+// Copy this code and paste
+// into your mindstone, and
+// that's it!
+//
+// Advanced Instructions:
+// ----------------------
+// The following variables 
+// can be modified to tailor
+// your pet seagull experience:
+//
+// bodycolor:  Color of the body
+//
+// legscolor:  Color of the legs
+//
+// eyescolor:  Color of the eyes
+//
+// textcolor:  Color of the text
+//
+// gulldistx:  Distance sun stays
+//             back from player
+//
+// gulldisty:  Distance sun stays
+//             above player
+//
+// Enjoy!
+//
+//
+//*******************************
+// Version Information
+//*******************************
+//
+// 1.0: Initial Release
+//
+//*******************************
+
+//*******************************
+// User Configurable Variables 
+//*******************************
+
+var bodycolor  = #white
+var legscolor  = #E8B233
+var eyescolor  = #white
+var textcolor  = #red
+var gulldistx  = -22
+var gulldisty  = 0
+
+//*******************************
+// Global Variables
+//*******************************
+
+var initialized = null
+var gullpnl  = null
+var bodyanim = null
+var legsanim = null
+var poopanim = null
+var flapanim = null
+var eyesanim = null
+var eyestext = null
+var gulltext = null
+var currx = -20
+var curry = pos.z
+var lastPlayerZ = pos.z
+var gullcorry = -6 //correct for gullpnl y pos
+var state = 0
+var count = 0
+var seqnum = 0
+var frame_seq = ［0,1,2,3,4,3,2,3,4,3,2,1,0］
+var pause_seq = ［1,1,1,1,4,1,1,1,4,1,1,1,0］
+
+//*******************************
+// ASCII Art
+//*******************************
+
+var body = ascii
+######_
+####_('═.
+_.:¯_)_)
+#¯¯¯
+asciiend // 0
+
+var legs = ascii
+#||
+#^^
+%% // 0
+#|\
+#^#`
+%% // 1
+#|\
+#^#^
+%% // 2
+#/|
+´#^
+%% // 3
+#||
+#^^
+%% // 4
+#\/
+#^`
+%% // 5
+#\/
+#^^
+%% // 6
+#\/
+#´^
+asciiend // 7
+
+var poop = ascii
+######_
+####_('═.
+_.:¯_)_)
+#¯¯¯
+#
+%% // 0
+######_
+####_('═.
+─.:¯_)_)
+##'¯
+#
+%% // 1
+######_
+####_('═.
+─.:¯_)_)
+##·¯
+#
+%% // 2
+######_
+####_('═.
+─.:¯_)_)
+##.¯
+#
+%% // 3
+######_
+####_('═.
+─.:¯_)_)
+###¯
+##'
+%% // 4
+######_
+####_('═.
+─.:¯_)_)
+###¯
+##·
+%% // 5
+######_
+####_('═.
+─.:¯_)_)
+###¯
+##.
+%% // 6
+######_
+####_('═.
+─.:¯_)_)
+###¯
+##…
+%% // 7
+######_
+####_('═.
+_.:¯_)_)
+#¯¯¯
+#
+asciiend // 8
+
+var flap = ascii
+#
+#########_
+#######_('═.
+###_.:¯_)_)
+####¯¯¯
+%% // 0
+#
+#########_
+##__…──.('═.
+##─═≥──_´_)
+#####¯¯
+%% // 1
+#
+###__…_  _
+#…═:_  \('═.
+##─═:¯'_`_)
+#####¯¯
+%% // 2
+#
+…───……_  _
+#¯¯─_  \('═.
+##─═:¯'_`_)
+#####¯¯
+%% // 3
+…──……#_
+#¯── ¯\\#_
+###¯─_ \('═.
+##─═:´'_`_)
+#####¯¯
+asciiend // 4
+
+var blink = ascii
+'
+%% // 0
+ 
+%% // 1
+'
+asciiend // 2
+
+var nemo = ascii
+#Mine!
+´
+asciiend // 0
+
+var custstyle = ui.AddStyle(＂
+^###
+^###
+^###＂)
+
+//*******************************
+// Functions
+//*******************************
+
+//*******************************
+// DrawSeagull()
+//
+// Creates the panel and 
+// animation for the pet
+// seagull art
+//
+//*******************************
+func DrawSeagull()
+  gullpnl = ui.AddPanel()
+  gullpnl.style = custstyle
+  gullpnl.anchor = top_left
+  gullpnl.dock = top_left
+  gullpnl.w = 14
+  gullpnl.h = 8
+  gullpnl.x = -gullpnl.w
+  gullpnl.y = screen.FromWorldZ(lastPlayerZ) 
+              ^+ gullcorry + gulldisty
+  
+  bodyanim = ui.AddAnim(body)
+  bodyanim.anchor = center_center
+  bodyanim.dock = center_center
+  bodyanim.color = bodycolor
+
+  legsanim = ui.AddAnim(legs)
+  legsanim.anchor = center_center
+  legsanim.dock = center_center
+  legsanim.x = 1
+  legsanim.y = 2
+  legsanim.loop = true
+  legsanim.gamePause = true
+  legsanim.duration = 8
+  legsanim.color = legscolor
+
+  poopanim = ui.AddAnim(poop)
+  poopanim.anchor = center_center
+  poopanim.dock = center_center
+  poopanim.loop = false
+  poopanim.gamePause = true
+  poopanim.duration = 30
+  poopanim.color = #white
+  poopanim.visible = false
+
+  flapanim = ui.AddAnim(flap)
+  flapanim.anchor = center_center
+  flapanim.dock = center_center
+  flapanim.x = -1
+  flapanim.y = -1
+  flapanim.color = #white
+  flapanim.visible = false
+
+  eyesanim = ui.AddAnim(blink)
+  eyesanim.anchor = center_center
+  eyesanim.dock = center_center
+  eyesanim.x = 2
+  eyesanim.y = -1
+  eyesanim.loop = false
+  eyesanim.gamePause = false
+  eyesanim.duration = 30
+  eyesanim.color = eyescolor
+  eyesanim.Play()
+
+  eyestext = ui.AddText()
+  eyestext.anchor = center_center
+  eyestext.dock = center_center
+  eyestext.x = 6
+  eyestext.y = 1
+  eyestext.text = ＂＂
+  eyestext.color = eyescolor
+
+  gulltext = ui.AddAnim(nemo)
+  gulltext.anchor = center_center
+  gulltext.dock = center_center
+  gulltext.x = 8
+  gulltext.y = -1
+  gulltext.visible = false
+  gulltext.color = textcolor
+
+  gullpnl.Add(bodyanim)
+  gullpnl.Add(legsanim)
+  gullpnl.Add(poopanim)
+  gullpnl.Add(flapanim)
+  gullpnl.Add(eyesanim)
+  gullpnl.Add(eyestext)
+  gullpnl.Add(gulltext)
+//
+
+
+//*******************************
+// MoveSeagull()
+//
+// Updates the pet seagull panel
+// with new x/y coordinates 
+// converting them from the 
+// world to screen positions for
+// use with the gull panel. Also,
+// updates seagulls's expression 
+// in response to player's facial
+// expression.
+//
+//*******************************
+func MoveSeagull()
+
+  ?state = 0 //idle
+    ?(screen.ToWorldX(gullpnl.x) - gulldistx)
+    ^< pos.x - 1
+      bodyanim.visible = true
+      flapanim.visible = false
+      poopanim.visible = false
+      ?!legsanim.playing
+        legsanim.Play()
+
+      ?currx < pos.x
+        currx++
+
+      ?lastPlayerZ < pos.z
+        lastPlayerZ++
+      :?lastPlayerZ > pos.z
+        lastPlayerZ--
+    :
+      ?!ai.walking
+        legsanim.Stop()
+        legsanim.frame = 0
+
+      var action = rng % 300
+      ?action = 1
+        state = 1 //flap
+        seqnum = 0
+        flapanim.frame = frame_seq［seqnum］ 
+        count = 0
+      :?action = 2
+        state = 2 //poop
+        poopanim.Play()
+
+  :?state = 1 //flap
+    legsanim.Stop()
+    legsanim.frame = 0
+    bodyanim.visible = false
+    flapanim.visible = true
+    poopanim.visible = false
+      
+    ?flapanim.visible = true
+      ?count > pause_seq［seqnum］
+        count = 0
+        seqnum++
+        ?seqnum > frame_seq.Count() - 1
+          seqnum = 0
+          state = 0 //idle
+        :
+          flapanim.frame = frame_seq［seqnum］
+      :
+        count = count + 1
+
+  :?state = 2 //poop
+    legsanim.Stop()
+    legsanim.frame = 0
+    bodyanim.visible = false
+    flapanim.visible = false
+    poopanim.visible = true
+
+    ?poopanim.frame >= 8
+      state = 0 //idle
+
+  ?screen.ToWorldX(gullpnl.x) > pos.x+gulldistx
+    currx = pos.x
+
+  gullpnl.x = screen.FromWorldX(currx)+gulldistx
+  gullpnl.y = screen.FromWorldZ(lastPlayerZ)
+              ^ + gullcorry + gulldisty
+
+
+  ?pickup.distance < 10
+    ?totaltime % 14 = 0
+      gulltext.visible = false
+    :?totaltime % 7 = 0
+      gulltext.visible = true
+  :
+    gulltext.visible = false
+
+  ?face = ＂°°＂
+    eyestext.text = ＂°＂
+  :?face = ＂^^＂
+    eyestext.text = ＂^＂
+  : 
+    eyestext.text = ＂＂
+    ?totaltime % 120 = 0
+      eyesanim.Play()
+//
+
+
+//*******************************
+// InitVariables()
+//
+// Resets all variables that may
+// have been modified in the 
+// previous loop to ensure the 
+// code works properly after every
+// loop, since variables may not 
+// reinitialized after looping.
+//
+//*******************************
+func InitVariables()
+  currx = screen.ToWorldX(gullpnl.x)
+  curry = pos.z
+  lastPlayerZ = pos.z
+  state = 0
+  count = 0
+  seqnum = 0
+//
+
+//*******************************
+// Drawing Code 
+//*******************************
+
+?totaltime <= 1 | !initialized
+  DrawSeagull()
+  InitVariables()
+  initialized = true
+:
+  MoveSeagull()
+//
+
+//*******************************
+// End of File
+//*******************************

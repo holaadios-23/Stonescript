@@ -1,0 +1,291 @@
+
+/*
+this is a stick insect
+by: Iva-Bel
+  .---------------------------------------.
+  |  Special thanks to "ArtificalPatato"  |
+  |   for helping create me in the game   |   
+  .--------------------.    ,-------------,
+                        \,./
+                  ,\   /. /
+                    \./, ,
+                    '|'
+                    «¡»
+                   / l \
+                   | | |
+                   î,!.î 
+                   /   \
+                   :   ;
+                  _/   \_  
+//--------------------------------------------\\
+*/
+//=-=-=-=-=-=-=-=-=-=VAR-=-=-==-=-=-=-=-=-=-=-\\
+
+var stinkycolor
+stinkycolor = #32DA6B
+
+//+-+-+-+-+-+-+-+COORDINATES+-+-+-++-+--+-+-+-\\
+
+var x = 0
+var y = 0
+var myX = 0
+var myZ = 0
+var lastX = 0
+var lastZ = 0
+
+var maxX = -12
+var maxDistance
+var targetZ = -5
+maxDistance = -50
+var keep = -15
+
+//+-+--+-+-+--++-Var_animation+-+-+-+-+-+-+-+-\\
+
+var run = 2
+var idle = 1
+var none = 0
+var current = none
+var stateTime = 0
+
+//+-+-+-+-+-+-+--+-rest?+-+-+-+-+-+-+-+-+-+-+-\\
+
+func SetState(newState)
+  ?newState = run
+    play open_note 400
+
+  current = newState
+  stateTime = 0
+
+?current = none | time = 1
+  lastX = pos.x
+  lastZ = pos.z
+  myX = keep
+  myZ = targetZ
+ 
+  ?time > 1
+    myX = maxDistance
+
+  SetState(idle)
+
+myX = myX - (pos.x - lastX)
+
+stateTime++
+
+?current = idle
+  ?myX < maxDistance | myX > -maxDistance
+    myX = maxDistance
+  myZ = myZ - (pos.z - lastZ)
+  ?myX < keep
+    SetState(run)
+
+:?current = run
+  ?myX < maxX
+    myX++
+  ?stateTime >= 9
+    ?myZ > targetZ
+      myZ--
+    :?myZ < targetZ
+      myZ++
+  ?stateTime >= 16
+    SetState(idle)
+
+lastX = pos.x
+lastZ = pos.z
+//=-=-=-=-=-=-=-=-ANIMATION=-=-=-=-=-=-=-=-=-=\\
+
+?current = idle
+  >o@myX@,@myZ@,@stinkycolor@,ascii
+#,\###/.#
+###\./###
+###'|'###
+###«¡»###
+##/#l#\##
+##|#|#|##
+##＂,!.＂## 
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend
+
+  ?face = ＂°°＂
+    ?time % 4 <= 1
+      >o@myX@,@myZ@,@stinkycolor@,ascii
+#   #   #
+##!\./!##
+#'#о|o#'#
+###«¡»###
+##/#l#\##
+#/ #|# \#
+#＂ ,!. ＂#
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend
+
+    ?time % 4 > 1
+      >o@myX@,@myZ@,@stinkycolor@,ascii
+#   #   #
+##!\./!##
+#'#o|о#'#
+###«¡»###
+##/#l#\##
+#/ #|# \#
+#＂ ,!. ＂# 
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend
+
+  :?face = ＂^^＂
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+##\   /##
+# #\./# #
+###^|^###
+###«¡»###
+##/#l#\##
+##\#|#/##
+##＂,!.＂## 
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend 
+
+  :?face = ＂,,＂ | pickup.distance <= 3
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+   ? ? 
+### \.\## 
+### ,/,##
+###«¡»###
+##/#l#\##
+##|#|#|##
+##＂,!.＂## 
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend  
+
+?current = run
+  ?stateTime/2 = 0
+   >o@myX@,@myZ@,@stinkycolor@,ascii
+#,\###/.#
+###\./###
+###'|'###
+###«¡»###
+##/#l#\##
+##|#|#|##
+##î,!.î## 
+###|##\##
+###/###;#
+##;###/_#  
+##\_#####  
+asciiend
+
+  :?stateTime/2 = 1
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+#,_###-###
+###\./####
+###'|'####
+###«¡»####
+#./#l#(###
+#(##|##\##
+#＂#,!.##＂#
+###|##\###
+###/###;##
+##/###/_##   
+#'########
+asciiend
+
+  :?stateTime/2 = 2
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+#__#-#####
+###\.\####
+###'|'####
+###«¡»####
+#,/#l#(###
+#(##|##L##
+##＂,!.#### 
+###\##\###
+#_#/##|###
+##V###;###
+######'_##
+asciiend
+
+  :?stateTime/2 = 3
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+#-_.##_.##
+###\./####
+###'|'####
+###«¡»####
+#./#l#(###
+#(##|##\##
+#'#,!.##＂#
+###\##\###
+####\#;###
+#####X####
+####/_\_##
+asciiend
+
+  :?stateTime/2 = 4
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+###.-#-.##
+###/./####
+###'|'####
+###«¡»####
+#,/#l#(###
+#(##|#l###
+##`.!,'###
+###\#/####
+###,\#####
+##/##;####  
+#l_##'_###
+asciiend
+
+  :?stateTime/2 = 5
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+###,-#_-.#
+###\./####
+###'|'####
+###«¡»####
+##/#l#(###
+#/##|##\##
+#＂#.!,##'#
+###\#/####
+#_#,\#####
+##V##;#### 
+#####'_###
+asciiend
+
+  :?stateTime/2 = 6
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+#,-###.-##
+###\./####
+###'|'####
+###«¡»####
+#./#l#\###
+#(##|#l###
+#'#,!.'###
+###\#/####
+####X#####
+##—┘#ì####  
+#####|_###
+asciiend
+
+  :?stateTime/2 = 7
+    >o@myX@,@myZ@,@stinkycolor@,ascii
+#,\###/.## 
+###\./####
+###'|'####
+###«¡»####
+##/#l#l###
+#/##|/####
+＂##,!.####
+###\##\.##
+####|##l##
+###-+-—┘##
+####|_####
+asciiend

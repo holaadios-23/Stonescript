@@ -1,0 +1,370 @@
+/*Credits\\
+By Citriondragon
+Version 1.0
+*/
+/*
+.  .      
+() () ()  O  O  O
+' .  '   o        o
+         .-.      .-.
+    _____|__\_____|__\___
+   |¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+  |¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+ |¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯`.______
+ \¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯[__()´
+  \                             .´
+-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯
+TODO:
+Dash anim (Big Wave + smoke displacement)
+Random small waves
+Backwards Dash (Big wave from behind + smoke displacement)
+Dialoge for locations (+ possibly bosses)
+Summons
+Buff/debuffs?
+
+Distances
+Max forward- 13?
+Max backward- 15?
+Normal- 26
+*/
+
+/*
+var cruise = ascii
+% {repeat:5}
+#'#.###.##'###.###`##.
+.#'#`)#()#()#()##O##O##O
+###'###'#.##`###.####.###.
+################.-.######.-.
+###########_____|__\_____|__\___
+##########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯`.__`_-_´
+########\¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    .´)
+#########\                             .´-`.
+¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯
+%% {repeat:5}
+##'##.##'###.###`###.
+.##`#()#()#()#()##O##O##o
+#.##'##.##`###'####.##'
+################.-.######.-.
+###########_____|__\_____|__\___
+##########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯`.____┴_
+########\¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    .´)-
+#########\                             .´┬´
+¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯
+%% {repeat:5}
+.'##.##.#`###.###.##'
+##.###()#()#()##O##O##O#'
+###`#'##.##'##.#o##`#####o
+################.-.######.-.
+###########_____|__\_____|__\___
+##########|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\`.
+#########|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯\
+########|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯`.__`_┴_´
+-##-#<]¯¯¯¯¯`.¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯[__()´)-
+#<##-#]_____.´                         .´┬`.
+¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯
+asciiend
+*/
+var cruise = ascii
+#
+#
+#
+################.-.######.-.
+###########_____|__\_____|__\___
+##########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+########|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯`.______
+########\¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    .´
+#########\                             .´
+¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯-¯¯
+asciiend
+
+var blade=ascii
+ #┴#
+####)-
+##┬´
+%%
+`#-#´
+####)
+##-`.
+asciiend
+
+var cannon=ascii
+[__()
+asciiend
+
+var boost=ascii
+% {repeat:3}
+##<#-#]¯¯¯¯¯`.
+-###<#]_____.´
+%% {repeat:3}
+-##-#<]¯¯¯¯¯`.
+#<##-#]_____.´
+asciiend
+
+var carmor=ascii
+##|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯`.
+%%
+##|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\¯\
+|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯`.
+%%
+##|¯¯O¯O¯O¯O¯O¯O¯O¯O¯O¯\`.
+#|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯\
+|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯`.
+%%
+##|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\`.
+#|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯\
+|¯¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯≡¯\¯`.
+asciiend
+
+var SmokeSymbols=["o","O","()",")","'",".","`"]
+
+//0 Symbol, 1 X, 2 Y
+var SmokeCoords=[]
+var delete=[]
+var count=0
+var smokecount
+var smokex
+var smokey
+var smokeweight
+
+var CruisePnl
+var Ship
+var Water
+var WaterSymbols=["-","¯","~","≈"," "," "]
+var waterstring
+var Smoke
+
+var CArmor
+var Boost
+var Cannon
+var Blade
+
+var Ranged=["bow","wand","staff","hook","stones","runestone"]
+var Melee=["sword","hammer","quarterstaff","shovel","hatchet","bardiche","blade","arm"]
+var infcolor=#000000
+
+func Reroll(c)
+  ?c<smokeweight
+    smokex=rng%12+13
+  :
+    smokex=rng%13+13+12
+  smokey=rng%3
+  CheckSmoke(smokex,smokey,c)
+
+func CheckSmoke(x,y,c)
+  var shared = false
+  for p : SmokeCoords
+   ?y=p[2]&(x=p[1]|p[0]="()"&x=p[1]+1)
+     shared = true
+   :?x=16+13&y=2|x=25+13&y=2
+     shared = true
+  ?shared
+    Reroll(c)
+
+func EnchantColor(hand)
+  ?hand="right"
+    ?item.right.id="Transcendent"
+      return #rainff
+    :?item.right.id="Legendary"
+      return #red
+    :?item.right.id="Epic"
+      return #blue
+    :?item.right.id="Heroic"
+      return #green
+    :?item.right.id="Rare"
+      return #yellow
+    :?item.right.id="Uncommon"
+      return #cyan
+    :
+      return #white
+  :?item.left.id="Transcendent"
+    return #rainff
+  :?item.left.id="Legendary"
+    return #red
+  :?item.left.id="Epic"
+    return #blue
+  :?item.left.id="Heroic"
+    return #green
+  :?item.left.id="Rare"
+    return #yellow
+  :?item.left.id="Uncommon"
+    return #cyan
+  :
+    return #white
+
+?totaltime=1
+  CruisePnl=ui.AddPanel()
+  CruisePnl.dock=top_left
+  CruisePnl.anchor=top_left
+  CruisePnl.style=ui.AddStyle("#########")
+  CruisePnl.w=46
+  CruisePnl.h=11
+  CruisePnl.x=screen.FromWorldX(pos.x)-41
+  CruisePnl.y=pos.z-9
+  Ship=ui.AddAnim(cruise)
+  Ship.loop=true
+  Ship.Play()
+  CruisePnl.Add(Ship)
+  Water=ui.AddText()
+  Water.w=46
+  Water.h=3
+  Water.y=4
+  CruisePnl.Add(Water)
+  Smoke=ui.AddCanvas()
+  Smoke.dock=top_left
+  Smoke.anchor=top_left
+  Smoke.h=3
+  Smoke.w=54
+  Smoke.x=-13
+  Smoke.y=0
+  //Smoke.SetFG("808080")
+  //Smoke.blend="multiply"
+  //Smoke.Set("X")
+  CruisePnl.Add(Smoke)
+  CArmor=ui.AddAnim(carmor)
+  CArmor.dock=top_left
+  CArmor.anchor=top_left
+  CArmor.y=5
+  CArmor.x=8
+  CruisePnl.Add(CArmor)
+  Boost=ui.AddAnim(boost)
+  Boost.dock=top_left
+  Boost.anchor=top_left
+  Boost.y=8
+  Boost.x=1
+  Boost.duration=10
+  Boost.loop=true
+  Boost.Play()
+  Boost.visible=false
+  CruisePnl.Add(Boost)
+  Cannon=ui.AddAnim(cannon)
+  Cannon.dock=top_left
+  Cannon.anchor=top_left
+  Cannon.y=8
+  Cannon.x=37
+  Cannon.visible=false
+  CruisePnl.Add(Cannon)
+  Blade=ui.AddAnim(blade)
+  Blade.dock=top_left
+  Blade.anchor=top_left
+  Blade.y=7
+  Blade.x=39
+  Blade.duration=4
+  Blade.loop=true
+  Blade.Play()
+  Blade.visible=false
+  CruisePnl.Add(Blade)
+disable player
+CruisePnl.x=screen.FromWorldX(pos.x)-41
+CruisePnl.y=pos.z-9
+?armor<=0
+  CArmor.frame=0
+:?armor<=maxarmor/3
+  CArmor.frame=1
+:?armor<=(maxarmor/3)*2
+  CArmor.frame=2
+:
+  CArmor.frame=3
+?item.left="triskelion"|item.right="triskelion"|buffs.string="inf_speed"
+  Boost.visible=true
+  ?buffs.string="inf_speed"
+    ?infcolor=#000000
+      infcolor=EnchantColor("right")
+    Boost.color=infcolor
+  :?item.right="triskelion"
+    ?item.right.id=lv2
+      Boost.color=#cyan
+    :
+      Boost.color=#white
+    infcolor=#000000
+  :?item.left.id=lv2
+    Boost.color=#cyan
+    infcolor=#000000
+  :
+    Boost.color=#white
+    infcolor=#000000
+:
+  Boost.visible=false
+Cannon.visible=false
+for c = 0..Ranged.Count()-1
+  ?item.left=Ranged[c]|item.right=Ranged[c]
+    Cannon.visible=true
+    ?item.right=Ranged[c]
+        Cannon.color=EnchantColor("right")
+    :
+      Cannon.color=EnchantColor("left")
+Blade.visible=false
+for c = 0..Melee.Count()-1
+  ?item.left=Melee[c]|item.right=Melee[c]
+    Blade.visible=true
+    ?item.left=Melee[c]&item.right=Melee[c]
+      ?Blade.frame=0
+        Blade.color=EnchantColor("right")
+      :
+        Blade.color=EnchantColor("left")
+    :?item.right=Melee[c]
+        Blade.color=EnchantColor("right")
+    :
+      Blade.color=EnchantColor("left")
+
+?time%15=0
+  waterstring=""
+  for i = 1..Water.w
+    waterstring=waterstring+WaterSymbols[rng%WaterSymbols.Count()]
+  Water.text="\n\n"+waterstring
+?time%5=0
+  ?SmokeCoords.Count()>0
+    count=0
+    for p : SmokeCoords
+      ?p[0]="o"|p[0]="O"|p[0]="()"
+        p[1]=p[1]-1
+        ?p[0]="o"
+          ?p[2]=2
+            p[2]=p[2]-1
+          ?p[1]=15+13
+            p[0]=SmokeSymbols[2]
+            p[1]=p[1]-1
+          :?p[1]=23+13
+            p[0]=SmokeSymbols[1]
+        :?p[0]="()"&p[1]=4+13
+          p[0]=SmokeSymbols[3]
+          p[1]=p[1]+1
+      :?p[0]="."&(p[1]=16+13|p[1]=25+13)&p[2]=2
+        p[0]=SmokeSymbols[0]
+      :
+        delete.Add(count)
+      count++
+    ?delete.Count()>0
+      for d : delete
+        SmokeCoords.Emplace(d,0)
+      for d : delete
+        SmokeCoords.RemoveAt(SmokeCoords.IndexOf(0))
+      delete.Clear()
+  ?time%15=0
+    SmokeCoords.Add([SmokeSymbols[5],16+13,2])
+    SmokeCoords.Add([SmokeSymbols[5],25+13,2])
+  smokecount=math.Max(rng%17,8)
+  smokeweight=(smokecount/3)*2
+  for c = 1..smokecount
+    ?c<smokeweight
+      smokex=rng%10+13
+    :
+      smokex=rng%13+13+12
+    smokey=rng%3
+    CheckSmoke(smokex,smokey,c)
+    SmokeCoords.Add([SmokeSymbols[rng%3+4],smokex,smokey])
+  Smoke.Set("#")
+  ?SmokeCoords.Count()>0
+    for p : SmokeCoords
+      ?p[0]="()"
+        Smoke.Set(p[1],p[2],"(")
+        Smoke.Set(p[1]+1,p[2],")")
+      :
+        Smoke.Set(p[1],p[2],p[0])

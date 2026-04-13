@@ -1,0 +1,148 @@
+/*
+made by holadios_
+with help of GMV01
+*/
+//variables
+var ctanim
+var ctailnim
+var ctopanim
+var clegsanim
+
+
+var cta = ascii
+#######,
+###-.-´'\
+####\#oω°)
+##.-´##,´
+###\)#\)
+%%
+#######,
+###-.-´'\
+####\#oω°)
+##.-´##,´
+##\/#\/
+%%
+#######,
+###-.-´'\
+####\#oω°)
+##.-´##,´
+##(/#(/
+%%
+#######,
+###-.-´'\
+####\#oω°)
+##.-´##,´
+##\/#\/
+asciiend
+
+var ctop = ascii
+#######,
+###-.-´'\
+####\#oω°)
+####/##,|
+###(_`,|;
+asciiend
+
+var ctail = ascii
+###,
+###)`,
+##(##;
+###`-
+%% ｛repeat:7｝
+#
+##(`. 
+##(##;
+###`-
+%% ｛repeat:7｝
+####
+#,-.
+#¯\ `.
+###`-
+%% ｛repeat:7｝
+#
+#
+#_,•-.
+#`. _.
+asciiend
+
+var clegs = ascii
+##\##\
+%%
+##\##\)
+%%
+#\##\
+%%
+#(/##/
+asciiend
+
+
+?totalTime = 1
+ ctanim = ui.AddAnim(cta)
+ ctanim.loop = true
+ ctanim.playOnStart = false
+ ctanim.gamePause = true
+ ctanim.anchor = bottom_center
+ ctanim.dock = top_left
+ ctanim.color = #FFFFFF
+ ctanim.visible = false
+
+ ctailnim = ui.AddAnim(ctail)
+ ctailnim.loop = true
+ ctailnim.playOnStart = true
+ ctailnim.gamePause = true
+ ctailnim.anchor = bottom_center
+ ctailnim.dock = top_left
+ ctailnim.color = #FFFFFF
+ ctailnim.visible = false
+
+ ctopanim = ui.AddAnim(ctop)
+ ctopanim.loop = false
+ ctopanim.gamePause = true
+ ctopanim.anchor = bottom_center
+ ctopanim.dock = top_left
+ ctopanim.color = #FFFFFF
+ ctopanim.visible = false
+
+ clegsanim = ui.AddAnim(clegs)
+ clegsanim.loop = false
+ clegsanim.gamePause = true
+ clegsanim.anchor = bottom_center
+ clegsanim.dock = top_left
+ clegsanim.color = #444444
+ clegsanim.visible = false
+
+?ctanim & ctailnim
+ var refx 
+ refx = screen.FromWorldX(pos.x)
+ var refz_world 
+ refz_world = pos.z - 3
+ var screenY
+ screenY = screen.FromWorldZ(refz_world - 1) 
+ ctanim.x = refx - 15
+ ctanim.y = screenY + 5
+ ctopanim.x = refx - 15
+ ctopanim.y = screenY + 5
+ clegsanim.x = refx - 17
+ clegsanim.y = screenY + 5
+ ?ai.walking
+  ctanim.visible = true
+  ctopanim.visible = false   
+  ctailnim.visible = true
+  clegsanim.visible = true
+  ctailnim.x = refx - 20
+  ctailnim.y = screenY + 4
+  ?!ctanim.playing
+   ctanim.Play()
+  ?!ctailnim.playing
+   ctailnim.Play()
+  ?!clegsanim.playing
+   clegsanim.Play()
+ :
+  ctanim.visible = false
+  ctopanim.visible = true
+  ctailnim.visible = true
+  clegsanim.visible = false
+  ctailnim.x = refx - 20
+  ctailnim.y = screenY + 5
+  ?ctanim.playing
+   ctanim.Stop()

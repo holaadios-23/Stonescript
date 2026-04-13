@@ -1,0 +1,136 @@
+//Oil Lamp
+//by: michael.g.g.
+//ver 1.0
+
+//Replaces the Torch with an Oil Lamp from Acropolis.
+//Genie come out to fight when you are atttacking with the torch.
+//Animated flame
+//Will only work when torch is equipped in right hand.
+
+var lightColor
+var lightFrame
+var lightPos
+
+?loc.begin 
+  lightFrame = 0
+
+?lightFrame < 5
+	lightColor = #white
+?lightFrame >= 5
+	lightColor = #yellow
+
+?item.left = "torch"
+	lightPos = -5
+?item.right = "torch"
+	lightPos = -1	
+/*
+?item.left = "torch"
+ >h-7,1,#yellow,ascii
+###o
+._(_)?
+###^
+asciiend
+*/
+
+?item.right = "torch"
+ >h1,1,#yellow,ascii
+# o
+q(_)_,
+##Δ
+asciiend
+
+ ?lightFrame < 5
+  >h@lightPos@,0,@lightColor@,ascii
+#####'
+######)
+#######
+asciiend
+ ?lightFrame > 5 & lightFrame < 10
+  >h@lightPos@,0,@lightColor@,ascii
+#####`
+######(
+#######
+asciiend
+ ?lightFrame > 10
+  >h@lightPos@,0,@lightColor@,ascii
+#####
+#####`,
+#######
+asciiend
+
+ ?item.right.state >= 2
+   >h2,-11,#A2456B,ascii
+#░░##░░
+##░###░
+#░░░░░░░░░░
+#░░░░░#░░░#░░░░░
+░░░░░░░░░░░░░##░░
+░░░░░░░░░#░░░░
+░░░#░░░░░░#░░░
+░░░░##░░░░░░
+#░░░░░######░░
+#░░░░░░░░░░░░
+░░░░░░░
+#░░░
+##░
+####░
+asciiend
+
+ ?item.right.state >= 2
+   >h2,-11,#8B268A,ascii
+#####░░
+######░
+#
+#
+#
+#
+#
+░
+#░░
+#░░░░
+░░░░░░░
+#░░░
+##░
+####░
+asciiend
+ ?item.right.state = 2
+   >h0,-10,#A2456B,ascii
+#
+#
+#
+#################░
+##################░
+##################░░##░░
+###################░░░░░░
+####################░░░░░
+#
+######░
+######░
+#######░####░░░░
+#######░░░░░░░░░
+#
+asciiend
+
+ ?item.right.state = 3 | item.right.state = 4
+  >h0,-10,#A2456B,ascii
+#
+#
+#
+#
+##################░
+##################░░##░░
+###################░░░░░░
+###################░░░░░░░
+###################░░░░░░░
+######░#######░░░░░##░░░░
+######░#####░░░░░░░░░░
+#######░####░░░░░░░░░
+#######░░░░░░░░░
+#
+asciiend
+ 
+
+lightFrame++
+
+?lightFrame >= 15
+  lightFrame = 0

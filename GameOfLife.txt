@@ -1,0 +1,196 @@
+// GameOfLife.txt - Juego de la Vida de Conway
+// Autor: Gemini Code Assist
+//
+// Descripción:
+// Implementación del clásico autómata celular.
+// - Células vivas: 'O' verde
+// - Reglas estándar de Conway
+// - Presiona 'Interactuar' (Click/Enter) para reiniciar.
+
+var gol_w = 30
+var gol_h = 15
+var gol_grid = []
+var gol_next = []
+var gol_canvas
+var gol_stats_txt
+var gol_init = false
+var gol_timer = 0
+var gol_speed = 3 // Actualizar cada 3 frames
+var gol_generation = 0
+var gol_population = 0
+var gol_paused = false
+var gol_btn_reset
+var gol_btn_pause
+
+// Inicialización
+func Gol_Init()
+  gol_grid = []
+  gol_next = []
+  gol_generation = 0
+  gol_population = 0
+  gol_paused = false
+  
+  // Crear cuadrícula con valores aleatorios
+  for y = 0 .. gol_h - 1
+    var row = []
+    var nrow = []
+    for x = 0 .. gol_w - 1
+      var val = 0
+      // 30% de probabilidad de estar vivo al inicio
+      ? rng % 100 < 30
+        val = 1
+      ? val > 0
+        gol_population++
+      row.Add(val)
+      nrow.Add(0)
+    gol_grid.Add(row)
+    gol_next.Add(nrow)
+
+  // Configurar Canvas para dibujar
+  ui.Clear()
+  gol_canvas = ui.AddCanvas()
+  gol_canvas.w = gol_w
+  gol_canvas.h = gol_h
+  gol_canvas.x = (screen.w - gol_w) / 2
+  gol_canvas.y = (screen.h - gol_h) / 2
+  
+  // Texto de estadísticas
+  gol_stats_txt = ui.AddText()
+  gol_stats_txt.align = center
+  gol_stats_txt.x = screen.w / 2
+  gol_stats_txt.y = 0
+  gol_stats_txt.text = "Gen: 0  Pop: " + gol_population
+  
+  // Instrucciones
+  var txt = ui.AddText()
+  txt.text = "Presiona [Interact] para reiniciar"
+  txt.align = center
+  txt.x = screen.w / 2
+  txt.y = gol_canvas.y + gol_h + 1
+  txt.color = #888888
+  
+  Gol_AddButtons()
+  
+  gol_init = true
+
+// Función para alternar pausa
+func Gol_TogglePause()
+  gol_paused = !gol_paused
+
+// Función dedicada para crear los botones
+func Gol_AddButtons()
+  // Botón Reiniciar
+  gol_btn_reset = ui.AddButton()
+  gol_btn_reset.text = "REINICIAR"
+  gol_btn_reset.w = 14
+  gol_btn_reset.h = 3
+  gol_btn_reset.x = screen.w / 2 - 8
+  gol_btn_reset.y = screen.h - 2
+  gol_btn_reset.anchor = bottom
+  gol_btn_reset.SetPressed(Gol_Init)
+
+  // Botón Pausa
+  gol_btn_pause = ui.AddButton()
+  gol_btn_pause.text = "PAUSA"
+  gol_btn_pause.w = 14
+  gol_btn_pause.h = 3
+  gol_btn_pause.x = screen.w / 2 + 8
+  gol_btn_pause.y = screen.h - 2
+  gol_btn_pause.anchor = bottom
+  gol_btn_pause.SetPressed(Gol_TogglePause)
+
+// Actualizar estado visual de botones (Hover y Texto)
+func Gol_UpdateButtons()
+  ? gol_btn_reset.hover
+    gol_btn_reset.color = #FF0000 // Rojo al pasar mouse
+  :
+    gol_btn_reset.color = #FFFFFF
+    
+  ? gol_btn_pause.hover
+    gol_btn_pause.color = #FFFF00 // Amarillo al pasar mouse
+  :
+    gol_btn_pause.color = #FFFFFF
+    
+  ? gol_paused
+    gol_btn_pause.text = "CONTINUAR"
+  :
+    gol_btn_pause.text = "PAUSA"
+
+// Contar vecinos (con bordes infinitos/wrap)
+func Gol_CountNeighbors(cx, cy)
+  var count = 0
+  for dy = -1 .. 1
+    for dx = -1 .. 1
+      ? dx = 0 & dy = 0
+        continue
+      // Usamos modulo para que el mapa sea esférico (conectado bordes)
+      var nx = (cx + dx + gol_w) % gol_w
+      var ny = (cy + dy + gol_h) % gol_h
+      var row = gol_grid[ny]
+      ? row[nx] > 0
+        count++
+  return count
+
+// Actualizar estado del juego
+func Gol_Update()
+  gol_generation++
+  gol_population = 0
+  for y = 0 .. gol_h - 1
+    for x = 0 .. gol_w - 1
+      var n = Gol_CountNeighbors(x, y)
+      var row = gol_grid[y]
+      var state = row[x]
+      var nextState = 0
+      
+      ? state >= 1
+        ? n = 2 | n = 3
+          nextState = state + 1
+      :
+        ? n = 3
+          nextState = 1
+      
+      gol_next[y].Emplace(x, nextState)
+      ? nextState > 0
+        gol_population++
+
+  var temp = gol_grid
+  gol_grid = gol_next
+  gol_next = temp
+  
+  gol_stats_txt.text = "Gen: " + gol_generation + "  Pop: " + gol_population
+
+func Gol_Draw()
+  ? !gol_canvas
+    return 0
+  for y = 0 .. gol_h - 1
+    for x = 0 .. gol_w - 1
+      var row = gol_grid[y]
+      var age = row[x]
+      ? age > 0
+        var col = #00FF00
+        ? age = 2
+          col = #AAFF00
+        ? age = 3
+          col = #FFFF00
+        ? age >= 4
+          col = #FF0000
+        gol_canvas.Set(x, y, col, "O")
+      :
+        gol_canvas.Set(x, y, #000000, " ")
+
+// --- Bucle Principal ---
+disable hud
+
+? !gol_init
+  Gol_Init()
+
+? key = primaryBegin
+  Gol_Init()
+
+Gol_UpdateButtons()
+
+gol_timer++
+? gol_timer >= gol_speed & !gol_paused
+  Gol_Update()
+  Gol_Draw()
+  gol_timer = 0

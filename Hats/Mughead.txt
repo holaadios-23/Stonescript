@@ -1,0 +1,82 @@
+/*
+Mughead v2 (originally named Beveragehead)
+Original code by Icynx.001
+Updated by Telos6857 to add better optimization
+and big head version
+*/
+
+var mug = ［ascii
+#·
+,
+asciiend,ascii
+#`
+)
+asciiend,ascii
+#
+`
+asciiend,ascii
+. 
+#
+asciiend,ascii
+'
+.
+asciiend,ascii
+#
+(
+asciiend,ascii
+#
+´
+asciiend,ascii
+#,
+#
+asciiend］
+
+var bigmug = ［ascii
+#'
+,#(
+asciiend,ascii
+#`
+)#´
+asciiend,ascii
+##.
+`
+asciiend,ascii
+.#'
+#
+asciiend,ascii
+'
+#.
+asciiend,ascii
+#
+#)
+asciiend,ascii
+#
+#`
+asciiend,ascii
+#,
+#
+asciiend］
+
+var mugT = 0
+?totaltime % 6 = 5
+ mugT++
+?!bighead
+ >h0,-1,#A9A9A9,@mug[mugT%8]@
+ ?player.direction = 1
+  >h-1,1,#A9A9A9,σ█
+ :
+  >h0,1,#A9A9A9,█o
+:
+ >h-1,-3,#A9A9A9,@bigmug[mugT%8]@
+ ?player.direction = 1
+  >h-4,-1,#A9A9A9,ascii
+#_.═══.
+(#|###|
+#¯'-.-'
+asciiend
+ :
+  >h-2,-1,#A9A9A9,ascii
+.═══._
+|###|#)
+'-.-'¯
+asciiend

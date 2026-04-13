@@ -1,0 +1,60 @@
+var colorIndex = null
+?loc.begin
+  colorIndex = 0
+
+?time > 0
+  draw.Bg(0,0,ColourList［colorIndex］,screen.w,
+  ^screen.h)
+  colorIndex++
+  ?colorIndex >= ColourList.Count()
+    colorIndex = 0
+
+var ColourList = ［＂#91E60A＂,
+＂#A1DB04＂,
+＂#B1CE01＂,
+＂#C0C000＂,
+＂#CEB101＂,
+＂#DBA104＂,
+＂#E6910A＂,
+＂#EF8011＂,
+＂#F66F1A＂,
+＂#FC5F25＂,
+＂#FF4F32＂,
+＂#FF4040＂,
+＂#FF324F＂,
+＂#FC255F＂,
+＂#F61A6F＂,
+＂#EF1180＂,
+＂#E60A91＂,
+＂#DB04A1＂,
+＂#CE01B1＂,
+＂#C000C0＂,
+＂#B101CE＂,
+＂#A104DB＂,
+＂#910AE6＂,
+＂#8011EF＂,
+＂#6F1AF6＂,
+＂#5F25FC＂,
+＂#4F32FF＂,
+＂#4040FF＂,
+＂#324FFF＂,
+＂#255FFC＂,
+＂#1A6FF6＂,
+＂#1180EF＂,
+＂#0A91E6＂,
+＂#04A1DB＂,
+＂#01B1CE＂,
+＂#00C0C0＂,
+＂#01CEB1＂,
+＂#04DBA1＂,
+＂#0AE691＂,
+＂#11EF80＂,
+＂#1AF66F＂,
+＂#25FC5F＂,
+＂#32FF4F＂,
+＂#40FF40＂,
+＂#4FFF32＂,
+＂#5FFC25＂,
+＂#6FF61A＂,
+＂#80EF11＂,
+＂#91E60A＂］

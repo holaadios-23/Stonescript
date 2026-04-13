@@ -1,0 +1,157 @@
+/*
+Parasola & Nimbus pet
+Version 1.0
+By Telos6857
+
+Description
+During your travels in the mushroom forest,
+you encounter an umbrella-shaped sentient
+mushroom accompanied with a living rain cloud.
+The two seems to be great friends and they
+don't appear to be particularly harmful,
+so you let them follow you throughout your
+adventures within the dark world
+*/
+
+var shroom = pos.x-25
+var shroomDist
+var shroomSpeed = 0
+var shroomX
+var shroomY
+var str = loc.stars
+var clr
+var rainfall
+rainfall = 1
+var raintime = 0
+?loc.loop
+ raintime = 0
+ shroom = pos.x-25
+raintime++
+?str <= 5
+  clr = white
+:?str <= 10
+  clr = cyan
+:?str <= 15
+  clr = yellow
+:?str <= 20
+  clr = green
+:?str <= 25
+  clr = blue
+:?str <= 30
+  clr = red
+:?str <= 35
+  clr = rainFF
+?pos.x-shroom >= 26
+^ & raintime%shroomSpeed = 0
+ shroom++
+?loc.id = ＂boss＂ | loc.id = ＂nagaraja＂
+^ | loc.id = ＂bronze_guardian＂
+ ?time = 1
+  shroom = pos.x-shroomDist
+:
+ shroomDist = pos.x-shroom
+?pos.x-shroom >= 28
+ shroomSpeed = 1
+:
+ shroomSpeed = player.framesPerMove
+shroomX = screen.FromWorldX(shroom)
+shroomY = screen.FromWorldZ(pos.z)
+
+>`@shroomX@,@shroomY-5@,#red,ascii
+#,´¯`.
+,'   '.
+;—;—;—;
+asciiend
+>`@shroomX@,@shroomY-4@,#@clr@,ascii
+####o
+;#;#;#;
+asciiend
+?pos.x-shroom <= 26
+ >`@shroomX+3@,@shroomY-2@,ascii
+|
+j
+asciiend
+:
+ >`@shroomX@,@shroomY-2@,ascii
+##/
+·´
+asciiend 
+?raintime%128>=120
+ >`@shroomX+2@,@shroomY-5@,#white,ascii
+—
+#─═─
+asciiend
+:
+ >`@shroomX+2@,@shroomY-5@,#white,ascii
+O
+#(#)
+asciiend
+>`@shroomX-1@,@shroomY-10@,#808080,ascii
+###___
+#_(   )_
+(_(_)___)
+asciiend
+?raintime%(rainfall*8) <= (rainfall*1)-1
+ >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+.'#.#·
+##·#.#'
+#
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*2)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+.·##'.
+##.'##·
+#
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*3)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+#.'#·
+'##·#'.
+#
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*4)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+##·#.#
+·'#.#·
+######'
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*5)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+##.'##
+.·##'.
+######·
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*6)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+###·#'
+#.'#·
+'#####.
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*7)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+#'#.#·'
+##·#.
+·
+asciiend
+:?raintime%(rainfall*8) <= (rainfall*8)-1
+  >`@shroomX@,@shroomY-9@,#cyan,ascii
+###;;
+#
+#·#.'··
+##.
+.
+asciiend

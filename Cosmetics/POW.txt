@@ -1,0 +1,53 @@
+// POW! Comic Effects
+// by: micahel.g.g.
+// v1.0
+
+//Each time you do damage that is the amount Full HP the foe has, a classic comic book style explosion will draw with a sound effect word.
+//The word is randomized with "POW!" having a chance to occur half the time.
+
+//set variables
+var setHP
+var count
+var WORD
+
+?loc.begin
+	count = 0 
+
+?count%2 = 0
+  WORD = "POW!"
+?count = 1
+  WORD = "WHAM"
+?count = 3
+  WORD = "BIFF"
+?count = 5
+  WORD = "OMPH"
+?count = 7
+  WORD = "DINK"
+?count = 9
+  WORD = "BAM!"
+?count = 11
+  WORD = "BOOM"
+?count = 13
+  WORD = "SLAM"
+?count = 15
+  WORD = "BONK"
+
+
+?item.left.state = 2 | item.right.state = 2
+  setHP = foe.hp
+
+?(item.left.state = 3 & (foe.hp < setHP - foe.maxhp)) | (item.right.state = 3 & (foe.hp < setHP - foe.maxhp))
+  >f-1,0,#red,ascii
+###
+##`)(.)(. ,
+-='.    `.=-
+##')(')(' `
+asciiend
+
+  >f3,2,#yellow,ascii
+@WORD@
+asciiend
+
+count++
+?count > 15
+  count = 0

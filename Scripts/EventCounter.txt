@@ -1,0 +1,78 @@
+// EventTracker
+// Rastrea items de evento ganados en tiempo real (sesión actual)
+
+var tracker_init = false
+var start_ts = 0
+var start_candy = 0
+var start_balloon = 0
+var start_mug = 0
+var start_warm_stone = 0
+var start_torch = 0
+
+// Función de inicialización
+// Se ejecuta solo una vez para establecer la línea base
+func InitTracker()
+  // Usamos BigNumber para el tiempo unix en milisegundos
+  start_ts = math.BigNumber(time.msbn.ToString())
+  
+  // Guardamos la cantidad actual de items como base
+  start_candy = item.GetCount("candy")
+  start_balloon = item.GetCount("balloon")
+  start_mug = item.GetCount("mug")
+  start_warm_stone = item.GetCount("warm_stone")
+  // Asumimos que torch_lv1 se refiere a antorchas de 1 estrella
+  start_torch = item.GetCount("torch *1")
+  
+  tracker_init = true
+
+// Ejecutar inicialización si no se ha hecho
+?!tracker_init
+  InitTracker()
+
+// --- Cálculos de Tiempo ---
+// Obtenemos el tiempo actual y restamos el tiempo de inicio
+var total_seconds = 0
+?tracker_init
+  var now = math.BigNumber(time.msbn.ToString())
+  now.Sub(start_ts)
+  now.Div(1000) // Convertir a segundos
+  total_seconds = now.ToInt()
+
+var hh = total_seconds / 3600
+var mm = (total_seconds % 3600) / 60
+var ss = total_seconds % 60
+
+// Formatear tiempo con ceros a la izquierda si es necesario (simple)
+var time_str = hh + ":"
+?mm < 10
+  time_str += "0"
+time_str += mm + ":"
+?ss < 10
+  time_str += "0"
+time_str += ss
+
+// --- Cálculos de Items ---
+var gain_candy = item.GetCount("candy") - start_candy
+var gain_balloon = item.GetCount("balloon") - start_balloon
+var gain_mug = item.GetCount("mug") - start_mug
+var gain_warm_stone = item.GetCount("warm_stone") - start_warm_stone
+var gain_torch = item.GetCount("torch *1") - start_torch
+
+// --- Visualización ---
+var y = 1
+var x = 1
+
+// Fondo semitransparente para mejor lectura
+draw.Box(x-1, y-1, 16, 8, #000000, 1)
+
+>`@x@,@y@,#FFFFFF,Tiempo: @time_str@
+y++
+>`@x@,@y@,#FF00FF,Candy: @gain_candy@
+y++
+>`@x@,@y@,#00FFFF,Balloon: @gain_balloon@
+y++
+>`@x@,@y@,#AA5500,Mug: @gain_mug@
+y++
+>`@x@,@y@,#FF5555,Warm Stone: @gain_warm_stone@
+y++
+>`@x@,@y@,#FFAA00,Torch Lv1: @gain_torch@

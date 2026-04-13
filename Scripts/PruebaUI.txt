@@ -1,0 +1,313 @@
+var ui_visible = true
+var panel
+var btn
+var infoPanel
+var headBtn
+var foeinfo
+var txt_cd
+var itemRL
+var txt_element
+var coldex = null
+var itemstats
+var locinfo
+var timetotal
+var fps_dps
+var playerinfo
+var lp = 0
+
+
+// Map item IDs to their max cooldown in frames (inspired by ClickAbilities.txt)
+func GetMaxCD(id)
+ ?id = "bash"
+  return 270
+ ?id = "dash"
+  return 45
+ ?id = "quarterstaff"
+  return 195
+ ?id = "staff_fire"
+  return 900
+ ?id = "mind"
+  return 360
+ ?id = "blade"
+  return 2400
+ return 0
+
+// Stats variables
+var fps = 0
+var dps = 0
+var hps = 0
+var fps_c = 0
+var sec_l = 0
+var hp_l = 0
+var dmg_l = []
+
+// Updates FPS, DPS, and HPS every frame
+func UpdateStats()
+ fps_c++
+ ?time.second ! sec_l
+  fps = fps_c
+  fps_c = 0
+  sec_l = time.second
+ var d = 0
+ var hp_n = foe.hp + foe.armor
+ ?hp_n < hp_l
+  d = hp_l - hp_n
+ hp_l = hp_n
+ dmg_l.Add(d)
+ ?dmg_l.Count() > 30
+  dmg_l.RemoveAt(0)
+ dps = 0
+ hps = 0
+ for x : dmg_l
+  dps += x
+  ?x > 0
+   hps++
+
+
+// Helper to create text elements
+func createtext(texto, x, y, w, h, color)
+ var t = ui.AddText()
+ t.x = x
+ t.y = y
+ t.w = w
+ t.h = h
+ t.color = color
+ t.text = texto
+ return t
+
+// Helper to create buttons
+func CrearBoton(texto, w, h, accion)
+  var b = ui.AddButton()
+  b.text = texto
+  b.w = w
+  b.h = h
+  b.anchor = bottom_center
+  b.dock = top_left 
+  b.SetPressed(accion)
+  return b
+
+// Returns elemental info and weakness for the foe
+func GetElementalInfo(id)
+  var element = "o"
+  var weakness = "o"
+  ?id = ice
+    element = "❄"
+    weakness = "φ"
+  :?id = poison
+    element = "∞"
+    weakness = "❄"
+  :?id = vigor
+    element = "♥"
+    weakness = "∞"
+  :?id = aether
+    element = "*"
+    weakness = "♥"
+  :?id = fire
+    element = "φ"
+    weakness = "*"
+  
+  ?!id
+    return "Elements: none"
+      
+  return "Foe: " + element + " weak to " + weakness
+
+
+// Returns a safe string for IDs (avoids nulls)
+func SafeName(id)
+ ?id
+  return id
+ return "none"
+
+// Calculates max GP based on location stars
+func MaxGP()
+ var gp = 999999
+ ?loc.stars = 5
+  gp = 150
+ ?loc.stars = 10
+  gp = 200
+ ?loc = "rocky"
+  gp = gp * 3
+ return gp
+
+// Generates cooldown text with color-coded percentages (Red/Yellow/Green)
+func GetCDText(list)
+ var s = ""
+ for id : list
+  var cd_curr = item.GetCooldown(id)
+  var cd_max = GetMaxCD(id)
+  
+  // If item is not in map, skip to avoid errors
+  ?cd_max = 0
+   continue
+
+  var percent = math.Floor(math.Min(100, (cd_max - cd_curr) / cd_max * 100))
+
+  s += id + ": " + percent + "%#\n"
+ return s
+
+// Adds a list of elements to a panel
+func AddList(panel, list)
+ for e : list
+  panel.Add(e)
+
+// Toggles UI visibility
+func ToggleUI()
+ ui_visible = !ui_visible
+ infoPanel.visible = ui_visible
+  
+  // Update button text
+ ?ui_visible
+  btn.text = "HIDE :3"
+ :
+  btn.text = "SHOW :3"
+
+// UI Initialization at start of location
+?loc.begin | loc.loop
+ disable hud rp
+ disable loadout print
+ coldex = 0
+ lp++
+ ui.Clear()
+ panel = ui.AddPanel()
+ panel.style = 0
+ panel.w = 0
+ panel.h = 0
+ 
+ infoPanel = ui.AddPanel()
+ infoPanel.style = 0
+ infoPanel.w = 0
+ infoPanel.h = 0
+ infoPanel.visible = ui_visible
+
+ btn = CrearBoton("HIDE :3", 9, 3, ToggleUI)
+ ?ui_visible
+  btn.text = "HIDE :3"
+ :
+  btn.text = "SHOW :3"
+ itemRL = createtext("", 5, -7, 100, 12, #bd6f01)
+ itemstats = createtext("", 5, -5, 100, 12, #FFFFFF)
+ foeinfo = createtext("", 5, -4, 100, 12, #00A36C)
+ locinfo = createtext("", 5, -3, 100, 12, #FFFFFF)
+ timetotal = createtext("", 5, -2, 100, 12, #FFFFFF)
+ txt_element = createtext("", 5,4 , 100, 20, #FFFFFF)
+ fps_dps = createtext("", 5, 1, 100, 12, #FFFFFF)
+
+ txt_cd = createtext("", 75, 12, 100, 12, #00A36C) 
+ 
+ playerinfo = createtext("", 5, 15, 100, 12, #FFFFFF)
+ panel.Add(btn)
+ panel.Add(infoPanel)
+ AddList(infoPanel, [itemRL, itemstats, foeinfo, timetotal, txt_cd, locinfo, txt_element, fps_dps, playerinfo])
+
+var ColourList = ["#91E60A","#A1DB04","#B1CE01","#C0C000","#CEB101","#DBA104","#E6910A","#EF8011","#F66F1A","#FC5F25","#FF4F32","#FF4040","#FF324F","#FC255F","#F61A6F","#EF1180","#E60A91","#DB04A1","#CE01B1","#C000C0","#B101CE","#A104DB","#910AE6","#8011EF","#6F1AF6","#5F25FC","#4F32FF","#4040FF","#324FFF","#255FFC","#1A6FF6","#1180EF","#0A91E6","#04A1DB","#01B1CE","#00C0C0","#01CEB1","#04DBA1","#0AE691","#11EF80","#1AF66F","#25FC5F","#32FF4F","#40FF40","#4FFF32","#5FFC25","#6FF61A","#80EF11","#91E60A"]
+
+// Main loop: Updates UI elements every frame
+?panel
+ disable hud rp
+ disable loadout print
+ UpdateStats()
+ //texts
+ itemRL.text = "L: " + SafeName(item.left) + "\nR: " + SafeName(item.right)
+ itemstats.text = "Left State: " + item.left.state + " | Right State: " + item.right.state + " screen: " + screen.i
+ foeinfo.text = "Foe-> " + SafeName(foe.id) + " hp: " + SafeName(foe.hp) + " distance: " + SafeName(foe.distance) + " time: " + SafeName(foe.time) + " state: " + SafeName(foe.state) + " number: " + SafeName(foe.count)
+ locinfo.text = "Loc: " + SafeName(loc.name) + " Stars: " + SafeName(loc.stars) + " GP: " + loc.gp + "/" + MaxGP() + " Best Time: " + loc.bestTime/1800 + "m " + (loc.bestTime/30)%60 + "s " + loc.bestTime%30 + "f"
+ txt_element.text = GetElementalInfo(foe)
+ timetotal.text = "Total Time: " + totaltime/1800 + "m " + (totaltime/30)%60 + "s " + totaltime%30 + "f -> in frames: " + totaltime + "\nloop: " + lp
+ fps_dps.text = "FPS: " + fps + " Dps: " + dps + " Hps: " + hps
+
+ txt_cd.text = GetCDText(["bash", "dash", "quarterstaff", "staff_fire"])
+ 
+ playerinfo.text = "Player: [color=#1357f4]" + player.name + "[/color] HP: " + hp + " Armor: " + armor + "." + armor.f + "\nBuffs: " + buffs.string
+ //colors
+ itemRL.color = ColourList[coldex]
+ itemstats.color = ColourList[ColourList.Count() - 1 - coldex]
+ fps_dps.color = #65d14d
+ ?loc.gp > MaxGP()
+  locinfo.color = #FF0000 // Rojo si superas el límite
+ :?loc.gp = MaxGP()
+  locinfo.color = #FFFF00 // Amarillo si estás en el límite
+ :
+  locinfo.color = #00FF00 // Blanco por defecto
+ playerinfo.color = #d915c5
+ ?time % 15 = 0
+  foeinfo.color = ColourList[rng % ColourList.Count()]
+  txt_element.color = color.Random()
+  timetotal.color = #rainff
+ //button
+ btn.x = screen.FromWorldX(pos.x) - 58
+ btn.y = screen.FromWorldZ(pos.z - pos.y) - 18
+ //other
+ coldex++
+ ?coldex >= ColourList.Count()
+  coldex = 0
+
+
+/*
+>o-17,-3,#CB6D51,ascii
+ ┌─┐   ┌─┐
+ │ │ ▄ │ │
+ │ ├─┴─┤ │
+ │ │█ █│ │
+ │ ├───┤ │
+ └─┤   ├─┘
+   ├─┬─┤
+   └─┴─┘
+asciiend
+*/
+// Pet animation logic
+var copg = [ascii
+.─. ▄ .─.
+│#.-┴-.#│
+¦#│###│#¦
+│#'───'#│
+'─|###|─'
+##.─.─.
+##'┘¯\'
+asciiend,ascii
+.─. ▄ .─.
+│#.-┴-.#│
+¦#│###│#¦
+│#'───'#│
+'─|###|─'
+##.─.─.
+##'/¯/'
+asciiend,ascii
+.─. ▄ .─.
+│#.-┴-.#│
+¦#│###│#¦
+│#'───'#│
+'─|###|─'
+##.─.─.
+##'/¯'┘
+asciiend]
+
+var i = 0
+
+?totaltime % 10 = 0 & ai.walking
+ i++
+
+?i >= copg.Count()
+ i = 0
+
+
+?ai.walking
+ >o-17,-3,#CB6D51,@copg[i]@
+
+?time % 25
+ >o-14,-1,#4ec9b0,█#█
+:
+ >o-14,-1,#4ec9b0,▄#▄
+
+?!ai.walking
+ >o-17,-3,#CB6D51,ascii
+.─. ▄ .─.
+│#.-┴-.#│
+¦#│###│#¦
+│#'───'#│
+'─|###|─'
+##.─.─.
+##'-┴-'
+asciiend
+ >h-14,-1,#4ec9b0,█#█
+ ?foe = phase & foe.hp < 0
+  >h-14,-1,#4ec9b0,^#^

@@ -1,0 +1,59 @@
+//Balloon
+//by: michael.g.g.
+//ver 1.0
+
+//This script will give the stonehead a balloon from the Spring event to hold. 
+//Ballon will sway left and right just like the icon for the Spring Party shop.
+//Default color matches the pink ballons picked up
+
+var balloonColor = #ff6da9
+var frame
+
+?loc.begin 
+  frame = 0
+
+?frame <= 10
+ >h-5,0,#777777,ascii
+######|
+asciiend
+ >h-5,-3,@balloonColor@,ascii
+#####.-.
+#####\ /
+######^
+asciiend
+?frame > 10 & frame <= 20
+ >h-5,0,#777777,ascii
+######\
+asciiend
+ >h-5,-3,@balloonColor@,ascii
+####.-.
+####\ /
+#####^
+asciiend
+?frame > 20 & frame <= 30
+ >h-5,0,#777777,ascii
+######|
+asciiend
+ >h-5,-3,@balloonColor@,ascii
+#####.-.
+#####\ /
+######^
+asciiend
+?frame > 30
+ >h-5,0,#777777,ascii
+######/
+asciiend
+ >h-5,-3,@balloonColor@,ascii
+#######.-.
+#######\ /
+########^
+asciiend
+
+
+
+
+
+frame++
+
+?frame >= 40
+  frame = 0

@@ -1,0 +1,96 @@
+//Pirate v1.0
+//By TTicsur
+prat_skin() 
+
+func prat_skin()
+ var pirate_ship1
+ var pirate_ship2                          
+ var pirate_ship3
+ var pirate_ship4
+ var pirate_ship5
+ var pirate_ship6
+ var pirate_ship7
+ var pirate_ship8
+
+
+ pirate_ship1 = ascii
+(`--#')
+#—————
+~~~~~~
+asciiend
+
+ pirate_ship2 = ascii
+(`--#')
+ —————
+~~~~~≈
+asciiend
+
+ pirate_ship3 = ascii
+(`--#')
+ —————
+~~~~≈≈
+asciiend
+
+ pirate_ship4 = ascii
+(`--#')
+ —————
+~~~≈≈~
+asciiend
+
+ pirate_ship5 = ascii
+(`--#')
+ —————
+~≈~~≈≈
+asciiend
+
+ pirate_ship6 = ascii
+(`--#')
+ —————
+≈~~≈≈~
+asciiend
+
+ pirate_ship7 = ascii
+(`--#')
+ —————
+~≈~≈~~
+asciiend
+
+ pirate_ship8 = ascii
+(`--#')
+ —————
+~≈~~~~
+asciiend
+
+ ?!ai.walking  
+   >h-2,3,@pirate_ship1@
+ :?time % 6 = 1
+   >h-2,3,@pirate_ship1@
+ :?time % 6 = 2
+   >h-2,3,@pirate_ship2@
+ :?time % 6 = 3
+   >h-2,3,@pirate_ship3@
+ :?time % 6 = 4
+   >h-2,3,@pirate_ship4@
+ :?time % 6 = 5
+   >h-2,3,@pirate_ship5@
+ :?time % 6 = 6
+   >h-2,3,@pirate_ship6@
+ :?time % 6 = 7
+   >h-2,3,@pirate_ship7@
+ :
+   >h-2,3,@pirate_ship8@ 
+
+
+>h-4,-1,#red,ascii
+#.###
+#＂\##
+asciiend
+
+>h-1,0,ascii
+ _
+｛#｝
+asciiend
+
+>h0,1,#63636B,ascii
+ø
+asciiend

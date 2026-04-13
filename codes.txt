@@ -1,0 +1,138 @@
+//codigos random, que hago, solo para guardarlos y no se borren
+
+/*contador de runs exitosas, para no tener cruz roja en el offline
+*/
+var secure = true 
+var loop = 0
+
+?loc.begin
+  loop = 0
+  secure = true
+
+?loc.loop
+  loop++
+  ?hp = maxhp
+    secure = true
+  :
+    secure = false
+    loop = 0
+?secure
+  >`0,10,#green,Tu run ha sido un exito. Quedan @20 - loop@ para quitar la cruz.
+:
+  >`0,10,#red,Tu run ha fallado. Quedan @20 - loop@ para quitar la cruz.
+
+/*bear ascii
+*/
+
+var ear = ［ascii
+#############
+##/`.#####.'\
+##\/#######\/
+#############
+#############
+asciiend,ascii
+#############
+##/`.#####.'\
+##`´ ##### `´
+#############
+#############
+asciiend,ascii
+###_#######_#
+##/_.#####._\
+############# 
+#############
+#############
+asciiend,ascii
+##,-.#####,-.
+##`-.#####.-´
+#############
+#############
+#############
+asciiend］
+
+var bear = ascii
+#############
+#############
+#####´¯¯¯`###
+####/#####\##
+####'.___.'##
+asciiend
+
+//>o-30,-3,#a89536,@bear@
+
+>o-7,-3,#a89536,@bear@
+
+var i = 0
+>h-7,-3,#a89536,@ear［i］@
+//>h-7,0,#a89536,@ear［i］@
+
+?totaltime % 7 = 0
+  i++
+
+
+?totaltime % 10 = 0
+ >h-1,-3,#3ebcdd,#####
+:
+ >h-1,0,#3ebcdd,. .
+
+?i >= ear.Count()
+  i = 0
+/*cta para mi foto de perfil en discord
+*/
+//draw.Clear()
+
+var ctop = ascii
+#
+#
+####/##,|
+###(_`,|;
+asciiend
+
+var head = ascii
+#######,
+###-.-´'\
+####\####)
+asciiend
+
+var ctail = ascii
+,
+)`.
+(##;
+#`-
+asciiend
+
+var head2 = ascii
+ 
+/ ▲ ▲ \
+\ vvv /
+asciiend
+
+var hat = ascii
+,
+.
+\\
+asciiend
+
+>`8,5,@hat@
+>`4,7,#f3d75b,@head@
+>`4,8,#f3d75b,@ctop@
+>`4,8,#f3d75b,@ctail@
+>`10,9,#49dadf,o#°
+>`10,9,#faa778,#ω#
+
+/*fps counter
+*/
+
+var fps_frame_count = 0
+var fps_last_sec = -1
+var fps_current_value = 0
+
+fps_frame_count++
+
+
+?!(time.second = fps_last_sec)
+  fps_current_value = fps_frame_count
+  fps_frame_count = 0
+  fps_last_sec = time.second
+
+>`0,0,#FFFFFF,FPS: @fps_current_value@

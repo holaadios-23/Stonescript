@@ -1,0 +1,158 @@
+
+var Cake
+var ChocoFall
+var land=ascii
+################__###__###################_#___
+##_#,´¯'-´¯\#,-´  `#´  `-__#/`#--#¯¯ ¯\#,´     ¯¯\/¯\##_#__
+#'                                                    ¯  /│
+                                                        │
+                                                        /
+                                                      _/|
+                                                     / │
+                                                    /'
+                                                    \
+##############################################      /│
+##############################################    _/
+##############################################  _/│
+ ,_,--_,__-,__,-'-,-,_,- -._-,__,-^-,-,_,--_,__/│
+  '│  ││ │' │'│ ││ │' '│ ' │' │'│ ││ │' '│ │'  '
+asciiend
+
+var candle1=ascii
+ '.
+ ()
+ ││
+:││.
+asciiend
+
+var candle2=ascii
+ '.
+ ()
+asciiend
+
+var loli1=ascii
+#.-.
+(═══)
+#`-´
+##║
+##║
+##║
+asciiend
+
+var loli2=ascii
+#.-.
+(═══)
+#`-´
+asciiend
+
+var canetree1=ascii
+   |,
+ \|| |/-
+,-\`,/¯
+   }{
+   {}
+   }{
+  /`\\
+asciiend
+
+var canetree2=ascii
+####,
+#\#|##/-
+,#\#,
+###}
+####}
+###}
+####\
+asciiend
+
+var canebert1=ascii
+,-\##-|###|/
+###\/`|/¯\/,
+¯`──\/|\)/_/--
+#####\^ /
+#\,##}V\{##|/
+#¯¯\_{\/}──'¯
+#####}  {
+#####}  {
+####//|`\\
+asciiend
+
+var canebert2=ascii
+#-\########/
+#####`|##\/#
+¯##─\##\)##/-#
+#####\^##
+#######\{##|/
+#¯¯##{\##──##
+####### {
+#####} ##
+####/###\\
+asciiend
+
+var gilbert
+
+var candycorn1=ascii
+#,'|
+//`|
+asciiend
+
+var candycorn2=ascii
+#,'|
+asciiend
+
+//29 X, 4 Y, "V"
+
+?loc.begin
+  ?draw.GetSymbol(29,4)="V"
+    gilbert=true
+  :
+    gilbert=false
+
+  Cake=ui.AddCanvas()
+  Cake.dock=top_left
+  Cake.anchor=top_left
+  Cake.w=screen.w
+  Cake.h=screen.h
+  Cake.blend=add
+  Cake.SetFG(#yellow)
+  ChocoFall=ui.AddCanvas()
+  ChocoFall.dock=bottom_left
+  ChocoFall.anchor=bottom_left
+  ChocoFall.SetFG(#5a2100)
+  ChocoFall.w=60
+  ChocoFall.h=13
+  ChocoFall.blend=multiply
+  ChocoFall.SetFG(38,3,#white)
+  ChocoFall.SetFG(39,3,#white)
+  ChocoFall.SetFG(40,3,#white)
+  ChocoFall.SetFG(37,4,#white)
+  ChocoFall.SetFG(38,4,#white)
+  ChocoFall.SetFG(39,4,#white)
+  ChocoFall.SetFG(40,4,#white)
+  ChocoFall.SetFG(51,0,#white)
+  ChocoFall.SetFG(53,0,#white)
+  ChocoFall.SetFG(56,0,#white)
+  ChocoFall.SetFG(59,0,#white)
+  ChocoFall.SetFG(51,1,#white)
+  ChocoFall.SetFG(55,2,#white)
+>`0,0,#magenta,@land@
+>`44,8,#white,@candle1@
+>`44,8,#yellow,@candle2@
+>`48,4,#white,@candle1@
+>`48,4,#yellow,@candle2@
+>`52,0,#white,@candle1@
+>`52,0,#yellow,@candle2@
+>`17,4,#white,@loli1@
+>`17,4,#ff6da9,@loli2@
+>`8,2,#white,@loli1@
+>`8,2,#ff6da9,@loli2@
+>`40,1,#white,@loli1@
+>`40,1,#ff6da9,@loli2@
+>`37,17,#white,@candycorn1@
+>`37,17,#ee8113,@candycorn2@
+?gilbert
+  >`23,0,#white,@canebert1@
+  >`23,0,#red,@canebert2@
+:
+  >`25,2,#white,@canetree1@
+  >`25,2,#red,@canetree2@

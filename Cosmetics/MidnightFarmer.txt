@@ -1,0 +1,199 @@
+/*
+MidnightFarmer
+Made by GMV (gmv01)
+version 1.0
+Copy and paste in your mind
+*/
+
+disable player
+
+var TractorWheel = ［ascii
+x
+asciiend
+,ascii
+x
+asciiend
+,ascii
++
+asciiend
+,ascii
++
+asciiend
+］
+var Smoke4bS = ［ascii
+.'.'.
+asciiend
+,ascii
+'.'.'
+asciiend
+］
+var Smoke3S = ［ascii
+.•.
+asciiend
+,ascii
+•..
+asciiend
+,ascii
+...
+asciiend
+,ascii
+..•
+asciiend
+］
+
+var Smoke2S = ［ascii
+~~~.
+~~~.
+asciiend
+,ascii
+~~'~
+~~'~
+asciiend
+,ascii
+~*~~
+~*~~
+asciiend
+,ascii
+@~~~
+@~~~
+asciiend
+］
+
+var Smoke1S = ［ascii
+~~~.
+~*~~
+~~'~
+asciiend
+,ascii
+~~'~
+@~~~
+~*~~
+asciiend
+,ascii
+~*~~
+~~~.
+@~~~
+asciiend
+,ascii
+@~~~
+~~'~
+~~~.
+asciiend
+］
+var TractorAtk = ［ascii
+┌—
+|#
+|#
+|#
+|#
+└—
+asciiend
+,ascii
+#┌—
+#|#
+#|#
+#|#
+-|#
+#└—
+asciiend
+,ascii
+#.####
+#|#`#.
+#|####
+#|####
+-|###.
+#.#´##
+asciiend
+,ascii
+#.####
+#|`.##
+#|##`.
+#|###.
+-|#.´#
+#.´###
+asciiend
+］
+
+var SmokeColor = #dddddd
+
+var TractorWheelF = 0
+var TractorAtkF = 0
+var Smoke4bSF = 0
+var Smoke1SF = 0
+var Smoke2SF = 0
+var Smoke3SF = 0
+
+?ai.walking & totaltime % 16 = 0
+ Smoke4bSF++
+
+?Smoke4bSF >= Smoke4bS.Count()
+ Smoke4bSF = 0
+
+?ai.walking & totaltime % 7 = 0
+ Smoke3SF++
+
+?Smoke3SF >= Smoke3S.Count()
+ Smoke3SF = 0
+
+?ai.walking & totaltime % 4 = 0
+ Smoke2SF++
+
+?Smoke2SF >= Smoke2S.Count()
+ Smoke2SF = 0
+
+?ai.walking & totaltime % 3 = 0
+ Smoke1SF++
+
+?Smoke1SF >= Smoke1S.Count()
+ Smoke1SF = 0
+
+?foe.distance <= 23 & ai.enabled 
+ ?totaltime % 7 = 0
+  TractorAtkF++
+:
+ TractorAtkF = 0
+?TractorAtkF >= TractorAtk.Count()
+ TractorAtkF = 0
+
+var Smoke1SCount = Smoke1S.Count()
+var difpos
+//walk
+difpos = pos.x + pos.y + pos.z
+TractorWheelF = (7*difpos/12) % Smoke1SCount
+
+?TractorWheelF < 0
+ TractorWheelF = TractorWheelF + Smoke1SCount
+
+>o-4,-4,#white,ascii
+####____############
+###|#o #|###########
+###|#|\•!##║########
+###|¯¯¯¯¯¯¯¯¯¯`.####
+###|____ ##     `.##
+##.´.--.`.     __|##
+###' ┌┐ ' ===='.-.`—
+###! └┘ !#####: # :#
+####`--´#######`-´##
+asciiend 
+
+>o16,-2,@TractorAtk［TractorAtkF］@
+
+>o12,3,@TractorWheel［TractorWheelF］@
+
+var light = ＂==＂
+?player.framesPerMove >= 4
+ >o5,0,#8c8c8c,@light@
+ ?ai.walking
+  >o-6,0,@SmokeColor@,@Smoke4bS［Smoke4bSF］@
+?player.framesPerMove = 3
+ >o5,0,#white,@light@
+ ?ai.walking
+  >o-4,0,@SmokeColor@,@Smoke3S［Smoke3SF］@
+:?player.framesPerMove = 2
+ >o5,0,#cyan,@light@
+ ?ai.walking
+  >o-5,-1,@SmokeColor@,@Smoke2S［Smoke2SF］@
+:?player.framesPerMove <= 1
+ >o5,0,#D14900,@light@
+ ?ai.walking
+  >o-5,-2,@SmokeColor@,@Smoke1S［Smoke1SF］@

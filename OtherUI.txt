@@ -1,0 +1,543 @@
+// Variables de control
+var ui_init = false
+var info_visible = false
+var anim_timer = 0
+var anim_speed = 1 // Frames por caracter (1 = muy rápido, 3 = normal)
+var msg_player
+var msg_map
+var msg_foe
+var msg_footer
+// Stats variables
+var fps = 0
+var dps = 0
+var hps = 0
+var fps_c = 0
+var sec_l = 0
+var hp_l = 0
+var dmg_l = []
+
+// Referencias a componentes UI
+var pnl_player
+var txt_player
+var txt_buffs
+var pnl_map
+var txt_map
+var pnl_foe
+var txt_foe
+var ai_text
+var cd_text_bar // Elemento de texto para la barra
+
+// --- Funciones ---
+
+func mindopen()
+ ui.OpenMind()
+ disable hud rabupf
+ disable loadout print
+
+func UpdateStats()
+ fps_c++
+ ?time.second ! sec_l
+  fps = fps_c
+  fps_c = 0
+  sec_l = time.second
+ var d = 0
+ var hp_n = foe.hp + foe.armor
+ ?hp_n < hp_l
+  d = hp_l - hp_n
+ hp_l = hp_n
+ dmg_l.Add(d)
+ ?dmg_l.Count() > 30
+  dmg_l.RemoveAt(0)
+ dps = 0
+ hps = 0
+ for x : dmg_l
+  dps += x
+  ?x > 0
+   hps++
+
+func MaxGP()
+ var gp
+ gp = 999999
+ ?loc.stars = 5
+  gp = 150
+ ?loc.stars = 10
+  gp = 200
+ ?loc = "rocky"
+  gp = gp * 3
+ return gp
+
+func nofoe()
+ ?foe.distance >= 50
+  return "No foe"
+ :
+  return Color("#f2f065",foe.id) + " | ♥ " + foe.hp + " | " + Color("#43029a","fd:"+ foe.distance) + " | " + GetElementalInfo(foe)
+
+// Esta función se ejecuta al presionar el botón
+func ToggleInfo()
+ info_visible = !info_visible
+ 
+ ?info_visible
+  // Si abrimos, reseteamos el timer y mostramos el panel
+  anim_timer = 0
+  pnl_player.visible = true
+  txt_player.text = ""
+  pnl_map.visible = true
+  txt_map.text = ""
+  pnl_foe.visible = true
+  txt_foe.text = ""
+  txt_buffs.visible = true
+ :
+  // Si cerramos, ocultamos el panel
+  pnl_player.visible = false
+  pnl_map.visible = false
+  pnl_foe.visible = false
+  txt_player.text = ""
+  txt_map.text = ""
+  txt_foe.text = ""
+  txt_buffs.visible = false
+
+func Createpanel(x,y,w,h,c,s,v)
+ var panel = ui.AddPanel()
+ panel.x = x
+ panel.y = y
+ panel.w = w
+ panel.h = h
+ panel.color = c
+ panel.style = s
+ panel.visible = v
+ return panel
+
+func createtext(text, x, y, w, h, color, align)
+ var t = ui.AddText()
+ t.text = text
+ t.x = x
+ t.y = y
+ t.w = w
+ t.h = h
+ t.color = color
+ t.align = align
+ return t
+
+func Color(c, t)
+ return "[color=" + c + "]" + t + "[/color]"
+
+/*idea para el print de el AI: (asi debe salir en el juego, cada uno en la posicion que pongo en este comentario)
+AI
+->Enabled //cambia el color si esta activo o no, si se puede cambiar texto
+->Paused //cambia el color si esta activo o no, si se puede cambiar texto
+->Idle //cambia el color si esta activo o no, si se puede cambiar texto
+->Walking //cambia el color si esta activo o no, si se puede cambiar texto
+*/
+
+func setAI()
+ var e
+ e = ai.enabled
+ var p
+ p = ai.paused
+ var i
+ i = ai.idle
+ var w
+ w = ai.walking
+ 
+ var res
+ res = ""
+ 
+ var c_e
+ c_e = "#FF0000"
+ ?e
+  c_e = "#00FF00"
+ res = res + "\n" + Color(c_e, "Enabled")
+ 
+ var c_p
+ c_p = "#00FF00"
+ ?!(p)
+  c_p = "#FF0000"
+ res = res + "\n" + Color(c_p, "Paused")
+ 
+ var c_i
+ c_i = "#ff0000"
+ ?i
+  c_i = "#00FF00"
+ res = res + "\n" + Color(c_i, "Idle")
+ 
+ var c_w
+ c_w = "#ff0000"
+ ?w
+  c_w = "#00FF00"
+ res = res + "\n" + Color(c_w, "Walking")
+ 
+ return res
+
+
+func GetColoredGPText()
+ var cur_gp
+ cur_gp = loc.gp
+ var m_gp
+ m_gp = MaxGP()
+ var gp_ratio
+ gp_ratio = 1.0 * cur_gp / m_gp
+
+ var gp_color
+ gp_color = color.Lerp("#00FF00", "#FF0000", gp_ratio)
+
+ var txt = "GP: " + cur_gp + "/" + m_gp
+ return Color(gp_color, txt)
+
+
+func GetColoredStarsText()
+ var s
+ s = loc.stars
+ var c
+ c = "#FFFFFF"
+ ?s > 15
+  c = "#00FF00"
+ :?s > 10
+  c = "#FFFF00"
+ :?s > 5
+  c = "#00FFFF"
+ var txt = "☆ " + s
+ return Color(c, txt)
+
+
+func CreateButton(text, x, y, w, h, anchor, dock, action)
+ var b = ui.AddButton()
+ b.text = text
+ b.x = x
+ b.y = y
+ b.w = w
+ b.h = h
+ b.anchor = anchor
+ b.dock = dock 
+ b.SetPressed(action)
+ return b
+
+func InitUI()
+ ui.Clear()
+ 
+ CreateButton("T", 1, 3, 3, 3, bottom_center, top_left, ToggleInfo)
+ CreateButton("M",1,6,3,3,bottom_center,top_left,mindopen)
+ CreateButton("I",0,0,3,3,bottom_left,bottom_left,ui.OpenInv)
+ // 1. Panel Jugador (Estilo Azul Tech) - Izquierda
+ pnl_player = Createpanel(-16, 12, 70, 3, #000044, 1, false)
+ txt_player = createtext("", -15, 14, 70, 4, #00FFFF, left)
+ 
+ // TEXTO DE BUFFS (Separado del panel principal)
+ txt_buffs = createtext("", -5, 12, 70, 4, #00FF00, left)
+ txt_buffs.visible = false
+ 
+ // 2. Panel Mapa (Estilo Dorado Antiguo) - Centro
+ pnl_map = Createpanel(-4, -12, 80, 3, #443300, 1, false)
+ txt_map = createtext("", -3, -10, 80, 4, #FFD700, left)
+
+ // 3. Panel Enemigo (Estilo Alerta Roja) - Derecha
+ pnl_foe = Createpanel(-14, -9, 7, 3, #440000, 1, false)
+ txt_foe = createtext("", -13, -7, 80, 4, #FF5555, left)
+
+ // --- Barra de Cooldown con texto "---" ---
+ // Usamos la función 'createtext' que ya tienes.
+ // Se posicionará arriba en el centro de la pantalla.
+ cd_text_bar = createtext("", -30, -7, 22, 1, #FFFF00, 1) // 1 = Alineación centrada
+ cd_text_bar.visible = false 
+ cdpotion()
+
+ ai_text = createtext("", -15, -3, 60, 6, #FFFFFF, left)
+
+ ui_init = true
+
+// Función para actualizar la barra de poción
+func cdpotion()
+ var t = 0
+ var max = 0
+ var name = "none"
+
+ // 1. Comprobar Lucky (180 frames)
+ t = buffs.GetTime("lucky")
+ ?t > 0
+  max = 180
+  name = "lucky"
+
+ // 2. Comprobar Berserk (300 frames) - Solo si no encontramos la anterior
+ ?t <= 0
+  t = buffs.GetTime("berserk")
+  ?t > 0
+   max = 300
+   name = "berserk"
+
+ // 3. Comprobar Strength (300 frames)
+ ?t <= 0
+  t = buffs.GetTime("strength")
+  ?t > 0
+   max = 300
+   name = "strength"
+
+ // 4. Comprobar Invisibility (450 frames)
+ ?t <= 0
+  t = buffs.GetTime("invisibility")
+  ?t > 0
+   max = 450
+   name = "invisibility"
+
+ // 5. Comprobar Vampiric (600 frames)
+ ?t <= 0
+  t = buffs.GetTime("vampiric")
+  ?t > 0
+   max = 600
+   name = "vampiric"
+
+ // 6. Comprobar Experience (900 frames)
+ ?t <= 0
+  t = buffs.GetTime("experience")
+  ?t > 0
+   max = 900
+   name = "experience"
+
+ // --- Actualizar Barra ---
+ ?t > 0
+  cd_text_bar.visible = true
+  var ratio
+  ratio = 1.0 * t / max
+  var bar_color
+  bar_color = color.Lerp("#63b6ba", "#c41e08", ratio)
+  cd_text_bar.color = bar_color
+  var num = (t * 20) / max
+  var s = ""
+  ?num > 0
+   for i = 0 .. num - 1
+    s += "-"
+  cd_text_bar.text = s
+  return [name, t]
+ :
+  cd_text_bar.visible = false
+  return ["none", 0]
+
+func GetBuffString()
+ var s = ""
+ 
+ // --- Pociones ---
+ ?buffs.GetTime("lucky") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Lcky"
+ 
+ ?buffs.GetTime("berserk") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Bers"
+ 
+ ?buffs.GetTime("strength") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Str"
+ 
+ ?buffs.GetTime("invisibility") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Inv"
+ 
+ ?buffs.GetTime("vampiric") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Vamp"
+ 
+ ?buffs.GetTime("experience") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Exp"
+ 
+ // --- Armas y Otros ---
+ ?buffs.GetTime("buff_damage") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Dmg"
+  
+ ?buffs.GetTime("bardiche_buff_aoe_chance") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "B.AoE"
+ 
+ ?buffs.GetTime("bardiche_buff_crit_chance") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "B.Crit"
+
+ ?buffs.GetTime("bardiche_buff_crit_mult") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "B.Mult"
+
+ ?buffs.GetTime("bardiche_buff_move_speed") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "B.Spd"
+
+ ?buffs.GetTime("shovel_damage") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Shvl"
+
+ ?buffs.GetTime("quarterstaff_buff_attack_speed") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Q.Spd"
+
+ ?buffs.GetTime("quarterstaff_buff_stun") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Q.Stn"
+
+ ?buffs.GetTime("pick_pocket") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Pick"
+
+ ?buffs.GetTime("smite") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Smt"
+
+ ?buffs.GetTime("buff_staff_berserk") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "S.Brk"
+
+ ?buffs.GetTime("buff_staff_protection") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "S.Pro"
+
+ ?buffs.GetTime("buff_range") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Rng"
+
+ ?buffs.GetTime("buff_bullet_width") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Wdth"
+
+ ?buffs.GetTime("buff_infernal") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Infr"
+
+ ?buffs.GetTime("buff_inf_speed") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "I.Spd"
+
+ ?buffs.GetTime("buff_frozen") > 0
+  ?string.Size(s) > 0
+   s += " "
+  s += "Frzn"
+
+ return s
+
+func FormatTime(t)
+ return t/1800 + "m " + (t/30)%60 + "s " + t%30 + "f"// -> in frames: " + t
+
+func GetElementalInfo(id)
+  ?id = ice
+    return Color("#c96d2f", "Fire") + " melts " + Color("#41606d", "Ice")
+  :?id = poison
+    return Color("#41606d", "Ice") + " slows " + Color("#4ca932", "Poison")
+  :?id = vigor
+    return Color("#4ca932", "Poison") + " infects " + Color("#d54d73", "Vigor")
+  :?id = aether
+    return Color("#d54d73", "Vigor") + " consumes " + Color("#c1cbab", "Aether")
+  :?id = fire
+    return Color("#c1cbab", "Aether") + " extinguishes " + Color("#c96d2f", "Fire")
+  :?id = stone
+    return Color("#494642", "Stone") + " break " + Color("#494642", "stone")
+
+
+
+func AnimateInfoPanel()
+ var current_len
+ current_len = anim_timer / anim_speed
+ 
+ // Comprobamos cada texto individualmente para evitar errores de longitud
+ ?current_len >= string.Size(msg_player)
+  txt_player.text = msg_player
+ :
+  txt_player.text = string.Sub(msg_player, 0, current_len)
+
+ ?current_len >= string.Size(msg_map)
+  txt_map.text = msg_map
+ :
+  txt_map.text = string.Sub(msg_map, 0, current_len)
+
+ ?current_len >= string.Size(msg_foe)
+  txt_foe.text = msg_foe
+ :
+  txt_foe.text = string.Sub(msg_foe, 0, current_len)
+ 
+ // --- Adaptación Dinámica de Paneles ---
+ // Calculamos el ancho restando los caracteres invisibles de las etiquetas [color] (aprox 23 por par)
+ var w_p
+ w_p = string.Size(msg_player)
+ w_p = w_p - 138 // 6 pares de etiquetas de color
+ w_p = w_p + 2   // Margen de seguridad
+ pnl_player.w = w_p
+ txt_player.w = w_p
+
+ var w_m
+ w_m = string.Size(msg_map)
+ w_m = w_m - 115   // 2 pares de etiquetas (Stars y GP)
+ w_m = w_m + 2
+ pnl_map.w = w_m
+ txt_map.w = w_m
+
+ var w_f
+ w_f = string.Size(msg_foe)
+ ?foe.distance <= 50
+  w_f = w_f - 92 // Solo restamos si hay enemigo (el mensaje de debilidad tiene 2 pares)
+ w_f = w_f + 2
+ pnl_foe.w = w_f
+ txt_foe.w = w_f
+
+ ?current_len < 200
+  anim_timer++
+
+disable hud rabupf
+disable loadout print
+
+?loc.begin | loc.loop
+ disable hud rabupf
+ disable loadout print
+ ui_init = false
+ info_visible = false
+
+?!ui_init 
+ InitUI()
+
+// --- Bucle Principal ---
+// Actualiza el mensaje del panel de información dinámicamente
+
+// Ejecutamos la función para que la barra se actualice visualmente
+cdpotion()
+
+// --- BUCLE PRINCIPAL (Cada Frame) ---
+// IMPORTANTE: Mantener esto FUERA de ?totaltime=1 para que se actualice siempre
+// Usamos símbolos Unicode para ahorrar espacio y dar estilo a las mini-tarjetas
+UpdateStats()
+var p_hp
+var p_arm
+var p_pos
+var p_dps
+ 
+p_hp = Color("#c92f30", " ♥ " + hp + "/" + maxhp)
+p_arm = Color("#30524f", " [" + armor + "." + armor.f + "]")
+p_pos = Color("#8e6c4a", "x=" + pos.x) + Color("#93a15e", " z=" + pos.z)
+p_dps = Color("#e66be0", "DPS: " + dps)
+
+msg_player = Color("#d0beef", player.name) + " |" + p_hp + p_arm + " | " + p_pos + " | " + p_dps
+
+txt_buffs.text = GetBuffString()
+
+msg_map = Color("#9098d2",loc.name) + " | " +  GetColoredStarsText() + " | " + GetColoredGPText() + " | " + Color("#77221a","Ö "+FormatTime(totaltime)) + " | " + Color("#18b851", "bestime: " + FormatTime(loc.bestTime))
+msg_foe = nofoe() 
+
+ai_text.text = setAI()
+
+?info_visible
+ AnimateInfoPanel()

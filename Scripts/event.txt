@@ -1,0 +1,158 @@
+var fd
+fd = foe.distance
+var px
+px = pos.x
+var pcd
+pcd = pickup.distance
+var aie
+aie = ai.enabled
+var aw
+aw = ai.walking
+var treasurePickedUp = false
+var igc = item.GetCooldown
+var ica = item.CanActivate
+?loc.begin | loc.loop
+ treasurePickedUp = false
+
+?item.left.state = 3
+  equipL *0 wand //trash
+  equipL @item.left@
+?item.right.state = 3
+  equipR *0 shield //trash
+  equip @item.right@
+
+
+func dah()
+ ?aie & aw & fd > 11 & fd < 17
+  ?igc("dash") <= 0
+   equipL triskelion
+   equipR dash
+   return true
+  :?igc("bash") <= 0
+   equipL triskelion
+   equipR bash
+   return true
+ return false
+
+func SwapSword()
+ ?foe = ice
+  equipL fire sword
+ :?foe = fire
+  equipL aether sword
+ :?foe = aether
+  equipL vigor sword
+ :?foe = vigor
+  equipL poison sword
+ :?foe = poison
+  equipL ice sword
+
+func BladeAt(i)
+ return screen.i=i & fd<29 & Blade()
+
+var waitToBlade=0
+func Blade()
+ ?igc(＂blade＂)<=0
+  waitToBlade++
+  screen.Next()
+  ?waitToBlade>18
+   equip blade
+   activate R
+   screen.ResetOffset()
+   waitToBlade=0
+  return true
+ return false
+
+func Staff()
+  ?igc("quarterstaff")=0
+   equip quarterstaff +0 *0
+   activate R
+
+func fire(x)
+ return talis(＂fire_talisman＂,＂cinderwisp＂,x)
+
+func aet(x)
+ return talis(＂aether_talisman＂,＂voidweaver＂,x)
+
+func talis(name,s,x)
+ ?totaltime>1 & (summon.GetId()!s)=x
+  equipR @name@
+  equipl trisk
+  ?item.GetCooldown(name)=0
+   activate R
+  return true
+ return false
+
+func CinderwispByCount(count)
+ ?summon.GetId()=＂cinderwisp＂ & summon.count>0 &
+ ^summon.GetVar(＂ignition＂)>=count
+  activate cinderwisp
+
+func bard()
+ return exec(＂bardiche＂,＂bardiche＂)
+
+func heavy()
+ return exec(＂heavy_hammer＂,＂heavy＂)
+
+func mask()
+ return exec(＂mask＂,＂mask＂)
+
+func exec(k,v)
+ ?ica() & (igc(k)<=0 | item.right=v &
+ ^item.right.state=2)
+  equip @v@
+  activate R 
+  return true
+ return false
+
+func perma(dist, maxLoops)
+ ?I <= maxLoops
+  ?fd < 11 | foe = boss
+   activate P
+  ?fd > dist
+   ?Staff()
+    return true
+   :
+    equipR mask
+    equipL triskelion
+   ?pcd < 7
+    equipL star
+   return true
+ return false
+
+var I = 0
+?loc.loop
+ I++
+
+?pickup = treasure
+ treasurePickedUp = true
+
+disable npcDialog
+
+?loc = rocky
+ ?perma(18,2)
+  return
+ ?dah()
+  return
+ ?fd < 10
+  equipL poison sword
+  equipR mask
+  ?foe = phase2
+   SwapSword()
+ :
+  equipR compound bow
+  equipL triskelion
+
+ :
+  ?fd < 20
+   ?Staff()
+    return
+   :
+    equipL triskelion
+    equipR compound shield
+  :?dah()
+   return
+  :?fd < 10
+    equip poison crossbow
+    ?foe = phase2
+     equipR moonstone
+     SwapSword()

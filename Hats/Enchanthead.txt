@@ -1,0 +1,36 @@
+/*
+EnchantHead by Telos6857
+v.1.1 updated for better optimization
+
+[Instructions]
+Copy and paste code and turn on bighead
+You're free to change the value of
+"enchantClr" to your choosing
+*/
+
+var enchant = ["(_ ","(¯ ","´¯`"," ¯)",
+" _)","._.","(_ ","(¯ ","´¯`"," ¯:"," '¡",
+" .:","._.",":_ ","!. ",":' ","´¯`"," ¯:",
+" '¡"," .:","._.","(_ ","(¯ ","´¯`"," ¯)",
+" .)"," ¡,","´! ","(` ","(_ ","._."," _)",
+" ¯)","(¯ ","(_ ","._."," _)"," ¯)","´¯`",
+"(¯ ","(, ",".¡ "," !`"," ´)"," _)","._."]
+
+var enchantT = 0
+var enchantCycle = 0
+var enchantClr = #rainFF
+?totaltime % 3 = 2
+ enchantT++
+enchantCycle = enchantT % 46
+?loc.loop
+ enchantT = 0
+ enchantCycle = 0
+
+func headPrint()
+ >h-2,-1,#2E2E2E,ascii
+#.-.
+(###)
+#`.´
+asciiend
+ >h-1,0,@enchantClr@,@enchant[enchantCycle]@
+headPrint()

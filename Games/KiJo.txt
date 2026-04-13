@@ -1,0 +1,1990 @@
+﻿///==============================================================
+/// KIJO
+///==============================================================
+// Version: 1.0
+//
+// Designed and verified on
+// SSRPG v4.20.2
+//
+// Author:
+// Created by TeumessianSven
+// on the Stone Story RPG
+// Discord
+//
+
+
+///==============================================================
+/// GLOBAL VARIABLES
+///==============================================================
+
+var CURPLAYER   = 0
+var VISPLAYER   = 1
+var MASTER      = 2
+var SUB         = 3
+var FLAG        = 4
+var GAMETIMER   = 5
+var INGAME      = 6
+var SHIFTPLAYER = 7
+
+// Game Master States
+var MENU       = 0
+var SETUP      = 1
+var GAMEPLAY   = 2
+var RESULTS    = 3
+var CLEANUP    = 4
+
+// Game Sub States
+var INITIAL = 0
+
+// Game SETUP Sub States
+var SHUFFLE    = 1
+var DEAL       = 2
+
+// Game GAMEPLAY Sub States
+var BEGINNING  = 1
+var MIDDLE     = 2
+var END        = 3
+
+
+//Shuffle States
+var UNSHUFFLED = 0
+//var SHUFFLE    = 1
+var CUT        = 2
+var SHUFFLED   = 3
+
+//Turn States
+var CHOOSE  = 0
+var TRADE   = 1
+var DRAW    = 2
+var FLIP    = 3
+var DISCARD = 4
+var RESOLVE = 5
+
+var GameState = [
+0,      //Current Player
+0,      //Visually Shown Player
+MENU,   //Master State
+CHOOSE, //Sub State
+CHOOSE, //Flag State
+0,      //Game Timer
+0,      //In Game
+0       //Shift Player View
+]
+
+
+
+var GAMEPLAYERS    = 0
+var GAMECOMPUTERS  = 1
+var GAMEMAXPLAYERS = 2
+var GAMEDIFFICULTY = 3
+var GAMECURPLAYER  = 4
+
+var COMPUTER = 0
+var PLAYER   = 1
+
+var EASY   = 0
+var MEDIUM = 1
+var HARD   = 2
+
+var GameDifficultyText = ["EASY","MEDIUM","HARD"]
+
+var GameSettings = [
+2, //Number of Players
+0, //Number of Computers
+8, //Max Players
+MEDIUM //Difficulty
+]
+
+
+// Player Params
+//var STATE  = 0
+//var CARDS = 1
+var SCORE = 2
+var WINS  = 3
+
+var PlayerInfo = [
+PLAYER, //Player or CPU
+[], //Hand
+null, //Panel
+0, //Current Score
+0, //Total Wins
+null //Text
+]
+
+var Players = []
+
+var InitDeckValues = [
+[12, 10],
+[11, 10],
+[10, 10],
+[ 9, 10],
+[ 8, 10],
+[ 7, 10],
+[ 6, 10],
+[ 5, 10],
+[ 4, 10],
+[ 3, 10],
+[ 2, 10],
+[ 1, 10],
+[ 0, 15],
+[-1, 10],
+[-2,  5]
+]
+
+var STATE  = 0
+var CARDS  = 1
+var VALUE  = 1
+var PANEL  = 2
+var BUTTON = 3
+var ANIM   = 4
+var TEXT   = 5
+//var FLAG   = 4
+
+
+//Anims
+var EMPTY  = 0
+var FRONT  = 1
+var BACK   = 2
+var EDGE   = 3
+
+//States
+var EMPTY     = 0
+var UNFLIPPED = 1
+var FLIPPED   = 2
+
+var Deck = []
+var DeckExample = [
+UNFLIPPED, //State: Empty,Unflipped/Flipped
+[],    //Cards
+null,  //Panel
+null,  //Button
+[null, //Anim-Empty
+null,  //Anim-Front
+null,  //Anim-Back
+null], //Anim-Edge
+null   //Text
+]
+
+var Discard = []
+// var DiscardExample = [
+// EMPTY, //State: Empty,Unflipped/Flipped
+// [],    //Cards
+// null,  //Panel
+// null,  //Button
+// [null, //Anim-Empty
+// null,  //Anim-Front
+// null,  //Anim-Back
+// null], //Anim-Edge
+// null   //Text
+//]
+
+var Temp = []
+// var TempExample = [
+// EMPTY, //State: Empty,Unflipped/Flipped
+// 12,    //Value
+// null,  //Panel
+// null,  //Button
+// [null, //Anim-Empty
+// null,  //Anim-Front
+// null], //Anim-Back
+// null   //Text
+//]
+
+
+var Shuffle = []
+//var Shuffle = [
+//SHUFFLE, //State
+//[],      //Cards
+//null,   //Panel1
+//null,   //Button1
+//]
+
+var SHUFFLETOGGLE = 0
+var SHUFFLEWIDTH  = 1
+var SHUFFLESPEED  = 2
+var SHUFFLEPHASE  = 3
+var SHUFFLETIME   = 4
+var SHUFFLEDELAY  = 5
+
+var ShuffleParams = [
+1,   //Shuffle Direction Toggle
+8,   //Shuffle Width
+4.0, //Shuffle Speed
+0.5, //Shuffle Phase Offset
+0,   //Shuffle Count Time
+10   //Cut Delay Time
+]
+
+
+
+
+
+
+
+
+
+
+var ColorUI = #AAAAAA
+
+var gamePanel = null
+var logoPanel = null
+var logoAnimK = null
+var logoAnimI = null
+var logoAnimJ = null
+var logoAnimO = null
+var menuPanel = null
+var mainMenuPanel = null
+var settingsMenuPanel = null
+
+var playButton = null
+var tutorialButton = null
+var settingsButton = null
+var exitButton = null
+
+var playersPanel = null
+var playersText = null
+var playersLButton = null
+var playersRButton = null
+var computersPanel = null
+var computersText = null
+var computersLButton = null
+var computersRButton = null
+var difficultyPanel = null
+var difficultyText = null
+var difficultyLButton = null
+var difficultyRButton = null
+var settingsPlayButton = null
+var settingsBackButton = null
+
+var tablePanel = null
+var pauseButton = null
+var leftButton = null
+var rightButton = null
+
+
+
+
+///==============================================================
+/// ASCII ART
+///==============================================================
+
+var logoArt = ascii
+.-──-.  .-──-.  .-──-.  .-──-.
+|K   |  |I   |  |J   |  |O   |
+│    │  │    │  │    │  │    │ 
+|   K|  |   I|  |   J|  |   O|
+'-──-'  '-──-'  '-──-'  '-──-'
+asciiend
+
+var logoK = ascii
+.-──-.
+|K   |
+│    │ 
+|   K|
+'-──-'
+asciiend
+
+var logoI = ascii
+.-──-.
+|I   |
+│    │ 
+|   I|
+'-──-'
+asciiend
+
+var logoJ = ascii
+.-──-.
+|J   |
+│    │ 
+|   J|
+'-──-'
+asciiend
+
+var logoO = ascii
+.-──-.
+|O   |
+│    │ 
+|   O|
+'-──-'
+asciiend
+
+
+
+
+
+var Invis = ui.AddStyle("
+^###
+^###
+^###")
+
+
+var cardempty = ascii
+.----.
+┊    ┊
+┊ -- ┊ 
+┊    ┊
+'----'
+asciiend
+
+
+var cardback = ascii
+.-──-.
+|K  I|
+│ @@ │ 
+|J  O|
+'-──-'
+asciiend
+
+
+var cardfront = ascii
+.-──-.
+|@   |
+│    │ 
+|   @|
+'-──-'
+asciiend
+
+
+var namePleft  = "·-─────── " //".-─────-· "
+var namePright = " ───────-·" //" ·-─────-."
+var nameCleft  = "·-────── "  //".-────-· "
+var nameCright = " ──────-·"  //" ·-────-."
+
+
+var deckedge = ascii
+######
+#####║
+#####║
+#####║
+#=══="
+asciiend
+
+
+var cardflip = ascii
+
+
+
+
+
+%%
+  .──.
+  |##|
+  │##│ 
+  |##|
+  '──'
+%%
+    ¡¡
+    ||
+    ││ 
+    ||
+    !!
+%%
+   ¡¡ 
+   || 
+   ││ 
+   || 
+   !! 
+%%
+  ¡¡  
+  ||  
+  ││  
+  ||  
+  !!  
+%%
+ ¡¡   
+ ||   
+ ││   
+ ||   
+ !!   
+%%
+¡¡    
+||    
+││    
+||    
+!!    
+%%
+.──.  
+|##|  
+│##│  
+|##|  
+'──'  
+%%
+
+
+
+
+
+asciiend
+
+
+
+///==============================================================
+/// FUNCTIONS
+///==============================================================
+
+func DrawGame()
+  gamePanel = ui.AddPanel()
+  gamePanel.anchor = center_center
+  gamePanel.dock = center_center
+  gamePanel.w = screen.w
+  gamePanel.h = screen.h
+  gamePanel.color = ColorUI
+
+  DrawMenus()
+  DrawTable()
+
+  var outlinePanel = ui.AddPanel()
+  outlinePanel.anchor = center_center
+  outlinePanel.dock = center_center
+  outlinePanel.style = -1
+  outlinePanel.w = screen.w
+  outlinePanel.h = screen.h
+  outlinePanel.color = ColorUI
+  gamePanel.Add(outlinePanel)
+//
+
+
+func DrawMenus()
+  menuPanel = ui.AddPanel()
+  menuPanel.anchor = center_center
+  menuPanel.dock = center_center
+  menuPanel.w = screen.w
+  menuPanel.h = screen.h
+  menuPanel.color = ColorUI
+  gamePanel.Add(menuPanel)
+
+  logoPanel = ui.AddPanel()
+  logoPanel.anchor = top_center
+  logoPanel.dock = top_center
+  ?screen.h <= 25
+    logoPanel.y = 1
+  :
+    logoPanel.y = 2
+  logoPanel.w = 30
+  logoPanel.h = 5
+  logoPanel.style = Invis
+
+  logoAnimO = ui.AddAnim(logoO)
+  logoAnimO.x = 12
+  logoAnimO.w = 6
+  logoAnimO.h = 5
+  logoPanel.Add(logoAnimO)
+
+  logoAnimJ = ui.AddAnim(logoJ)
+  logoAnimJ.x = 4
+  logoAnimJ.w = 6
+  logoAnimJ.h = 5
+  logoPanel.Add(logoAnimJ)
+
+  logoAnimI = ui.AddAnim(logoI)
+  logoAnimI.x = -4
+  logoAnimI.w = 6
+  logoAnimI.h = 5
+  logoPanel.Add(logoAnimI)
+
+  logoAnimK = ui.AddAnim(logoK)
+  logoAnimK.x = -12
+  logoAnimK.w = 6
+  logoAnimK.h = 5
+  logoPanel.Add(logoAnimK)
+  
+  gamePanel.Add(logoPanel)
+
+  DrawMainMenu()
+  DrawSettingsMenu()
+//
+
+
+func DrawMainMenu()
+  mainMenuPanel = ui.AddPanel()
+  mainMenuPanel.anchor = bottom_center
+  mainMenuPanel.dock = bottom_center
+  mainMenuPanel.w = 40
+  mainMenuPanel.h = 15
+  mainMenuPanel.y = -2
+  mainMenuPanel.color = ColorUI
+  menuPanel.Add(mainMenuPanel)
+
+  playButton = ui.AddButton()
+  playButton.anchor = top_center
+  playButton.dock = top_center
+  playButton.y = 1
+  playButton.w = 12
+  playButton.h = 3 
+  playButton.bcolor = ColorUI
+  playButton.text = "PLAY"
+  playButton.SetPressed(MainButtons)
+  mainMenuPanel.Add(playButton)
+
+  tutorialButton = ui.AddButton()
+  tutorialButton.anchor = top_center
+  tutorialButton.dock = top_center
+  tutorialButton.y = 5
+  tutorialButton.w = 12
+  tutorialButton.h = 3
+  tutorialButton.bcolor = ColorUI
+  tutorialButton.text = "TUTORIAL"
+  tutorialButton.SetPressed(MainButtons)
+  mainMenuPanel.Add(tutorialButton)
+
+  settingsButton = ui.AddButton()
+  settingsButton.anchor = top_center
+  settingsButton.dock = top_center
+  settingsButton.y = 8
+  settingsButton.w = 12
+  settingsButton.h = 3 
+  settingsButton.bcolor = ColorUI
+  settingsButton.text = "SETTINGS"
+  settingsButton.SetPressed(MainButtons)
+  mainMenuPanel.Add(settingsButton)
+ 
+  exitButton = ui.AddButton()
+  exitButton.anchor = top_center
+  exitButton.dock = top_center
+  exitButton.y = 11
+  exitButton.w = 12
+  exitButton.h = 3 
+  exitButton.bcolor = ColorUI
+  exitButton.text = "EXIT"
+  exitButton.SetPressed(MainButtons)
+  mainMenuPanel.Add(exitButton)
+//
+
+func MainButtons(btn)
+  ?btn = playButton
+    mainMenuPanel.visible = false
+    settingsMenuPanel.visible = inherit
+
+  :?btn = settingsButton
+    >Settings
+
+  :?btn = tutorialButton
+    >Tutorial
+
+  :?btn = exitButton
+    loc.Leave()
+//
+
+
+func DrawSettingsMenu()
+  settingsMenuPanel = ui.AddPanel()
+  settingsMenuPanel.anchor = bottom_center
+  settingsMenuPanel.dock = bottom_center
+  settingsMenuPanel.w = 40
+  settingsMenuPanel.h = 15
+  settingsMenuPanel.y = -2
+  settingsMenuPanel.color = ColorUI
+  settingsMenuPanel.visible = false
+  menuPanel.Add(settingsMenuPanel)
+
+
+  playersPanel = ui.AddPanel()
+  playersPanel.anchor = top_center
+  playersPanel.dock = top_center
+  playersPanel.x = -8
+  playersPanel.y = 5
+  playersPanel.w = 3
+  playersPanel.h = 3 
+  playersPanel.color = ColorUI
+  settingsMenuPanel.Add(playersPanel)
+
+  playersText = ui.AddText()
+  playersText.y = -1
+  playersText.w = 7
+  playersText.h = 3
+  playersText.align = center
+  playersText.color = ColorUI
+  playersText.text = ＂PLAYERS＂ + ＂\n\n＂ + GameSettings[GAMEPLAYERS] 
+  playersPanel.Add(playersText)
+
+  playersLButton = ui.AddButton()
+  playersLButton.anchor = right_center
+  playersLButton.dock = left_center
+  playersLButton.w = 3
+  playersLButton.h = 3
+  playersLButton.style = Invis
+  playersLButton.text = "◀"
+  playersLButton.SetPressed(SettingsButtons)
+  playersPanel.Add(playersLButton)
+
+  playersRButton = ui.AddButton()
+  playersRButton.anchor = left_center
+  playersRButton.dock = right_center
+  playersRButton.w = 3
+  playersRButton.h = 3
+  playersRButton.style = Invis
+  playersRButton.text = "▶"
+  playersRButton.SetPressed(SettingsButtons)
+  playersPanel.Add(playersRButton)
+  
+
+  computersPanel = ui.AddPanel()
+  computersPanel.anchor = top_center
+  computersPanel.dock = top_center
+  computersPanel.x = 7
+  computersPanel.y = 5
+  computersPanel.w = 3
+  computersPanel.h = 3 
+  computersPanel.color = ColorUI
+  settingsMenuPanel.Add(computersPanel)
+
+  computersText = ui.AddText()
+  computersText.y = -1
+  computersText.w = 9
+  computersText.h = 3
+  computersText.align = center
+  computersText.color = ColorUI
+  computersText.text = ＂COMPUTERS＂ + ＂\n\n＂ + GameSettings[GAMECOMPUTERS]
+  computersPanel.Add(computersText)
+
+  computersLButton = ui.AddButton()
+  computersLButton.anchor = right_center
+  computersLButton.dock = left_center
+  computersLButton.w = 3
+  computersLButton.h = 3
+  computersLButton.style = Invis
+  computersLButton.text = "◀"
+  computersLButton.SetPressed(SettingsButtons)
+  computersPanel.Add(computersLButton)
+
+  computersRButton = ui.AddButton()
+  computersRButton.anchor = left_center
+  computersRButton.dock = right_center
+  computersRButton.w = 3
+  computersRButton.h = 3
+  computersRButton.style = Invis
+  computersRButton.text = "▶"
+  computersRButton.SetPressed(SettingsButtons)
+  computersPanel.Add(computersRButton)
+
+
+  difficultyPanel = ui.AddPanel()
+  difficultyPanel.anchor = top_center
+  difficultyPanel.dock = top_center
+  difficultyPanel.x = 0
+  difficultyPanel.y = 7
+  difficultyPanel.w = 18
+  difficultyPanel.h = 3 
+  difficultyPanel.color = ColorUI
+  difficultyPanel.visible = false
+  settingsMenuPanel.Add(difficultyPanel)
+
+  difficultyText = ui.AddText()
+  difficultyText.y = -1
+  difficultyText.w = 10
+  difficultyText.h = 3
+  difficultyText.align = center
+  difficultyText.color = ColorUI
+  difficultyText.text = ＂DIFFICULTY＂  + ＂\n\n＂ + "MEDIUM"
+  difficultyPanel.Add(difficultyText)
+
+  difficultyLButton = ui.AddButton()
+  difficultyLButton.anchor = right_center
+  difficultyLButton.dock = left_center
+  difficultyLButton.w = 3
+  difficultyLButton.h = 3
+  difficultyLButton.style = Invis
+  difficultyLButton.text = "◀"
+  difficultyLButton.SetPressed(SettingsButtons)
+  difficultyPanel.Add(difficultyLButton)
+
+  difficultyRButton = ui.AddButton()
+  difficultyRButton.anchor = left_center
+  difficultyRButton.dock = right_center
+  difficultyRButton.w = 3
+  difficultyRButton.h = 3
+  difficultyRButton.style = Invis
+  difficultyRButton.text = "▶"
+  difficultyRButton.SetPressed(SettingsButtons)
+  difficultyPanel.Add(difficultyRButton)
+
+
+  settingsPlayButton = ui.AddButton()
+  settingsPlayButton.anchor = top_left
+  settingsPlayButton.dock = top_center
+  settingsPlayButton.x = 2
+  settingsPlayButton.y = 11
+  settingsPlayButton.w = 12
+  settingsPlayButton.h = 3 
+  settingsPlayButton.bcolor = ColorUI
+  settingsPlayButton.text = "PLAY"
+  settingsPlayButton.SetPressed(SettingsButtons)
+  settingsMenuPanel.Add(settingsPlayButton)
+
+  settingsBackButton = ui.AddButton()
+  settingsBackButton.anchor = top_right
+  settingsBackButton.dock = top_center
+  settingsBackButton.x = -2
+  settingsBackButton.y = 11
+  settingsBackButton.w = 12
+  settingsBackButton.h = 3 
+  settingsBackButton.bcolor = ColorUI
+  settingsBackButton.text = "BACK"
+  settingsBackButton.SetPressed(SettingsButtons)
+  settingsMenuPanel.Add(settingsBackButton)
+//
+
+
+func SettingsButtons(btn)
+  ?btn = playersLButton
+    ?GameSettings[GAMEPLAYERS] > 0
+      GameSettings[GAMEPLAYERS] = GameSettings[GAMEPLAYERS] - 1
+      playersText.text = ＂PLAYERS＂ + ＂\n\n＂ + GameSettings[GAMEPLAYERS]
+  
+  :?btn = playersRButton
+    ?GameSettings[GAMEPLAYERS] + GameSettings[GAMECOMPUTERS] < GameSettings[GAMEMAXPLAYERS]
+      GameSettings[GAMEPLAYERS] = GameSettings[GAMEPLAYERS] + 1
+      playersText.text = ＂PLAYERS＂ + ＂\n\n＂ + GameSettings[GAMEPLAYERS] 
+  
+  :?btn = computersLButton
+    ?GameSettings[GAMECOMPUTERS] <= 1
+      GameSettings[GAMECOMPUTERS] = 0
+      difficultyPanel.visible = false
+      playersPanel.y = 5
+      computersPanel.y = 5
+    :
+      GameSettings[GAMECOMPUTERS] = GameSettings[GAMECOMPUTERS] - 1
+    computersText.text = ＂COMPUTERS＂ + ＂\n\n＂ + GameSettings[GAMECOMPUTERS]
+
+  :?btn = computersRButton
+    ?GameSettings[GAMEPLAYERS] + GameSettings[GAMECOMPUTERS] < GameSettings[GAMEMAXPLAYERS]
+      playersPanel.y = 2
+      computersPanel.y = 2
+      difficultyPanel.visible = inherit
+      GameSettings[GAMECOMPUTERS] = GameSettings[GAMECOMPUTERS] + 1
+      computersText.text = ＂COMPUTERS＂ + ＂\n\n＂ + GameSettings[GAMECOMPUTERS]
+
+  :?btn = difficultyLButton
+    ?GameSettings[GAMEDIFFICULTY] > EASY
+      GameSettings[GAMEDIFFICULTY] = GameSettings[GAMEDIFFICULTY] - 1
+      difficultyText.text = ＂DIFFICULTY＂ + ＂\n\n＂ + GameDifficultyText[GameSettings[GAMEDIFFICULTY]]
+
+  :?btn = difficultyRButton
+    ?GameSettings[GAMEDIFFICULTY] < HARD
+      GameSettings[GAMEDIFFICULTY] = GameSettings[GAMEDIFFICULTY] + 1
+      difficultyText.text = ＂DIFFICULTY＂ + ＂\n\n＂ + GameDifficultyText[GameSettings[GAMEDIFFICULTY]]
+
+  :?btn = settingsBackButton
+    settingsMenuPanel.visible = false
+    mainMenuPanel.visible = inherit
+
+  :?btn = settingsPlayButton
+    GameState[MASTER] = SHUFFLE
+//
+
+
+func DrawTable()
+  tablePanel = ui.AddPanel()
+  tablePanel.anchor = center_center
+  tablePanel.dock = center_center
+  tablePanel.w = screen.w
+  tablePanel.h = screen.h
+  tablePanel.color = ColorUI
+  gamePanel.Add(tablePanel)
+
+  DrawDeck()
+  tablePanel.Add(Deck[PANEL])
+
+  DrawTemp()
+  tablePanel.Add(Temp[PANEL])
+
+  DrawDiscard()
+  tablePanel.Add(Discard[PANEL])
+
+  CreateShuffle()
+  tablePanel.Add(Shuffle[PANEL])
+
+  pauseButton = ui.AddButton()
+  pauseButton.anchor = top_right
+  pauseButton.dock = top_right
+  pauseButton.x = 5
+  pauseButton.y = 0
+  pauseButton.w = 5
+  pauseButton.h = 3
+  pauseButton.text = "X"
+  pauseButton.SetPressed(TableButtons)
+  tablePanel.Add(pauseButton)
+
+  rightButton = ui.AddButton()
+  rightButton.anchor = bottom_right
+  rightButton.dock = bottom_right
+  rightButton.x = 5
+  rightButton.y = -7
+  rightButton.w = 5
+  rightButton.h = 5
+  rightButton.text = "▶"
+  rightButton.SetPressed(TableButtons)
+  tablePanel.Add(rightButton)
+
+  leftButton = ui.AddButton()
+  leftButton.anchor = bottom_left
+  leftButton.dock = bottom_left
+  leftButton.x = -5
+  leftButton.y = -7
+  leftButton.w = 5
+  leftButton.h = 5
+  leftButton.text = "◀"
+  leftButton.SetPressed(TableButtons)
+  tablePanel.Add(leftButton)
+
+  tablePanel.visible = false
+//
+
+
+
+
+
+
+func CreateDeck()
+  var tempDeck = []
+  for i = 0..InitDeckValues.Count()-1
+    for j = 0..InitDeckValues[i][1]-1
+      tempDeck.Add(InitDeckValues[i][0])
+
+  return tempDeck
+//
+
+
+func DrawDeck()
+  Deck.Clear()
+  Deck = CreateDeckStructure()
+
+  Deck[STATE] = UNFLIPPED
+  Deck[CARDS] = CreateDeck()
+  ShuffleCards()
+
+  Deck[PANEL].anchor = top_center
+  Deck[PANEL].x = 0
+  ?screen.h <= 25
+    Deck[PANEL].y = 1
+  :
+    Deck[PANEL].y = 2
+
+  Deck[BUTTON].SetPressed(DeckButton)
+
+  UpdateDeckAnim(Deck)
+//
+
+func DrawTemp()
+  Temp = CreateCard()
+  Temp[STATE] = EMPTY
+  Temp[PANEL].anchor = top_center
+  Temp[PANEL].dock = top_center
+  ?screen.h <= 25
+    Temp[PANEL].y = 1
+  :
+    Temp[PANEL].y = 2
+  Temp[PANEL].visible = false
+
+  Temp[BUTTON].Recycle()
+
+  UpdateCardAnim(Temp)
+//
+
+func DrawDiscard()
+  Discard.Clear()
+  Discard = CreateDeckStructure()
+
+  Discard[STATE] = EMPTY
+  Discard[CARDS].Clear()
+  Discard[PANEL].anchor = top_center
+  Discard[PANEL].x = 8
+  ?screen.h <= 25
+    Discard[PANEL].y = 1
+  :
+    Discard[PANEL].y = 2
+
+  Discard[BUTTON].SetPressed(DiscardButton)
+
+  UpdateDeckAnim(Discard)
+//
+
+func CreateDeckStructure()
+  var deckarray = []
+  
+  deckarray.Add(MULTI) //State
+  deckarray.Add([]) //Cards
+
+  var deckPanel = ui.AddPanel()
+  deckPanel.visible = false
+  deckPanel.anchor = top_center
+  deckPanel.dock = top_center
+  deckPanel.w = 6
+  deckPanel.h = 5
+  deckarray.Add(deckPanel) //Panel
+
+  var deckButton = ui.AddButton()
+  deckButton.w = 6
+  deckButton.h = 5
+  deckPanel.Add(deckButton)
+  deckarray.Add(deckButton) //Button
+
+  deckarray.Add([]) //Anim
+
+  var deckAnim = ui.AddAnim(cardempty)
+  deckAnim.visible = false
+  deckPanel.Add(deckAnim)
+  deckarray[ANIM].Add(deckAnim) //Anim-Empty
+
+  deckAnim = ui.AddAnim(cardfront)
+  deckAnim.visible = false
+  deckPanel.Add(deckAnim)
+  deckarray[ANIM].Add(deckAnim) //Anim-Front
+
+  deckAnim = ui.AddAnim(cardback)
+  deckAnim.visible = false
+  deckPanel.Add(deckAnim)
+  deckarray[ANIM].Add(deckAnim) //Anim-Back
+
+  deckAnim = ui.AddAnim(deckedge)
+  deckAnim.visible = false
+  deckPanel.Add(deckAnim)
+  deckarray[ANIM].Add(deckAnim) //Anim-Edge
+
+  var deckText = ui.AddText()
+  deckText.anchor = center_center
+  deckText.dock = center_center
+  deckText.h = 1
+  deckText.w = 2
+  deckText.align = right
+  deckText.text = ""
+  deckPanel.Add(deckText)
+
+  deckarray.Add(deckText)
+
+  return deckarray
+//
+  
+
+func UpdateDeckAnim(deckarray)
+  ?deckarray[STATE] = UNFLIPPED
+    deckarray[ANIM][EMPTY].visible = false
+    deckarray[ANIM][BACK].visible = inherit
+    deckarray[ANIM][FRONT].visible = false
+    deckarray[TEXT].visible = false
+
+  :?deckarray[STATE] = FLIPPED
+    deckarray[ANIM][EMPTY].visible = false
+    deckarray[ANIM][BACK].visible = false
+    deckarray[ANIM][FRONT].visible = inherit
+    deckarray[TEXT].visible = inherit
+    deckarray[TEXT].text = "" + deckarray[CARDS][0]
+
+  :
+    deckarray[ANIM][EMPTY].visible = inherit
+    deckarray[ANIM][BACK].visible = false
+    deckarray[ANIM][FRONT].visible = false
+    deckarray[TEXT].visible = false
+
+  ?deckarray[CARDS].Count() > 1 & deckarray[STATE] ! EMPTY
+    deckarray[ANIM][EDGE].visible = inherit
+  :
+    deckarray[ANIM][EDGE].visible = false
+//
+
+
+func DeckButton()
+  ?Deck[CARDS].Count() > 0 & Temp[STATE] = EMPTY
+    Temp[PANEL].visible = inherit
+    Temp[VALUE] = Deck[CARDS][0]
+    Deck[CARDS].RemoveAt(0)
+    Temp[STATE] = FLIPPED
+    ?Deck[CARDS].Count() <= 0
+      Deck[STATE] = EMPTY
+
+    UpdateDeckAnim(Deck)
+    UpdateCardAnim(Temp)
+//
+
+
+func DiscardButton()
+  ?GameState[MASTER] = GAMEPLAY
+    GameState[MASTER] = CLEANUP
+
+  ?Temp[STATE] ! EMPTY
+    ?Discard[CARDS].Count() > 0
+      Discard[CARDS].Insert(0,Temp[VALUE])
+    :
+      Discard[CARDS].Add(Temp[VALUE])
+    Discard[STATE] = FLIPPED
+    Temp[STATE] = EMPTY
+    Temp[PANEL].visible = false
+
+    UpdateDeckAnim(Discard)
+    
+//
+  
+  
+func CardButton(btn)
+  var cardarray = []
+
+  for i=0..11
+    ?btn = Players[GameState[CURPLAYER]][CARDS][i][BUTTON]
+      cardarray = Players[GameState[CURPLAYER]][CARDS][i]
+      
+      ?cardarray[STATE] = UNFLIPPED
+        cardarray[STATE] = FLIPPED
+      :?cardarray[STATE] = FLIPPED
+        cardarray[STATE] = UNFLIPPED
+ 
+      UpdateCardAnim(cardarray)
+//
+  
+
+
+func CreatePlayers()
+  Players.Clear()
+
+  ?GameSettings[GAMEPLAYERS] > 0
+    for i=0..(GameSettings[GAMEPLAYERS] - 1)
+      Players.Add(CreatePlayer(PLAYER))
+      
+  ?GameSettings[GAMECOMPUTERS] > 0
+    for i=0..(GameSettings[GAMECOMPUTERS] - 1)
+      Players.Add(CreatePlayer(COMPUTER))
+
+  var offset = 0
+  for i=0..Players.Count()-1
+    ?Players[i][STATE] = PLAYER
+      Players[i][TEXT].text = namePleft + "PLAYER " + i + namePright
+      offset = i+1
+    :?Players[i][STATE] = COMPUTER
+      Players[i][TEXT].text = nameCleft + "COMPUTER " + (i-offset) + nameCright
+//
+
+
+
+func CreatePlayer(TYPE)
+  var playerarray = []
+  
+  playerarray.Add(TYPE)
+
+  playerarray.Add([]) //Hand
+
+  var playerPanel = ui.AddPanel()
+  playerPanel.visible = false
+  playerPanel.anchor = bottom_center
+  playerPanel.dock = bottom_center
+  playerPanel.style = Invis
+  playerPanel.y = -1
+  playerPanel.w = 30
+  playerPanel.h = 17
+  tablePanel.Add(playerPanel)
+  playerarray.Add(playerPanel)
+
+  playerarray.Add(0) //Current Score
+  playerarray.Add(0) //Total Wins
+
+  playerarray[CARDS] = CreateHand(playerarray[PANEL])
+
+  var playerText = ui.AddText()
+  playerText.visible = false
+  playerText.anchor = bottom_center
+  playerText.dock = top_center
+  playerText.h = 1
+  playerText.w = 30
+  playerText.align = center
+  playerText.color = #AAAAAA
+  playerText.text = "───  ───"
+  playerPanel.Add(playerText)
+  playerarray.Add(playerText) //Text
+
+  return playerarray
+//
+
+
+func CreateHand(playerPanel)
+  var handarray = []
+  var newcard = null
+  
+  for i = 0..11
+    newcard = CreateCard()
+    newcard[BUTTON].SetPressed(CardButton)  // TEMPORARY
+    newcard[BUTTON].visible = false
+    playerPanel.Add(newcard[PANEL])
+    handarray.Add(newcard)
+
+  //for i=11..0
+  //  playerPanel.Add(playerPanel.children[0])
+
+  return handarray
+//
+
+
+func CreateCard()
+  var cardarray = []
+  
+  cardarray.Add(UNFLIPPED) //State
+
+  cardarray.Add(12) //Value
+
+
+  var cardPanel = ui.AddPanel()
+  cardPanel.w = 6
+  cardPanel.h = 5
+  cardarray.Add(cardPanel) //Panel
+
+  var cardButton = ui.AddButton()
+  cardButton.w = 6
+  cardButton.h = 5
+  cardPanel.Add(cardButton)
+  cardarray.Add(cardButton) //Button
+
+  cardarray.Add([]) //Anim
+
+  var cardAnim = ui.AddAnim(cardempty)
+  cardPanel.Add(cardAnim)
+  cardarray[ANIM].Add(cardAnim) //Anim-Empty
+
+  cardAnim = ui.AddAnim(cardfront)
+  cardPanel.Add(cardAnim)
+  cardarray[ANIM].Add(cardAnim) //Anim-Front
+
+  cardAnim = ui.AddAnim(cardback)
+  cardPanel.Add(cardAnim)
+  cardarray[ANIM].Add(cardAnim) //Anim-Back
+
+  cardAnim = ui.AddAnim(deckedge)
+  cardPanel.Add(cardAnim)
+  cardarray[ANIM].Add(cardAnim) //Deck-Edge
+
+  var cardText = ui.AddText()
+  cardText.anchor = center_center
+  cardText.dock = center_center
+  cardText.h = 1
+  cardText.w = 2
+  cardText.align = right
+  cardText.color = #white
+  cardText.text = "" + cardarray[VALUE]
+  cardText.visible = false
+  cardPanel.Add(cardText)
+  cardarray.Add(cardText) //Text
+
+  return cardarray
+//
+
+func UpdateCardAnim(cardarray)
+  ?cardarray[STATE] = UNFLIPPED
+    cardarray[ANIM][EMPTY].visible = false
+    cardarray[ANIM][BACK].visible = inherit
+    cardarray[ANIM][FRONT].visible = false
+    cardarray[TEXT].visible = false
+
+  :?cardarray[STATE] = FLIPPED
+    cardarray[ANIM][EMPTY].visible = false
+    cardarray[ANIM][BACK].visible = false
+    cardarray[ANIM][FRONT].visible = inherit
+    cardarray[TEXT].visible = inherit
+    cardarray[TEXT].text = "" + cardarray[VALUE]
+
+  :
+    cardarray[ANIM][EMPTY].visible = inherit
+    cardarray[ANIM][FRONT].visible = false
+    cardarray[ANIM][BACK].visible = false
+    cardarray[TEXT].visible = false
+//
+
+
+func ShuffleCards()
+  var card = null
+  var index = 0
+  for i=0..Deck[CARDS].Count()-1
+    card = Deck[CARDS][0]
+    index = rng % Deck[CARDS].Count()
+    Deck[CARDS].Insert(index,card)
+    Deck[CARDS].RemoveAt(0)
+//
+
+func CutCards()
+  var half = []
+  var size = 0
+  
+  size = Deck[CARDS].Count() / 2
+
+  for i=0..size-1
+    half.Add(Deck[CARDS][0])
+    Deck[CARDS].RemoveAt(0)
+
+  for i=0..size-1
+    Deck[CARDS].Add(half[0])
+    half.RemoveAt(0)
+//
+
+
+func CreateShuffle()
+  var newcut = null
+
+  Shuffle.Add(UNSHUFFLED) //State
+  Shuffle.Add([])  //CUTS
+
+  var shuffpanel = ui.AddPanel()
+  shuffpanel.visible = false
+  shuffpanel.anchor = top_center
+  shuffpanel.dock = top_center
+  shuffpanel.y = screen.h/2 - 3
+  shuffpanel.w = 6 + (ShuffleParams[SHUFFLEWIDTH] * 2)
+  shuffpanel.h = 5
+  shuffpanel.style = Invis
+  Shuffle.Add(shuffpanel) //Panel
+
+  var shuffbutton = ui.AddButton()
+  shuffbutton.visible = false
+  shuffbutton.w = 6 + (ShuffleParams[SHUFFLEWIDTH] * 2)
+  shuffbutton.h = 5
+  shuffbutton.text = ""
+  shuffbutton.style = Invis
+  shuffbutton.SetPressed(ShuffleButtons)
+  shuffpanel.Add(shuffbutton)
+  Shuffle.Add(shuffbutton) //Button
+
+  for i = 0..5
+      newcut = CreateCard()
+      newcut[BUTTON].SetPressed(ShuffleButtons)
+      Shuffle[PANEL].Add(newcut[PANEL])
+      Shuffle[CARDS].Add(newcut)
+
+  Shuffle.Add(0) //Flag
+//
+
+
+func ShuffleDeck()
+  var tog = ShuffleParams[SHUFFLETOGGLE]
+  var wid = ShuffleParams[SHUFFLEWIDTH]
+  var spd = ShuffleParams[SHUFFLESPEED]
+  var phs = ShuffleParams[SHUFFLEPHASE]
+  var result = 0
+
+  ?Shuffle[STATE] = UNSHUFFLED
+
+    ?Shuffle[FLAG] = 0 & (Oscillate(0,wid,spd,0) = 0)
+      Shuffle[STATE] = SHUFFLE
+      Shuffle[FLAG] = 1
+
+
+  ?Shuffle[STATE] = SHUFFLE
+
+    for i = 0..Shuffle[CARDS].Count()-1
+      Shuffle[CARDS][i][PANEL].visible = inherit //Show All Cards
+      Shuffle[CARDS][i][BUTTON].visible = false
+      Shuffle[CARDS][i][ANIM][EDGE].visible = false //Turn Off Deck Edges
+    Shuffle[BUTTON].visible = inherit
+
+    ?(Shuffle[CARDS][0][PANEL].x = 0 &
+    ^Shuffle[CARDS][1][PANEL].x = 0)
+      ?(Shuffle[PANEL].children[Shuffle[PANEL].children.Count()-1] ! 
+      ^Shuffle[CARDS][0][PANEL])
+        ShuffleCards()
+        tog = tog * -1
+        ShuffleParams[SHUFFLETOGGLE] = tog
+
+      Shuffle[PANEL].Add(Shuffle[CARDS][0][PANEL])
+      Shuffle[CARDS][0][ANIM][EDGE].visible = inherit
+
+
+    :?Shuffle[CARDS][0][PANEL].x = wid |
+    ^Shuffle[CARDS][0][PANEL].x = -wid
+      Shuffle[PANEL].Add(Shuffle[CARDS][1][PANEL])
+
+    ?Shuffle[FLAG] = 1
+      Shuffle[CARDS][0][PANEL].x =  tog*Oscillate(0,wid,spd,0)
+      Shuffle[CARDS][1][PANEL].x = -tog*Oscillate(0,wid,spd,0)
+      Shuffle[CARDS][2][PANEL].x =  tog*Oscillate(0,wid,spd,phs)
+      Shuffle[CARDS][3][PANEL].x = -tog*Oscillate(0,wid,spd,phs)
+      Shuffle[CARDS][4][PANEL].x =  tog*Oscillate(0,wid,spd,2*phs)
+      Shuffle[CARDS][5][PANEL].x = -tog*Oscillate(0,wid,spd,2*phs)
+
+    :?Shuffle[FLAG] = 2
+      result = Move(Shuffle[CARDS][0][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][1][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][2][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][3][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][4][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][5][PANEL],0,0,1,1,2,1)
+      ?result
+        Shuffle[FLAG] = 0
+        Shuffle[STATE] = CUT
+
+
+  :?Shuffle[STATE] = CUT
+
+    for i = 0..1
+      Shuffle[CARDS][i][PANEL].visible = inherit //Show Cards 1 & 2
+      Shuffle[CARDS][i][BUTTON].visible = inherit //Show Card Buttons
+      Shuffle[CARDS][i][ANIM][EDGE].visible = inherit //Turn On Deck Edges
+
+    for i = 2..Shuffle[CARDS].Count()-1
+      Shuffle[CARDS][i][PANEL].visible = false //Hide All Other Cards
+
+    Shuffle[BUTTON].visible = false
+
+    ?Shuffle[FLAG] = 0
+      ?ShuffleParams[SHUFFLETIME] = 0
+        ShuffleParams[SHUFFLETIME] = time
+      :?time - ShuffleParams[SHUFFLETIME] > ShuffleParams[SHUFFLEDELAY]
+        ShuffleParams[SHUFFLETIME] = 0
+        Shuffle[FLAG] = 1
+
+    :?Shuffle[FLAG] = 1
+      Shuffle[PANEL].Add(Shuffle[CARDS][0][PANEL])
+      ?Move(Shuffle[CARDS][0][PANEL],-5,0,1,1,1,1)
+        Shuffle[FLAG] = 2
+    :?Shuffle[FLAG] = 2
+      ?Move(Shuffle[CARDS][1][PANEL],5,0,1,1,1,1)
+        Shuffle[FLAG] = 3
+    :?Shuffle[FLAG] = 4
+      ?Move(Shuffle[CARDS][0][PANEL],5,0,1,1,2,1)
+        Shuffle[FLAG] = 6
+    :?Shuffle[FLAG] = 5
+      ?Move(Shuffle[CARDS][1][PANEL],-5,0,1,1,2,1)
+        Shuffle[FLAG] = 6
+    :?Shuffle[FLAG] = 6
+      result = Move(Shuffle[CARDS][0][PANEL],0,0,1,1,2,1)
+      result = result * Move(Shuffle[CARDS][1][PANEL],0,0,1,1,2,1)
+      ?result
+        Shuffle[FLAG] = 0
+        Shuffle[STATE] = SHUFFLED
+//
+
+func ShuffleInfo()
+  >`1,11,#blue,State: @Shuffle[STATE]@
+  >`1,12,#blue,Flag: @Shuffle[FLAG]@
+  for i=0..Shuffle[PANEL].children.Count()-1
+    for j=0..Shuffle[CARDS].Count()-1
+      ?Shuffle[PANEL].children[i] = Shuffle[CARDS][j][PANEL]
+        >`1,@13+i@,#blue,Card@j@
+//
+
+
+func ShuffleButtons(btn)
+  ?Shuffle[STATE]  = SHUFFLE
+    Shuffle[FLAG] = 2
+
+  :?Shuffle[STATE] = CUT
+    ?btn = Shuffle[CARDS][0][BUTTON]
+      Shuffle[PANEL].Add(Shuffle[CARDS][0][PANEL])
+      Shuffle[FLAG] = 4
+    :?btn = Shuffle[CARDS][1][BUTTON]
+      Shuffle[PANEL].Add(Shuffle[CARDS][1][PANEL])
+      Shuffle[FLAG] = 5
+      CutCards()
+
+  :?Shuffle[STATE] = SHUFFLED
+    Shuffle[STATE] = UNSHUFFLED  
+//
+
+
+func Move(comp,fx,fy,rx,ry,mx,my)
+  ?time % rx = 0
+    ?comp.x < fx
+      comp.x = comp.x + mx
+      ?comp.x > fx
+        comp.x = fx
+    :?comp.x > fx
+      comp.x = comp.x - mx
+      ?comp.x < fx
+        comp.x = fx
+
+  ?time % ry = 0
+    ?comp.y < fy
+      comp.y = comp.y + my
+      ?comp.y > fy
+        comp.y = fy
+    :?comp.y > fy
+      comp.y = comp.y - my
+      ?comp.y < fy
+        comp.y = fy
+
+  ?(comp.x = fx) & (comp.y = fy)
+    return 1
+  :
+    return 0
+//
+
+
+func Oscillate(p0, p1, spd, phs)
+  return math.RoundToInt(
+        ^math.Lerp(p0, p1, 
+        ^math.Sin((time/spd)+phs)))
+//
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+    
+func ShowGameInfo(showdeck)
+  var row = 0
+  var col = 0
+
+  >`1,1,#green,screen w/h : @screen.w@ / @screen.h@\n
+              ^State      : @GameState[MASTER]@\n
+              ^Flag       : @GameState[FLAG]@\n
+              ^Players    : @GameSettings[GAMEPLAYERS]@\n
+              ^Computers  : @GameSettings[GAMECOMPUTERS]@\n
+              ^Players Tot: @Players.Count()@\n
+              ^Cur Player : @GameState[CURPLAYER]@\n
+              ^Difficulty : @GameSettings[GAMEDIFFICULTY]@\n
+              ^Deck Count : @Deck[CARDS].Count()@\n
+              ^Disc Count : @Discard[CARDS].Count()@
+
+  ?Players.Count() > 0
+    for i = 0..Players.Count()-1
+      >`1,@i+13@,#green,@Players[i][STATE]@, Cards: 
+                       ^@Players[i][CARDS][0][VALUE]@, 
+                       ^@Players[i][CARDS][1][VALUE]@, 
+                       ^@Players[i][CARDS][2][VALUE]@, 
+                       ^@Players[i][CARDS][3][VALUE]@, 
+                       ^@Players[i][CARDS][4][VALUE]@, 
+                       ^@Players[i][CARDS][5][VALUE]@, 
+                       ^@Players[i][CARDS][6][VALUE]@, 
+                       ^@Players[i][CARDS][7][VALUE]@, 
+                       ^@Players[i][CARDS][8][VALUE]@, 
+                       ^@Players[i][CARDS][9][VALUE]@, 
+                       ^@Players[i][CARDS][10][VALUE]@, 
+                       ^@Players[i][CARDS][11][VALUE]@
+
+  ?Deck[CARDS].Count() > 0 & showdeck
+    for i = 0..Deck[CARDS].Count()-1
+      col = math.RoundToInt(i / (screen.h-2))
+      row = i - (col*(screen.h-2)) 
+      ?Deck[CARDS][i] < 10 & Deck[CARDS][i] >= 0
+        >`@(screen.w-30)+(col*4)@,@row+1@,#green, @Deck[CARDS][i]@
+      :
+        >`@(screen.w-30)+(col*4)@,@row+1@,#green,@Deck[CARDS][i]@
+
+  ?Discard[CARDS].Count() > 0 & showdeck
+    for i = 0..Discard[CARDS].Count()-1
+      ?Discard[CARDS][i] < 10 & Discard[CARDS][i] >= 0
+        >`@screen.w-2@,@i+1@,#green, @Discard[CARDS][i]@
+      :
+        >`@screen.w-2@,@i+1@,#green,@Discard[CARDS][i]@
+//
+
+func AnimateLogo(dir)
+  var result = 0
+  ?dir = 0
+    result = Move(logoAnimK,0,0,1,1,2,1)
+    result = result*Move(logoAnimI,0,0,1,1,1,1)
+    result = result*Move(logoAnimJ,0,0,1,1,1,1)
+    result = result*Move(logoAnimO,0,0,1,1,2,1)
+  :?dir = 1
+    result = Move(logoAnimK,-12,0,1,1,2,1)
+    result = result*Move(logoAnimI,-4,0,1,1,1,1)
+    result = result*Move(logoAnimJ,4,0,1,1,1,1)
+    result = result*Move(logoAnimO,12,0,1,1,2,1)
+
+  return result
+//
+
+
+func StateController()
+  ?GameState[MASTER] = MENU
+    tablePanel.visible = false
+    menuPanel.visible = inherit
+    Players.Clear()
+
+  :?GameState[MASTER] = SETUP
+    ?GameState[SUB] = INITIAL
+      GameState[SUB] = SHUFFLE
+    :?GameState[SUB] = SHUFFLE
+      GameShuffle()
+    :?GameState[SUB] = DEAL
+      GameDeal()
+
+  :?GameState[MASTER] = GAMEPLAY
+    ?GameState[SHIFTPLAYER] ! 0
+      GameShiftPlayers()
+      
+
+  :?GameState[MASTER] = CLEANUP
+    GameState[INGAME] = 0
+    GameCleanup()
+//
+
+
+/*
+  //Game Shuffle
+  Collapse Logo into deck
+  Move to Middle
+  Shuffle
+  Cut
+  Move to Top
+
+  //Game Deal
+  Deal Hands
+  Move Hands
+  Disperse Hands
+  Move Deck and Show Discard
+
+
+  //Game Play
+  -Flip Two
+  -Choose Deck or Discard
+   --Deck: Swap Card or Discard
+   --Deck - Discard: Choose Card to Flip
+   --Discard: Cancel or Swap Card
+  -Check for Columns
+   --If Column, Discard
+   --Move Cards together
+  -Check for all cards flipped
+  
+  --[Need to know who went out first]
+ 
+  //Async
+  -Pause Can do this just through button clicks
+  -Game Started (Don't destroy players)
+  -Left
+  -Right
+
+  
+
+
+
+  //Clean up Table
+  Collapse Hands
+  Move Hands to Discard
+  Flip Discard to Back
+  Collapse Discard and Deck into deck
+*/
+
+
+
+
+func GameShuffle()
+  var result = 0
+  menuPanel.visible = false
+
+  ?GameState[FLAG] = 0  //Checks if Coming from Menu or End of Round
+    ?GameState[INGAME] = 1
+      GameState[FLAG] = 3  //End of Round
+    :
+      GameState[FLAG] = 1  //Menu
+
+  :?GameState[FLAG] = 1  //Collapse Logo and Swap with Deck
+    ?AnimateLogo(0)
+      logoPanel.visible = false
+      Deck[PANEL].x = 0
+      Deck[PANEL].visible = inherit
+      Deck[BUTTON].visible = false
+      tablePanel.visible = inherit
+      GameState[FLAG] = 2
+      GameState[GAMETIMER] = 0
+
+  :?GameState[FLAG] = 2  //Pause for Effect
+    ?GameState[GAMETIMER] = 0
+      GameState[GAMETIMER] = time
+      CreatePlayers()  //Use lag from CreatePlayers for pause
+      GameState[INGAME] = 1
+    :?time - GameState[GAMETIMER] > 3
+      GameState[FLAG] = 3
+      GameState[GAMETIMER] = 0
+
+  :?GameState[FLAG] = 3  //Move Deck to middle of screen
+    ?Move(Deck[PANEL],0,(screen.h/2 - 3),1,1,1,1)
+      Deck[PANEL].visible = false
+      Shuffle[PANEL].visible = inherit
+      Shuffle[STATE] = UNSHUFFLED 
+      GameState[FLAG] = 4
+
+  :?GameState[FLAG] = 4  //Shuffle Deck
+    ?Shuffle[STATE] = SHUFFLED
+      GameState[FLAG] = 5
+    :
+      ShuffleDeck()
+
+  :?GameState[FLAG] = 5  //Move Shuffled Deck to top of screen
+    Deck[PANEL].visible = inherit
+    Shuffle[PANEL].visible = false
+    ?Move(Deck[PANEL],0,Discard[PANEL].y,1,1,1,1)
+      GameState[FLAG] = 0
+      GameState[SUB] = DEAL
+//
+
+
+func GameDeal()
+  var result = 1
+
+  ?GameState[FLAG] = 0  //Creates Players, sets their panels for dealing
+    //CreatePlayers() //Moved to Shuffle to hide lag in pause 
+    GameState[FLAG] = 1
+
+  :?GameState[FLAG] = 1  //
+    tablePanel.visible = inherit
+    for i = 0..Players.Count()-1
+      Players[i][PANEL].x = (8*i) - (((Players.Count()-1)*8)/2)
+      Players[i][PANEL].y = -6
+      Players[i][TEXT].visible = false
+      for j = 0..Players[i][CARDS].Count()-1
+        Players[i][CARDS][j][PANEL].visible = false
+        Players[i][CARDS][j][PANEL].anchor = top_left//top_center
+        Players[i][CARDS][j][PANEL].dock = top_left//top_center
+        Players[i][CARDS][j][PANEL].x = 12 //Center of Panel
+        Players[i][CARDS][j][PANEL].y = 6  //Center of Panel
+        Players[i][CARDS][j][STATE] = UNFLIPPED
+        UpdateCardAnim(Players[i][CARDS][j])
+      Players[i][PANEL].visible = inherit
+
+    tablePanel.Add(Temp[PANEL]) //Draws Temp on top
+    Temp[PANEL].visible = inherit
+    Temp[PANEL].y = 2
+    Temp[ANIM][BACK].visible = inherit
+    Temp[ANIM][EDGE].visible = inherit
+    
+    GameState[FLAG] = 2
+
+
+  :?GameState[FLAG] = 2  //Deals Temp Card to Players panels and unhides cards one by one
+    
+      var playerarray = []
+      var card   = Players[0][CARDS].Count()
+      var player = Players.Count()-1
+      var dealing = 0
+
+      for i=0..Players.Count()-1
+        for j=0..Players[i][CARDS].Count()-1
+          ?Players[i][CARDS][j][PANEL].visible = false
+            ?j < card
+              card = j
+              player = i
+              dealing = 1
+
+      ?dealing
+      
+        var goalx = Players[player][PANEL].x
+        var goaly = screen.h + Players[player][PANEL].y -
+                              ^Players[player][PANEL].h + 6
+        var spdx = Players.Count()-1 //Deal faster when more players
+        Temp[ANIM][EDGE].visible = false
+        
+        ?Move(Temp[PANEL],goalx,goaly,1,1,spdx,1)
+          Players[player][CARDS][card][PANEL].visible = inherit
+          Players[player][CARDS][card][VALUE] = Deck[CARDS][0]
+          Deck[CARDS].RemoveAt(0)
+
+          Players[player][PANEL].Add(Players[player][CARDS][card][PANEL])
+
+          ?card > 0
+            Players[player][CARDS][card][ANIM][EDGE].visible = inherit
+          :
+            Players[player][CARDS][card][ANIM][EDGE].visible = false
+          Temp[PANEL].x = 0
+          Temp[PANEL].y = 2
+          Temp[ANIM][EDGE].visible = inherit
+
+      :
+        GameState[FLAG] = 3
+        Temp[PANEL].visible = false
+        Temp[ANIM][BACK].visible = false
+        Temp[ANIM][EDGE].visible = false
+
+
+
+  :?GameState[FLAG] = 3  //Moves player panels to screen spots
+
+    for i=0..(Players.Count()-1)
+      ?i=0 & screen.w >= 80
+        result = result * Move(Players[i][PANEL],(-18 - (screen.w-80)/4),-1,1,1,2,1)
+      :?i=1 & screen.w >= 80
+        result = result * Move(Players[i][PANEL],(18 + (screen.w-80)/4),-1,1,1,2,1)
+      :
+        ?Players[i][PANEL].x > screen.w
+          Players[i][PANEL].x = (screen.w)
+        result = result * Move(Players[i][PANEL],(screen.w),-1,1,1,1+(1*i),1)
+
+          //Players[i][PANEL].x = (i*screen.w)
+        //result = result * Move(Players[i][PANEL],(i*screen.w),-1,1,1,1+(1*i),1)
+
+    ?result
+      GameState[FLAG] = 4
+
+
+  :?GameState[FLAG] = 4 //Moves all cards to correct places
+
+    for i=0..Players.Count()-1
+      for j=0..Players[i][CARDS].Count()-1
+          Players[i][CARDS][j][ANIM][EDGE].visible = false
+          Players[i][CARDS][j][BUTTON].visible = inherit
+          
+        ?Players[i][PANEL].x > screen.w // Move all cards to final spots immediatelly if offscreen
+          Players[i][CARDS][j][PANEL].x = (8*(j%4))
+          Players[i][CARDS][j][PANEL].y = (6*(j/4))
+        :
+          Players[i][PANEL].Add(Players[i][CARDS][j][PANEL]) //Draw card on top        
+          ?!Move(Players[i][CARDS][j][PANEL],(8*(j%4)),(6*(j/4)),1,1,2,1)
+            break //Only do current card
+          :
+            Players[i][PANEL].Add(Players[i][CARDS][j][PANEL],0) //Move to Back
+            Players[i][CARDS][j][ANIM][BACK].color = #888888
+            ?j = Players[i][CARDS].Count()-1
+              GameState[FLAG] = 5
+
+
+  :?GameState[FLAG] = 5 //Finalizes Hand setup
+
+    for i=0..Players.Count()-1
+      Players[i][TEXT].visible = inherit
+      for j=0..Players[i][CARDS].Count()-1
+        Players[i][CARDS][j][ANIM][BACK].color = #white
+
+    GameState[FLAG] = 6
+
+
+  :?GameState[FLAG] = 6 //Moves Deck and Discard to correct places
+
+    Deck[PANEL].visible = inherit
+    result = Move(Deck[PANEL],-8,1,1,1,1,1)
+    result = result * Move(Temp[PANEL],0,1,1,1,1,1)
+    result = result * Move(Discard[PANEL],8,1,1,1,1,1)
+    ?result
+      Discard[PANEL].visible = inherit
+      Deck[BUTTON].visible = inherit
+      GameState[FLAG] = 7
+
+  :?GameState[FLAG] = 7 //Moves Side Arrows and Pause into place
+
+    result = Move(pauseButton,0,0,1,1,1,1)
+    result = result * Move(rightButton,0,-7,1,1,1,1)
+    result = result * Move(leftButton,0,-7,1,1,1,1)
+    ?result
+      GameState[MASTER] = GAMEPLAY
+      GameState[SUB] = BEGINNING
+      GameState[FLAG] = 0
+//
+
+
+
+func GameCleanup()
+  var result = 0
+
+  ?GameState[FLAG] = 0 //Cleanup Temp Card
+
+    ?Temp[STATE] ! EMPTY
+      ?Discard[CARDS].Count() > 0
+        Discard[CARDS].Insert(0,Temp[VALUE])
+      :
+        Discard[CARDS].Add(Temp[VALUE])
+      Discard[STATE] = FLIPPED
+      Temp[STATE] = EMPTY
+      Temp[PANEL].visible = false
+
+    UpdateDeckAnim(Discard)
+    GameState[FLAG] = 1
+
+
+  :?GameState[FLAG] = 1 //Moves Side Arrows and Pause offscreen
+
+    result = Move(pauseButton,4,0,1,1,1,1)
+    result = result * Move(rightButton,5,-7,1,1,1,1)
+    result = result * Move(leftButton,-5,-7,1,1,1,1)
+    ?result
+      GameState[FLAG] = 2
+
+
+  :?GameState[FLAG] = 2 //Finalizes Hand setup
+
+    for i=0..Players.Count()-1
+      Players[i][TEXT].visible = false
+      for j=0..Players[i][CARDS].Count()-1
+        Players[i][CARDS][j][STATE] = FLIPPED
+        UpdateCardAnim(Players[i][CARDS][j])
+        Players[i][CARDS][j][ANIM][FRONT].color = #888888
+
+    GameState[FLAG] = 3
+
+
+  :?GameState[FLAG] = 3 //Moves all cards to a pile
+
+  //Move off screens to separate function that only runs once to reduce lag
+
+    for i=0..Players.Count()-1
+      for j=0..Players[i][CARDS].Count()-1
+          Players[i][CARDS][j][BUTTON].visible = false
+          
+        ?Players[i][PANEL].x > screen.w/2 // Move all cards to final spots immediatelly if offscreen
+          Players[i][CARDS][j][PANEL].x = 12
+          Players[i][CARDS][j][PANEL].y = 6
+          Players[i][CARDS][j][ANIM][EDGE].visible = inherit
+          Players[i][CARDS][j][ANIM][FRONT].color = #white
+        :
+          Players[i][PANEL].Add(Players[i][CARDS][j][PANEL]) //Draw card on top        
+          ?!Move(Players[i][CARDS][j][PANEL],12,6,1,1,2,1)
+            break //Only do current card
+          :
+            Players[i][CARDS][j][ANIM][EDGE].visible = inherit
+            Players[i][CARDS][j][ANIM][FRONT].color = #white
+            ?j = Players[i][CARDS].Count()-1
+              GameState[FLAG] = 4
+
+
+  :?GameState[FLAG] = 4  //Moves player panels to screen spots
+    result = 1
+
+    for i=0..(Players.Count()-1)
+      result = result * Move(Players[i][PANEL],0,-1,1,1,1+(2*i),1)
+
+    ?result
+      GameState[FLAG] = 5
+
+
+  :?GameState[FLAG] = 5  //Replaces Player panels with Temp card
+
+    Temp[PANEL].x = Players[0][PANEL].x
+    Temp[PANEL].y = screen.h + Players[0][PANEL].y -
+                              ^Players[0][PANEL].h + 6
+
+    var lastplayer = Players.Count()-1
+    var lastcard = Players[lastplayer][CARDS].Count()-1
+
+    Temp[VALUE] = Players[lastplayer][CARDS][lastcard][VALUE]
+    Temp[STATE] = FLIPPED
+    UpdateCardAnim(Temp)
+    Temp[PANEL].visible = inherit
+    
+    for i=0..(Players.Count()-1)
+      Players[i][PANEL].visible = false
+
+    GameState[FLAG] = 6
+    
+
+  :?GameState[FLAG] = 6  //Moves Temp to Discard Pile
+
+    ?Move(Temp[PANEL],8,1,1,1,1,1)
+      for i=Players.Count()-1..0
+        for j=Players[i][CARDS].Count()-1..0
+          Discard[CARDS].Add(Players[i][CARDS][j][VALUE])
+          Players[i][CARDS][j][VALUE] = 12
+
+      Discard[STATE] = FLIPPED
+      UpdateDeckAnim(Discard)
+      Temp[STATE] = EMPTY
+      UpdateCardAnim(Temp)
+      Temp[PANEL].x = 0
+      Temp[PANEL].visible = false 
+      GameState[FLAG] = 7
+
+
+  :?GameState[FLAG] = 7  //Combines Discard and Deck back together
+     
+    Discard[STATE] = UNFLIPPED
+    UpdateDeckAnim(Discard)
+    tablePanel.Add(Deck[PANEL])
+    
+    ?Move(Discard[PANEL],0,1,1,1,1,1)
+      ?Move(Deck[PANEL],0,1,1,1,1,1)
+        for i=0..Discard[CARDS].Count()-1
+          Deck[CARDS].Add(Discard[CARDS][i])
+        Discard[CARDS].Clear()
+        Discard[PANEL].visible = false
+        Discard[STATE] = EMPTY
+        UpdateDeckAnim(Discard)
+        GameState[FLAG] = 8
+
+
+  :?GameState[FLAG] = 8  
+    ?GameState[INGAME]
+      GameState[MASTER] = SETUP
+      GameState[SUB] = SHUFFLE
+      GameState[FLAG] = 0
+    :
+      ?Move(Deck[PANEL],0,2,1,1,1,1)
+
+        logoPanel.visible = inherit
+        Deck[PANEL].visible = false
+        tablePanel.visible = false
+        ?AnimateLogo(1)
+          GameState[MASTER] = MENU
+          GameState[SUB] = INITIAL
+          GameState[FLAG] = 0
+//
+
+
+func TableButtons(btn)
+  ?btn = pauseButton
+    >pause
+
+  :?btn = rightButton
+    GameState[VISPLAYER] = GameState[VISPLAYER] + 1
+    ?GameState[VISPLAYER] > Players.Count()-1 
+      GameState[VISPLAYER] = 0
+    GameState[SHIFTPLAYER] = 1
+    //GameConfigShift()
+
+  :?btn = leftButton
+    GameState[VISPLAYER] = GameState[VISPLAYER] - 1
+    ?GameState[VISPLAYER] < 0 
+      GameState[VISPLAYER] = Players.Count()-1
+    GameState[SHIFTPLAYER] = -1
+    //GameConfigShift()
+//
+
+
+func GameConfigShift()
+  ?GameState[SHIFTPLAYER] > 0
+    for i=0..Players.Count()-1
+      ?Players[i][PANEL].x < -screen.w/2 |
+      ^Players[i][PANEL].x >  screen.w/2
+        Players[i][PANEL].x = screen.w
+  :?GameState[SHIFTPLAYER] < 0
+    for i=0..Players.Count()-1
+      ?Players[i][PANEL].x < -screen.w/2 |
+      ^Players[i][PANEL].x >  screen.w/2
+        Players[i][PANEL].x = -screen.w
+//
+
+
+func GameShiftPlayers()
+  var result = 1
+  var loc0 = -screen.w
+  var loc1 = 0
+  var loc2 = screen.w
+  var loc3 = screen.w
+
+  ?screen.w >= 80
+    loc1 = (-18 - (screen.w-80)/4)
+    loc2 = ( 18 - (screen.w-80)/4)
+  
+
+  for i=0..(Players.Count()-1)
+    ?i < GameState[VISPLAYER]
+      result = result * Move(Players[i][PANEL],loc0,-1,1,1,2,1)
+    :?i = GameState[VISPLAYER]
+      result = result * Move(Players[i][PANEL],loc1,-1,1,1,2,1)
+    :?i = GameState[VISPLAYER] + 1
+      result = result * Move(Players[i][PANEL],loc2,-1,1,1,2,1)
+    :
+      result = result * Move(Players[i][PANEL],loc3,-1,1,1,2,1)
+
+  ?result
+    GameState[SHIFTPLAYER] = 0
+//
+
+
+
+
+
+
+var initialized = 0
+
+
+func RunKijo()
+  ?!initialized
+    disable Banner
+    DrawGame()
+    initialized = 1
+  :
+    StateController()
+//
+
+RunKijo()

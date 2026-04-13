@@ -1,0 +1,89 @@
+//CalaveritaDeAzucar v1.0
+//By Jhon Rock
+/*
+español:
+Cosmético inspirado en la tradición mexicana del Día de Muertos. hecho como una carta de amor para los jugadores mexicanos de stone story
+ingles:
+Cosmetic inspired by the Mexican tradition of the Day of the Dead. Made as a love letter to Mexican Stone Story players.
+*/
+
+>h-5,-2,#yellow,ascii
+####_#_
+-__/_-_\__-
+
+asciiend 
+
+>h-5,-2,#red,ascii
+#######
+###########
+°#°#######°
+asciiend 
+
+>h-5,-2,#blue,ascii
+#######
+###########
+####_###_##
+asciiend
+
+var animframes = ［ascii
+#######
+###########
+###(#o,O###
+#### `＂´
+
+asciiend,ascii
+#######
+###########
+###(#O,o###
+#### `＂´
+
+asciiend,ascii
+#######
+###########
+###(#o,O###
+#### `＂´
+
+asciiend,ascii
+#######
+###########
+###(#O,o###
+#### `＂´
+
+asciiend,ascii
+#######
+#########♪
+###(#o,O###
+#### `＂´
+
+asciiend,ascii
+##########♪
+###########
+###(#O,o###
+#### `"´
+
+asciiend,ascii
+###########♪
+###########
+###(#o,O###
+#### `＂´
+
+asciiend,ascii
+###########
+###########
+###(#O,o###
+#### `"´
+
+asciiend,ascii
+#######
+###########
+###(#=,=###
+#### `＂´
+
+asciiend］
+
+var i = 0
+>h-5,-2,#rainE1,@animframes［i］@
+?totaltime % 12 = 0
+  i++
+?i >= animframes.Count()
+  i = 0

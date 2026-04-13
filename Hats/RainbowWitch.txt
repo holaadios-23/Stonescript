@@ -1,0 +1,121 @@
+/*
+var Author = Js
+var Usage = "import or copy paste"
+
+have fun!!!
+*/
+
+//Global variables
+
+var f = null
+var c = ＂#rainFF＂
+
+
+//scarf
+
+var animframes = ［ascii
+'-._. -
+asciiend,ascii
+-._.- ☺
+asciiend,ascii
+._.-. O
+asciiend,ascii
+_.-._ ☺
+asciiend,ascii
+,-._. -
+asciiend］
+
+
+//witch hat
+
+var hat = null
+
+
+?foe = poison
+ hat = ascii
+#/❄
+('.
+_)_\_
+asciiend 
+
+
+:?foe = vigor
+ hat = ascii
+#/∞
+('.
+_)_\_
+asciiend 
+
+
+:?foe = aether
+ hat = ascii
+#/❤
+('.
+_)_\_
+asciiend 
+
+
+:?foe = fire
+ hat = ascii
+#/*
+('.
+_)_\_
+asciiend 
+
+
+:?foe = ice
+ hat = ascii
+#/φ
+('.
+_)_\_
+asciiend 
+
+
+:?loc = ＂shop＂
+ hat = ascii
+#/$
+('.
+_)_\_
+asciiend 
+
+
+:?loc.IsQuest 
+ hat = ascii
+#/!
+('.
+_)_\_
+asciiend 
+
+
+:
+ hat = ascii
+#/o
+('.
+_)_\_
+asciiend
+
+
+//print.
+
+>h-2,-2,@c@,@hat@
+
+>h-3,4,@c@,Ω @player.name@ Ω
+
+var i = 0
+>h-6,1,@f@,@animframes［i］@
+
+
+//set random colors
+
+?time % 16 = 0
+ i++
+ f = color.random()
+
+?time % 16 = 8
+ f = color.random()
+
+?i >= animframes.Count()
+ i = 0
+
+//and, finish the cosmetic
+draw.Player()

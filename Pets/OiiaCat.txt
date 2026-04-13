@@ -1,0 +1,233 @@
+/*++++++++++++++++++++++++++++++++++++++++++++
+oiia cat by Witch
+v1.0
+
+Usage:
+import Pets/oiiaCat
+
+or if you want to change settings:
+
+var cat = import Pets/oiiaCat
+cat.setInstability(20)
+cat.screenEdgeOffset = 10
+cat.Run()
+
+Settings:
+setInstability() - defines how lively the cat is.
+Default is 15
+Sane values are within 1 and 100,
+but you can try other values too
+
+screenEdgeOffset - increase to contain the cat
+closer to the center of the screen (if it hides your UI)
+Default is 0
+
+++++++++++++++++++++++++++++++++++++++++++++*/
+
+var instability = 15
+var screenEdgeOffset = 0
+
+var catv1=ascii
+########+◘#####**
+#####++#**+-:-:=+
+###=:::.===+=:::=
+##:.:---++*+*=-:=
+##--.:.:-◘@@@◘◘=+
+##=:.:.---:◘+-.-+
+###*:..:-++**==-
+###+◘#.-===◘◘-:-
+#######++*##+++
+#######◘@-+###+@
+asciiend
+
+var cat=ascii
+########|\#####/|
+########|*+---:+|
+###/‾‾‾\=#.:.:.#=
+##|.#-:-,<o>.<o>=.
+##:#.:.|-+=-v-==:)
+##\.#:.-\-@=^=@-/
+###|:__.#'+@*@=|
+###d◘#.\===◘◘-:|
+#######|+*###\+|
+#######◘▲d####L.b
+asciiend
+
+var catSprites = ascii
+######---:.-===+*
+####-==--..=*=*++
+###.-+**+=:.:-+*+
+###.##:-=****==**
+#####....-=+*◘++
+###########:--
+%%
+############.-
+###...::.-.--.=+
+#:::-+*+=++**=:
+#::-------====+
+#.:::::-:..::-:
+###.......
+%%
+#####=:......
+####-:.##.-++::
+####.####.:++=..
+####:.###.::-=-:
+######.....:::::
+%%
+#+*◘*=-:::-===-:
+#+**+-::---:..--.:
+##-::.###########.
+##..:--=---.:.###.
+###.::--:---:..
+%%
+#######+
+###**+@◘*-::.
+##*+=+◘+◘+-#..
+####-=-=-=-:#.
+####==+***---.
+####-+◘◘+=---
+asciiend
+
+
+var X
+var Y
+
+var targetX
+var targetY
+
+var oldScreenX
+var oldScreenI
+
+var catAnim
+var catText
+
+var spinning
+
+var spinFrames
+
+var moveDistLimit
+var animDuration
+
+var yeetAway
+
+var settingsChangedByUser = false
+
+func rngl(l)
+  return rng%(l+1)
+
+//>`0,1,#red, @X@ @Y@
+
+func randomizePos()
+  ?yeetAway
+    targetX = rng%(screen.w+10) + screen.x
+    targetY = rng%(screen.h+5)
+  :
+    targetX = rng%(screen.w-2 - screenEdgeOffset) + screen.x
+    targetY = rng%(screen.h-10 - screenEdgeOffset)
+
+func magnitude(x,y)
+  var l = math.Sqrt(math.Pow(x,2) + math.Pow(y,2))
+  return l
+
+func moveTo(x,y)
+  var diffX = x - X
+  var diffY = y - Y
+  var m = magnitude(diffX, diffY)
+  var newLimit = moveDistLimit + math.Abs(screenDelta())
+  ?m <= newLimit
+    X = x
+    Y = y
+  :
+    diffX = math.RoundToInt(diffX/m*moveDistLimit)
+    diffY = math.RoundToInt(diffY/m*moveDistLimit)
+    X = X + diffX
+    Y = Y + diffY
+
+func rngCurved(p, mult)
+  return math.RoundToInt((math.Pow(rngf, p))*mult)
+
+func updateAnimPos()
+  catAnim.x = X - screen.w/2 - screen.x
+  catAnim.y = Y - screen.h/2 + 1
+
+func updateTextPos()
+  catText.x = X - screen.w/2 - screen.x
+  catText.y = Y - screen.h/2 + 1
+
+func controlAnimation()
+  ?spinning
+    catAnim.visible = true
+    catAnim.Play()
+    catText.visible = false
+  :
+    catAnim.visible = false
+    catAnim.Stop()
+    catText.visible = true
+
+func setInstability(inst)
+  ?instability ! inst
+    instability = inst
+    settingsChangedByUser = true
+    updateSettings()
+
+func updateSettings()
+  moveDistLimit = math.Clamp(
+  ^math.RoundToInt(math.log(instability/5, 2)), 1, 30)
+  animDuration = math.Clamp(
+  ^math.RoundToInt((100 - instability)/3), 1, 120)
+  catAnim.duration = animDuration
+  ?instability < 45
+    yeetAway = false
+  :
+    yeetAway = true
+
+func screenChanged()
+  return screen.i ! oldScreenI
+
+func boostSpeed()
+  return screen.x ! oldScreenX
+
+func screenDelta()
+  return screen.x - oldScreenX
+
+func Run()
+  ?loc.begin
+    oldScreenX = screen.x
+    oldScreenI = screen.i
+    catAnim = ui.AddAnim(catSprites)
+    ?!settingsChangedByUser
+      updateSettings()
+    catText = ui.AddText(cat)
+    catText.w = 20
+    catAnim.loop = true
+    X = screen.x - screen.w/2
+    Y = screen.h/2
+    targetX = screen.x + screen.w/4
+    targetY = screen.h/2
+    spinning = false
+    spinFrames = 0
+
+  ?spinFrames > 0
+    spinning = true
+    spinFrames --
+  :
+    spinning = false
+  ?rngCurved(0.7, 200) < instability | screenChanged()
+    randomizePos()
+  ?rngCurved(1, 200) < instability
+    ?spinFrames <=0
+      spinFrames = rngCurved(1.5, 1) * (20 + math.Min(instability, -10))
+
+  ?X ! targetX
+    moveTo(targetX, targetY)
+    spinning = true
+    updateAnimPos()
+  :
+    updateTextPos()
+  controlAnimation()
+
+  oldScreenX = screen.x
+  oldScreenI = screen.i
+
+Run()
+

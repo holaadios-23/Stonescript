@@ -1,0 +1,433 @@
+/*Credits\\
+By Citriondragon
+Version 1.0
+*/
+
+/*
+  _(¯¯¯¯'¯') 
+ ( (     ) ))
+( (  ))   )) 
+ '__))¯¯¯¯   
+
+
+ ('¯) 
+(_)_))
+
+
+ (¯) 
+(_( )
+*/
+
+//Create more storm cloud frames
+//Add boss defeated effects (moonshine + rainbow, maybe flower?)
+var stormclouds = ascii
+( (  ))   ) ( (     ( (   '      )  '   )¯      (_) ( (( (   )  .     .  '   __))¯¯¯¯   
+ '__))¯    ( (  ))          .               ))   _(__))¯¯¯¯  .     '     ))      ¯'     
+  (   '  '__)    ¯¯¯   '        -  '    ¯¯      ( ( '__))       -     .   ( (      )    
+ '__))¯ (  '__))¯  _(¯   '¯')   _      (  )  _(¯¯¯¯'¯') )   )) (   .     ))   _(¯¯¯¯'¯')
+#######( (  ))    ( (     ) )) ( (    '__)) ( (         '__))¯¯  '   -   .    ( (     )
+########'__))¯¯¯¯( (  ))   )) ( (  ))   )) ( (  ))   ))#####( (  ))    '__ ))####(_( )
+##################'__))¯¯¯¯####'__))¯¯¯¯####'__))¯¯¯¯########'__))¯¯¯¯
+%%
+) ( (     ( (   '      )  '   )¯      (_) ( (( (   )  .     .  '   __))¯¯¯  _(¯¯¯¯'¯') ¯ 
+ ( (  ))          .               ))   _(__))¯¯¯¯  .     '     ))   _(¯¯¯¯ ( (     ) ))'
+__)    ¯¯¯   '        -  '    ¯¯      ( ( '__))       -     .   (  ( (    ( (  ))   ))  
+ '__))¯  _(¯   '¯')   _      (  )  _(¯¯¯¯'¯') )   )) (   .     )) ( (  ))  '__))¯¯¯¯    
+  ))    ( (     ) )) ( ('¯) '__)) ( (         '__))¯¯  '   -   .   '__))¯ ( (     ) ))¯¯
+_))¯¯¯¯( (  ))   ))###(_)_))#####( (  ))   ))#####( (  )) '__ ))#######(_( (  ))   )) ( 
+########'__))¯¯¯¯#################'__))¯¯¯¯#################################'__))¯¯¯¯
+%%
+  _(   '¯'' '__))¯(¯¯'¯    '  .    (_))     ( (  ))    _ (   _(¯¯¯ ( (     ) ))¯'(_)_))
+ ( (     ) _(¯' ¯'   `.__,/  (    )     _(¯¯¯¯'¯'  '__))¯¯¯' ( (   ( (  )  '    .   ) ))
+( (  ))  (     ) `._(¯¯¯¯'¯'  _,´   ( (  ))   ( (     )   _(( (  )) '__))¯    '   )) ¯¯¯
+ ' ('¯) ¯¯ (  ))   )(       _(¯¯¯¯'¯'  '__))¯¯¯( (  ))   ( ( '__))¯¯¯¯   _(¯¯¯¯'¯')     
+  (_)_))#####'__))¯   )    ( (     ) __))¯¯¯¯ (_)_))    ( (  ))   ))    ( (     ) ))'__)
+####################'__))¯( (  ))   )##############'__)) '__))¯¯¯¯###¯¯( (  ))   )) ¯¯
+###########################'__))¯¯¯¯####################################'__))¯¯¯¯
+%%
+(¯¯'¯    '  .    (_))     ( (  ))    _ (   _(¯¯¯ ( (     ) ))¯'(_)_))    _(¯¯¯¯'¯')   (' 
+  '   . /  (    )     _(¯¯¯¯'¯'  '__))¯¯¯' ( (   ( (  )  '    .    _(¯¯ ( (     ) ))¯(_)
+._(¯¯¯¯'¯'  _,´   ( (  ))   ( (     )   _(( (  )) '__))¯    '   ) ( (  ( (  ))   ))    )
+ )(       _(¯¯¯¯'¯'  '__))¯¯¯( (  ))   ( ( '__))¯¯¯¯   _(¯¯¯¯'¯')( (    '__))¯¯¯¯  ('¯) 
+¯   )    ( (     ) __))¯¯¯¯ (_)_))    ( (  ))   ))    ( (     ) ) '__) ( (     ) )(_)_))
+##'__))¯( (  ))   )##############'__)) '__))¯¯¯¯###¯¯( (  ))   ))#####( (  ))   ))
+#########'__))¯¯¯¯####################################'__))¯¯¯¯########'__))¯¯¯¯
+asciiend
+
+var stormcloudsalt = ascii
+( (  ))   ) ( (     ( (   '      )  '   )¯      (_) ( (( (   )  .     .  '   __))¯¯¯¯   
+ '__))¯    ( (  ))          .               ))   _(__))¯¯¯¯  .     '     ))      ¯'     
+  (   '  '__)    ¯¯¯   '        -  '    ¯¯      ( ( '__))       -     .   ( (      )    
+ '__))¯ (  '__))¯  _(¯   '¯')   _      (  )  _(¯¯¯¯'¯') )   )) (   .     ))   _(¯¯¯¯'¯')
+#######( (  ))    ( (     ) )) ( (    '__)) ( (         '__))¯¯  '   -   .    ( (     )
+########'__))¯¯¯¯( (  ))   )) ( (  ))   )) ( (  ))   ))#####( (  ))    '__ ))####(_( )
+##################'__))¯¯¯¯####'__))¯¯¯¯####'__))¯¯¯¯########'__))¯¯¯¯
+%%
+) ( (     ( (   '      )  '   )¯      (_) ( (( (   )  .     .  '   __))¯¯¯  _(¯¯¯¯'¯') ¯ 
+ ( (  ))          .               ))   _(__))¯¯¯¯  .     '     ))   _(¯¯¯¯ ( (     ) ))'
+__)    ¯¯¯   '        -  '    ¯¯      ( ( '__))       -     .   (  ( (    ( (  ))   ))  
+ '__))¯  _(¯   '¯')   _      (  )  _(¯¯¯¯'¯') )   )) (   .     )) ( (  ))  '__))¯¯¯¯    
+  ))    ( (     ) )) ( ('¯) '__)) ( (         '__))¯¯  '   -   .   '__))¯ ( (     ) ))¯¯
+_))¯¯¯¯( (  ))   ))###(_)_))#####( (  ))   ))#####( (  )) '__ ))#######(_( (  ))   )) ( 
+########'__))¯¯¯¯#################'__))¯¯¯¯#################################'__))¯¯¯¯
+%%
+  _(   '¯'' '__))¯(¯¯'¯    '  .    (_))     ( (  ))    _ (   _(¯¯¯ ( (     ) ))¯'(_)_))
+ ( (     ) _(¯' ¯'   `.__,/  (    )     _(¯¯¯¯'¯'  '__))¯¯¯' ( (   ( (  )  '    .   ) ))
+( (  ))  (     ) `._(¯¯¯¯'¯'  _,´   ( (  ))   ( (     )   _(( (  )) '__))¯    '   )) ¯¯¯
+ ' ('¯) ¯¯ (  ))   )(       _(¯¯¯¯'¯'  '__))¯¯¯( (  ))   ( ( '__))¯¯¯¯   _(¯¯¯¯'¯')     
+  (_)_))#####'__))¯   )    ( (     ) __))¯¯¯¯ (_)_))    ( (  ))   ))    ( (     ) ))'__)
+####################'__))¯( (  ))   )##############'__)) '__))¯¯¯¯###¯¯( (  ))   )) ¯¯
+###########################'__))¯¯¯¯####################################'__))¯¯¯¯
+%%
+(¯¯'¯    '  .    (_))     ( (  ))    _ (   _(¯¯¯ ( (     ) ))¯'(_)_))    _(¯¯¯¯'¯')   (' 
+  '   . /  (    )     _(¯¯¯¯'¯'  '__))¯¯¯' ( (   ( (  )  '    .    _(¯¯ ( (     ) ))¯(_)
+._(¯¯¯¯'¯'  _,´   ( (  ))   ( (     )   _(( (  )) '__))¯    '   ) ( (  ( (  ))   ))    )
+ )(       _(¯¯¯¯'¯'  '__))¯¯¯( (  ))   ( ( '__))¯¯¯¯   _(¯¯¯¯'¯')( (    '__))¯¯¯¯  ('¯) 
+¯   )    ( (     ) __))¯¯¯¯ (_)_))    ( (  ))   ))    ( (     ) ) '__) ( (     ) )(_)_))
+##'__))¯( (  ))   )##############'__)) '__))¯¯¯¯###¯¯( (  ))   ))#####( (  ))   ))
+#########'__))¯¯¯¯####################################'__))¯¯¯¯########'__))¯¯¯¯
+asciiend
+
+var lightning1=ascii
+% {repeat:4}
+##
+%%
+###|
+###|`
+###|
+##,\
+_/##\
+,\##/
+####|
+####|
+###/ ;-.
+###|
+#.´|
+###|
+###/`-
+##/|
+#,| \
+##|
+##|
+###\
+###.\
+###|
+%%
+###|
+###|
+###|
+###\
+####\
+####/
+####|
+####|
+###/'
+###|
+##´|
+###|
+###/
+##/'
+##|
+##|
+##|
+###\
+###|
+##.!:
+%%
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+##@#@
+#@@_@@
+%%
+#
+asciiend
+
+var lightning2=ascii
+% {repeat:4}
+##/.´
+##\\__
+,-/´ \-
+##\###`
+__/\-
+´##/`
+###\
+###´\
+####,\_
+###/##,`
+###\
+%%
+###/
+##',
+##/
+##\
+###\
+###/
+###\
+####\
+####,'
+###/
+###\
+%%
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+###@
+asciiend
+
+var lightning3=ascii
+% {repeat:4}
+###`.\
+####//-,
+##_/´
+#/#\
+´##/\_
+##'\##`
+###|
+##/\-
+##|#`
+_/|
+'#\
+###\
+###/\
+###\#`
+###|
+%%
+###`\
+####/
+###/
+###\
+###/
+###\
+###|
+##/
+##|
+##|
+##\
+###\
+###/
+###\
+###|
+%%
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+###@
+asciiend
+
+var storm
+var raincanvas
+
+var seenboss=false
+var bossdead=false
+
+var lightningtimer=0
+var lightning
+var lightningrng
+var lightningx
+var lightningy
+
+?loc.name="Hotspring Shop"
+  continue
+
+?totaltime=1
+  seenboss=false
+  bossdead=false
+  raincanvas = ui.AddCanvas()
+  raincanvas.dock=top_left
+  raincanvas.anchor=top_left
+  raincanvas.w=screen.w
+  raincanvas.h=screen.h
+  raincanvas.SetFG(#565656)
+  lightning = ui.AddAnim(lightning1)
+  lightning.dock=top_left
+  lightning.anchor=top_left
+  lightning.visible=false
+  storm = ui.AddAnim(stormclouds)
+  storm.dock=top_left
+  storm.anchor=top_left
+  storm.y=1
+  storm.color=#282828
+  storm.loop=true
+  storm.duration=120
+  storm.Play()
+
+?foe="phase"
+  seenboss=true
+
+?pickup="treasure"
+  bossdead=true
+
+?totaltime%5=0
+  raincanvas.Set("#")
+  ?!bossdead
+    for w = 0..screen.w-1
+      for h = 0..screen.h-1
+        ?rng%25=0
+          ?seenboss
+            raincanvas.Set(w,h,"/")
+          :?rng%3=0
+            raincanvas.Set(w,h,"|")
+          :
+            raincanvas.Set(w,h,"'")
+
+?lightningtimer>0
+  lightningtimer--
+  ?lightningtimer=0
+    lightning.visible=false
+
+?totaltime%10=0&rng%2=0&seenboss&lightningtimer=0&!bossdead
+  lightningrng=rng
+  ?lightningrng%3=0
+    lightning.Load(lightning1)
+  :?lightningrng&3=1
+    lightning.Load(lightning2)
+  :
+    lightning.Load(lightning3)
+  lightningtimer=8
+  lightning.x= 5 + rng % ((screen.w-5) - 5 + 1)
+  lightning.y= 3 + rng % (6 - 3 + 1)
+  lightning.visible=true
+  lightning.Play()
+  lightningtimer=6
+
+?bossdead
+  raincanvas.SetFG(#202020)
+  //raincanvas.Set("█")
+  for a = 5..10
+    raincanvas.SetFG(21+a,6,#white)
+  for b = 5..10
+    raincanvas.SetFG(21+b,7,#white)
+  for c = 5..11
+    raincanvas.SetFG(21+c,8,#white)
+  for d = 5..11
+    raincanvas.SetFG(21+d,9,#white)
+  for e = 5..11
+    raincanvas.SetFG(22+e,10,#white)
+  for f = 5..12
+    raincanvas.SetFG(22+f,11,#white)
+  for g = 5..13
+    raincanvas.SetFG(22+g,12,#white)
+  for h = 5..12
+    raincanvas.SetFG(23+h,13,#white)
+  for i = 5..13
+    raincanvas.SetFG(23+i,14,#white)
+  for j = 5..13
+    raincanvas.SetFG(23+j,15,#white)
+  for k = 5..13
+    raincanvas.SetFG(24+k,16,#white)
+  for l = 5..13
+    raincanvas.SetFG(24+l,17,#white)
+
+  for m = 0..2
+    raincanvas.SetFG(36+m,15,#800080)
+  for n = 2..5
+    raincanvas.SetFG(36+n,14,#800080)
+  for o = 5..11
+    raincanvas.SetFG(36+o,13,#800080)
+  for p = 11..14
+    raincanvas.SetFG(36+p,14,#800080)
+  for q = 14..16
+    raincanvas.SetFG(36+q,15,#800080)
+
+  for r = 0..1
+    raincanvas.SetFG(36+r,14,#blue)
+  for s = 1..4
+    raincanvas.SetFG(36+s,13,#blue)
+  for t = 4..12
+    raincanvas.SetFG(36+t,12,#blue)
+  for u = 12..15
+    raincanvas.SetFG(36+u,13,#blue)
+  for v = 15..17
+    raincanvas.SetFG(36+v,14,#blue)
+
+  for w = -1..0
+    raincanvas.SetFG(36+w,13,#cyan)
+  for x = 0..3
+    raincanvas.SetFG(36+x,12,#cyan)
+  for y = 3..13
+    raincanvas.SetFG(36+y,11,#cyan)
+  for z = 13..16
+    raincanvas.SetFG(36+z,12,#cyan)
+  for A = 16..18
+    raincanvas.SetFG(36+A,13,#cyan)
+
+  for B = -1..-1
+    raincanvas.SetFG(36+B,12,#green)
+  for C = -1..2
+    raincanvas.SetFG(36+C,11,#green)
+  for D = 2..14
+    raincanvas.SetFG(36+D,10,#green)
+  for E = 14..17
+    raincanvas.SetFG(36+E,11,#green)
+  for F = 17..19
+    raincanvas.SetFG(36+F,12,#green)
+
+  for G = -2..-2
+    raincanvas.SetFG(36+G,11,#yellow)
+  for H = -2..1
+    raincanvas.SetFG(36+H,10,#yellow)
+  for I = 1..15
+    raincanvas.SetFG(36+I,9,#yellow)
+  for J = 15..18
+    raincanvas.SetFG(36+J,10,#yellow)
+  for K = 18..20
+    raincanvas.SetFG(36+K,11,#yellow)
+
+  //for L = -2..1
+    //raincanvas.SetFG(36+L,10,#FFA500)
+  for M = -3..0
+    raincanvas.SetFG(36+M,9,#FFA500)
+  for N = 0..16
+    raincanvas.SetFG(36+N,8,#FFA500)
+  for O = 16..19
+    raincanvas.SetFG(36+O,9,#FFA500)
+  for P = 19..21
+    raincanvas.SetFG(36+P,10,#FFA500)
+
+  //for Q = -3..1
+    //raincanvas.SetFG(36+Q,9,#red)
+  for R = -3..-1
+    raincanvas.SetFG(36+R,8,#red)
+  for S = -1..17
+    raincanvas.SetFG(36+S,7,#red)
+  for T = 17..20
+    raincanvas.SetFG(36+T,8,#red)
+  for U = 20..22
+    raincanvas.SetFG(36+U,9,#red)
+  raincanvas.blend=add
+
+//>`0,1,#565656,@stormclouds@

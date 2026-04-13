@@ -1,0 +1,50 @@
+//-----DragonHead v1.1-----\\
+// Original by Ditsaid
+// Edited by Icynx.001
+
+?player.direction = 1
+ >h-2,-5,#red,ascii
+##_##_
+##)\_)\
+<'`- - \_.-.
+<. _____(• •)
+| /VVVVVVVVV
+\ \AAAAAAAAA,
+#＂＂＂＂＂＂＂＂＂＂＂
+asciiend
+ >h-2,-5,#white,ascii
+##_##_
+##)\#)\
+<
+<
+###VVVVVVVVV
+###AAAAAAAAA
+asciiend
+ ?!bighead
+ ^ | bighead & face = ＂(   )＂
+  >h1,-3,#red,- -
+ :
+  >h1,-3,#yellow,• •
+:
+ >h-10,-5,#red,ascii
+#######_##_
+######/(_/(
+#.-._/ — —´'>
+(• •)_____ .>
+#VVVVVVVVV\ |
+.AAAAAAAAA/ /
+#＂＂＂＂＂＂＂＂＂＂＂
+asciiend
+ >h-9,-5,#white,ascii
+######_##_
+#####/(_/(
+###########>
+###########>
+VVVVVVVVV
+AAAAAAAAA
+asciiend
+ ?!bighead
+ ^ | bighead & face = ＂(   )＂
+  >h-3,-3,#red,- -
+ :
+  >h-3,-3,#yellow,• •

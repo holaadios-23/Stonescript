@@ -1,0 +1,26 @@
+// Speedometer
+// Mide la velocidad actual del personaje en unidades por segundo (u/s).
+
+var last_pos = pos.x
+var current_speed = 0.0
+var timer = 0
+var interval = 10 // Actualizar cada 10 frames (aprox 0.33 segundos) para suavizar la lectura
+
+?loc.begin
+  last_pos = pos.x
+  timer = 0
+
+timer++
+
+?timer >= interval
+  var dist = pos.x - last_pos
+  // Calcular velocidad: (Distancia / Frames transcurridos) * 30 FPS
+  // Usamos 30.0 para asegurar operación con decimales
+  current_speed = (dist * 30.0) / interval
+  
+  last_pos = pos.x
+  timer = 0
+
+// Mostrar información en pantalla (esquina superior izquierda)
+>`1,4,#00FF00,Velocidad Real: @current_speed@ u/s
+>`1,5,#FFFF00,Stat (Frames/Mov): @player.framesPerMove@

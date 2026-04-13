@@ -1,0 +1,68 @@
+
+
+var fd
+fd = foe.distance
+var pcd
+pcd = pickup.distance
+var irs
+irs = item.right.state
+var i = 0
+var igc = item.GetCooldown
+var ica = item.CanActivate
+
+?item.left.state = 3
+  equipL *0 wand
+  equipL @item.left@
+?item.right.state = 3
+  ?time % 2
+    equipR throw
+  :
+    equipR *0 shield
+  equip @item.right@
+
+func dash()
+ ?igc(＂dash＂)<=0
+  equipR dash *0 +0
+  equipL trisk 
+
+func quart()
+ ?igc(＂quarterstaff＂)=0 & ica()
+  equip quarterstaff +0 *0
+  activate R
+
+func Bardiche()
+ return Exec(＂bardiche＂,＂bardiche＂)
+
+func Heavy()
+ return Exec(＂heavy_hammer＂,＂heavy +0＂)
+
+func Exec(k,v)
+ ?ica() & (igc(k)=0 | item.right=v & irs=2)
+  equip @v@
+  activate R
+  return true
+ return false
+
+?loc = deadwood
+ ?loc.begin
+  equipR compound +0
+  equipL quest
+  return
+ ?fd >= 20
+  ?quart()
+   return
+  :
+   equipL tri
+   equipR mask
+  ?pcd < 8
+   equipL star
+ :?fd > 11 & fd < 18 & ai.enabled
+  activate P
+  dash()
+ :
+  equip stone staff +11
+  ?foe = phase2
+   equipR poison sword
+   equipL moon
+   ?foe.state = 32 & foe.time > 41
+    equipL mind

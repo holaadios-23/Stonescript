@@ -1,0 +1,44 @@
+/*
+GlitchHead by Gigane
+Version - Build 0
+
+Supported both for Big Head and Stone Head
+*/
+
+var glitchBIG = [
+"|''A",
+"E!'V",
+"€'*\",
+"n|-O",
+"'!>>",
+"<<~=",
+"/A'}",
+"%^'+",
+"'1?2",
+"7?!R",
+"W_|R",
+"MLWG",
+",$=_",
+"XYZW",
+]
+
+var glitchSTONE = [",", "ö", "ü", "n", "t", "|", "*", "$", "}", "{", "!", "-", "/", "=", "&"]
+
+var curfrm = 0
+var interval = 0.1
+var totalsprite = 14
+//var totalfrm = interval * totalsprite
+var colorGlitch = #FFFFFF
+
+?totaltime % 2 = 1
+  curfrm++
+  ?curfrm = totalsprite
+    curfrm = 0
+
+func AnimBase()
+  ?bighead
+    >h-1,0,@colorGlitch@,@glitchBIG[curfrm]@
+  :
+    >h0,1,@colorGlitch@,@glitchSTONE[curfrm]@
+  
+AnimBase()

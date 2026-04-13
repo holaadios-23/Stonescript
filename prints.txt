@@ -1,0 +1,68 @@
+>`0,1,left: @item.left@\nright: @item.right@
+>`0,3,left state: @item.left.state@
+^ right state: @item.right.state@
+>`0,4,screen: @screen.i@
+var incre = 0
+?loc.loop
+ incre++
+>`0,5,foe state: @foe.state@
+^ time: @foe.time@ distance: @foe.distance@
+>`0,6,foe @foe.id@ hp: @foe.hp@
+>`0,7,foes: @foe.count@
+>`0,8,stars: @loc.stars@
+>`0,9,loop: @incre@
+?loc.gp > MaxGP()
+ >`0,10,#FF0000,GP @loc.gp@/@MaxGP()@
+:?loc.gp = MaxGP()
+ >`0,10,#FFFF00,GP @loc.gp@/@MaxGP()@
+:
+ >`0,10,#00FF00,GP @loc.gp@/@MaxGP()@
+>`0,11,total time @totaltime/1800@m
+^ @(totaltime/30)%60@s => @totaltime@f\n
+^best time: @loc.bestTime/1800@m 
+^@(loc.bestTime/30)%60@s => @loc.bestTime@f
+var element = "stone"
+var eledebil = "stone"
+?foe = ice
+ element = "ice"
+ eledebil = "fire"
+:?foe = poison
+ element = "poison"
+ eledebil = "ice"
+:?foe = vigor
+ element = "vigor"
+ eledebil = "poison"
+:?foe = aether
+ element = "aether"
+ eledebil = "vigor"
+:?foe = fire
+ element = "fire"
+ eledebil = "aether"
+>`0,13,@element@ is weak to @eledebil@
+>`0,14,@buffs.string@
+>`0,15,#7d5926,armor: @armor@.@armor.f@
+
+func MaxGP()
+ var gp = 999999
+ ?loc.stars = 5
+  gp = 150
+ ?loc.stars = 10
+  gp = 200
+ ?loc = ＂rocky＂
+  gp = gp * 3
+ return gp
+ 
+>c-27,12,#rainbow, Player: @player.name@
+
+/*
+>o-14,0,#FFD700,ascii
+#,###-.-'\
+#)`,#\##ω#)
+(##;#/`###\
+`-·#(__`,|_)
+asciiend
+>h-7,1,#4ec9b0,o#°
+var fr = 7
+?time / fr % 7 = 4
+ >h-7,1,#4ec9b0,°#o
+*/

@@ -1,0 +1,1091 @@
+// ===========================================
+// Pacman
+// Autor: holadios_
+// Descripción:
+// A recreation of the classic Pac-Man game
+// using the Stonescript UI system.
+//
+// How to play:
+// - Use arrow keys (or WASD) to move in PC
+// - Use the buttons on mobile
+// - Eat all dots to win.
+// - Avoid ghosts.
+// can you reach level 10?
+// pacart, ghostart, stoneart by gmv01
+// Copy/Paste or do import Games/Pacman
+// ===========================================
+
+var pac_initialized = false
+var pac_state = "menu"
+
+// --- Game Configuration ---
+var map_w = 19
+var map_h = 21
+var map_data
+var map_grid = []
+
+var pac_x = 9
+var pac_y = 15
+var pac_dx = 0
+var pac_dy = 0
+var pac_next_dx = 0
+var pac_next_dy = 0
+
+var current_level = 1
+var max_levels = 10
+
+var ghosts = [] // Ghost objects array
+var score = 0
+var lives = 3
+var pac_bg_text // Global variable for background control
+var dots_count = 0
+
+var move_timer = 0
+var move_speed = 5 // frames per movement
+var scared_timer = 0
+
+
+
+var titleart = ascii
+.---.  .--.  .--.       .-..-. .--. .-..-.
+: .; :: .; :: .--'_____ : `' :: .; :: `: :
+:  _.':    :: :  :_____:: .. ::    :: .` :
+: :   : :: :: :__.      : :; :: :: :: :. :
+:_;   :_;:_;`.__.'      :_;:_;:_;:_;:_;:_;
+asciiend
+
+
+var PacArt = ［ascii
+####_
+#.´   `.
+:    .´
+:   '.
+'.    `.
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:    _.-'
+:   '-._ 
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:       :
+:       :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:       :
+:       :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:    _.-'
+:   '-._  
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:    .´
+:   '.
+'.    `.
+##` - ´
+asciiend］
+
+var PacArt2 = ［ascii
+####_
+#.´   `.
+##`.    :
+###.'   :
+#.´    .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+'-._    :
+#_.-'   :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:       :
+:       :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+:       :
+:       :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+'-._    :
+#_.-'   :
+'.     .'
+##` - ´
+asciiend,
+ascii
+####_
+#.´   `.
+##`.    :
+###.'   :
+#.´    .'
+##` - ´
+asciiend］
+
+var GhostArt = ［ascii
+##.--.
+#' • •'
+|      |
+|      |
+'´¯`´¯`'
+asciiend,
+ascii
+##.--.
+#' • •'
+|      |
+|_    _|
+##`´`´
+asciiend］
+
+var GhostArt2 = ［ascii
+##.--.
+#'o o '
+|      |
+|      |
+'´¯`´¯`'
+asciiend,
+ascii
+##.--.
+#'o o '
+|      |
+|_    _|
+##`´`´
+asciiend］
+
+var StoneArt = ［ascii
+.
+-\_o
+##‾|
+##/#\
+asciiend,
+ascii
+.
+-\_o
+##‾|
+##/<
+asciiend,
+ascii
+.
+-\_o
+##‾|
+##<|
+asciiend,
+ascii
+.
+-\_o
+##‾|
+##/|
+asciiend］
+
+
+var gameArt = ascii
+   .´. .´`.
+    `.'.-´
+  .-. .--.#################################################.´. .´`.
+ (   (    )#################################################`.'.-´
+  `-´ `--´        .´. .´`.#################################.-.#.--.
+                   `.'.-´#################################(   (    )########.´. .´`.
+           #####  .-. .--.#################################`-´ `--´##########`.'.-´
+        #########(   (    )#################################################.-.#.--.
+   .´. .´`.       `-´ `--´#################################################(   (    )
+    `.'.-´##################################################################`-´ `--´
+  .-. .--.#################################################.´. .´`.
+ (   (    )#################################################`.'.-´
+  `-´ `--´        .´. .´`.#################################.-.#.--.
+                   `.'.-´#################################(   (    )########.´. .´`.
+                  .-. .--.#################################`-´ `--´##########`.'.-´
+                 (   (    )#################################################.-.#.--.
+   .´. .´`.       `-´ `--´#################################################(   (    )
+    `.'.-´##################################################################`-´ `--´
+  .-. .--.#################################################.´. .´`.
+ (   (    )#################################################`.'.-´
+  `-´ `--´########.´. .´`.#################################.-.#.--.
+                   `.'.-´#################################(   (    )########.´. .´`.
+                  .-. .--.#################################`-´ `--´##########`.'.-´
+                 (   (    )#################################################.-.#.--.
+                  `-´ `--´#################################################(   (    )
+asciiend
+
+// --- Cherry Configuration ---
+var cherry_state = 0 // 0: inactive, 1: active
+var cherry_x = 9
+var cherry_y = 11
+var cherry_timer = 0
+var cherry_spawns_done = 0
+var apple_state = 0
+var apple_timer = 0
+
+// --- UI ---
+var canvas
+var txt_score
+var txt_lives
+var txt_level
+var txt_message
+var menu_anim_element
+var menu_bg_element
+var menu_stone_element
+var menu_phase = 0 // 0: Pacman chases ghost, 1: Stone chases both
+
+// Functions
+func CreateButton(text, x, y, w, h, anchor, dock, action)
+  var b = ui.AddButton()
+  b.text = text
+  b.x = x
+  b.y = y
+  b.w = w
+  b.h = h
+  b.anchor = anchor
+  b.dock = dock 
+  b.SetPressed(action)
+  return b
+
+func createtext(text, x, y, w, h, color, align)
+ var t = ui.AddText()
+ t.text = text
+ t.x = x
+ t.y = y
+ t.w = w
+ t.h = h
+ t.color = color
+ t.align = align
+ return t
+
+func Createbg(x,y,w,h,color)
+  var bg = ui.AddPanel()
+  bg.x = x
+  bg.y = y
+  bg.w = w
+  bg.h = h
+  bg.color = color
+  return bg
+
+func MoveUp()
+  pac_next_dx = 0
+  pac_next_dy = -1
+
+func MoveDown()
+  pac_next_dx = 0
+  pac_next_dy = 1
+
+func MoveLeft()
+  pac_next_dx = -1
+  pac_next_dy = 0
+
+func MoveRight()
+  pac_next_dx = 1
+  pac_next_dy = 0
+
+// Helper function to animate menu elements
+func SetAnimPos(el, x, y, txt, col)
+  el.x = x
+  el.y = y
+  el.text = txt
+  el.color = col
+  el.visible = true
+
+// --- Menu Functions ---
+func StartGame()
+  // Check if player has at least 1 Ki
+  ?item.GetCount("ki") < 1
+    return 
+  // Note: Can't consume Ki (item.Lose doesn't exist), but require having it.
+
+  pac_init()
+  pac_state = "playing"
+
+func DrawMenu()
+  ui.Clear()
+  disable hud
+
+  Createbg(0, 0, screen.w, screen.h, #000000)
+  
+  createtext(titleart, 0, -2, 100, 20, #FFFF00, center)
+
+  // Element 1: Pacman (or Ghost in phase 2)
+  menu_bg_element = ui.AddText()
+  menu_bg_element.text = PacArt[0]
+  menu_bg_element.color = #ffff00
+  menu_bg_element.x = -5
+  menu_bg_element.y = 7
+  menu_bg_element.w = 100
+  menu_bg_element.h = 25
+  menu_bg_element.align = left
+
+  // Element 2: Ghost (or Pacman in phase 2)
+  menu_anim_element = ui.AddText()
+  menu_anim_element.text = GhostArt[0]
+  menu_anim_element.color = #5555FF
+  menu_anim_element.x = -35 // Starts off-screen left
+  menu_anim_element.y = 1 // Just below Pac-Man art
+  menu_anim_element.w = 20
+  menu_anim_element.h = 10
+  
+  // Element 3: The Stone (Phase 2 only)
+  menu_stone_element = ui.AddText()
+  menu_stone_element.text = StoneArt[0]
+  menu_stone_element.color = #888888
+  menu_stone_element.x = -50
+  menu_stone_element.y = 7
+  menu_stone_element.w = 20
+  menu_stone_element.h = 10
+  menu_stone_element.visible = false
+
+  var coins = item.GetCount("ki")
+  createtext("[color=#FF0000]B = Blinky[/color]  [color=#FFB8FF]P = Pinky[/color]  [color=#00FFFF]I = Inky[/color]  [color=#FFB852]C = Clyde[/color]\n\n O = Power Pellet (50 points)   . = Dot (10 points)\n\n [color=#862020]♂ = Cherry (100 points)[/color]     [color=#FF0000]ó = Apple (500 points + 1 live)[/color]", 0,10,100,12,#FFFFFF,center)
+  CreateButton("INSERT KI (" + coins + ")", 0, 0, 15, 3, bottom_center, bottom_center,StartGame)
+  CreateButton("X",0,0,3,3,top_right,top_right,exitgame)
+  
+  menu_phase = 0
+
+
+func MenuUpdate()
+  var frame
+  var move = false
+  ?totaltime % 2 = 0
+    move = true
+
+  ?menu_phase = 0
+    // --- PHASE 1: Giant Pacman chases Ghost ---
+    // Ghost Animation (Flee right)
+    frame = (totaltime / 5) % GhostArt.Count()
+    menu_anim_element.text = GhostArt[frame]
+    ?move
+      menu_anim_element.x += 1
+    
+    // Pacman Animation (Chase right)
+    frame = (totaltime / 3) % PacArt.Count()
+    menu_bg_element.text = PacArt[frame]
+    ?move
+      menu_bg_element.x += 1
+    
+    // Reset and phase change when off-screen
+    ?menu_bg_element.x > 95
+      menu_phase = 1
+      // Phase 2 start positions (Enter from RIGHT)
+      // High values (100+) to start off-screen right
+      SetAnimPos(menu_anim_element, 90, 1, GhostArt2[0], #5555FF) // Ghost in front (leftmost)
+      SetAnimPos(menu_bg_element, 117, 7, PacArt2[0], #FFFF00) // Pacman in middle
+      SetAnimPos(menu_stone_element, 102, 1, StoneArt[0], #888888) // Stone at end
+
+  :
+    // --- PHASE 2: Stone chases Pacman and Ghost ---
+    // Ghost 2 Animation (Flee left)
+    frame = (totaltime / 10) % GhostArt2.Count()
+    menu_anim_element.text = GhostArt2[frame]
+    ?move
+      menu_anim_element.x -= 1 // Faster
+
+    // Pacman 2 Animation (Flee left)
+    frame = (totaltime / 2) % PacArt2.Count()
+    menu_bg_element.text = PacArt2[frame]
+    ?move
+      menu_bg_element.x -= 1
+
+    
+    frame = (totaltime / 5) % StoneArt.Count()
+    menu_stone_element.text = StoneArt[frame]
+    ?move
+      menu_stone_element.x -= 1
+
+    // --- DETECT WHEN REACHING LEFT ---
+    // Moving left, check if X is negative enough (-40) which means off-screen.
+    ?menu_stone_element.x < -40
+      menu_phase = 0
+      menu_stone_element.visible = false
+      // Reset Phase 1 positions
+      SetAnimPos(menu_anim_element, -45, 1, GhostArt[0], #5555FF)
+      SetAnimPos(menu_bg_element, -15, 7, PacArt[0], #FFFF00)
+
+
+func GoToMenu()
+  ui.Clear() // Ensure map/gameArt cleared before state change
+  // Force hide background just in case
+  ?pac_bg_text
+    pac_bg_text.visible = false
+    pac_bg_text = null
+  pac_state = "menu"
+  DrawMenu()
+
+func exitgame()
+  loc.Leave()
+
+func DrawEndScreen()
+  ui.Clear()
+  disable hud
+  
+  Createbg(0, 0, screen.w, screen.h, #000000)
+  
+   // Re-create Canvas to show background map
+  canvas = ui.AddCanvas()
+  canvas.w = map_w
+  canvas.h = map_h
+  canvas.x = (screen.w - map_w) / 10
+  canvas.y = (screen.h - map_h) / 9
+  canvas.anchor = center_right
+  
+  pac_bg_text = ui.AddText()
+  pac_bg_text.text = gameArt
+  pac_bg_text.color = #7e1515
+  pac_bg_text.x = 5
+  pac_bg_text.y = 0
+  pac_bg_text.w = 100
+  pac_bg_text.h = 25
+  pac_bg_text.align = left
+
+  var msg = "GAME OVER"
+  var col = #FF0000
+  var msg_x = canvas.x - 14 // Normal X position for GAME OVER
+
+  ?pac_state = "win"
+    msg = "YOU WIN!"
+    col = #00FF00
+    msg_x = canvas.x-9 // <-- CHANGE THIS VALUE to move YOU WIN only
+  
+  createtext(msg, msg_x, canvas.y-6, 100, 12, col, center)
+  var final_score_text = "Final Score: [color=#4ec9b0]" + score + "[/color]"
+  var reached_level_text = ""
+  ?pac_state = "game_over"
+    reached_level_text += "Max Level: " + current_level
+  createtext(final_score_text, canvas.x-9, canvas.y-5, 100, 12, #FFFFFF, center)
+  createtext(reached_level_text, canvas.x-3, canvas.y-6, 100, 12, #FFFFFF, center)
+  CreateButton("RETRY", canvas.x-19, canvas.y+9, 15, 3, center_right, center_center, StartGame)
+  CreateButton("MENU", canvas.x+15, canvas.y+9, 15, 3, center_right, center_center, GoToMenu)
+// --- Initialization ---
+func pac_init()   
+  ui.Clear()
+  disable hud
+
+  Createbg(0, 0, screen.w, screen.h, #000000)
+
+  map_data = ascii
+███████████████████
+█........█........█
+█O██.███.█.███.██O█
+█.................█
+█.██.█.█████.█.██.█
+█....█...█...█....█
+████.███.█.███.████
+████.█       █.████
+████.█ ██-██ █.████
+█#.... █   █  ...#█
+████.█ █████ █.████
+████.█       █.████
+████.█ █████ █.████
+█........█........█
+█.██████.█.██████.█
+█.................█
+████.█.█████.█.████
+█....█...█...█....█
+█O██████.█.██████O█
+█.................█
+███████████████████
+asciiend
+
+  // Parse map to 2D grid
+  map_grid = []
+  dots_count = 0
+  score = 0
+  lives = 3
+  current_level = 1
+  var lines = string.Split(map_data, "\n")
+  for y = 0 .. lines.Count() - 1
+    var row_str = lines[y]
+    var row_arr = []
+    for x = 0 .. string.Size(row_str) - 1
+      var char = string.Sub(row_str, x, 1)
+      row_arr.Add(char)
+      ?char = "." | char = "O"
+        dots_count++
+    map_grid.Add(row_arr)
+
+  cherry_state = 0
+  cherry_spawns_done = 0
+  apple_state = 0
+
+  // Create ghosts
+  ghosts = []
+  // Ghost 1 (Red - Blinky)
+  ghosts.Add([8, 9, 1, 0, #FF0000, 8, 0])
+  // Ghost 2 (Pink - Pinky)
+  // Start Pos: X=10, Y=9
+  ghosts.Add([10, 9, -1, 0, #FFB8FF, 8, 60])
+  // Ghost 3 (Cyan - Inky)
+  // Start Pos: X=9, Y=8
+  ghosts.Add([9, 8, 0, 1, #00FFFF, 8, 180])
+  // Ghost 4 (Orange - Clyde)
+  // Start Pos: X=9, Y=9
+  ghosts.Add([9, 9, 0, -1, #FFB852, 8, 360])
+
+  // Create UI
+  canvas = ui.AddCanvas()
+  canvas.w = map_w
+  canvas.h = map_h
+  // --> MAP COORDINATES <--
+  // Change these to move the game area (canvas).
+  // Currently centered on screen.
+  canvas.x = (screen.w - map_w) / 10
+  canvas.y = (screen.h - map_h) / 9
+  canvas.anchor = center_right
+  
+  pac_bg_text = ui.AddText()
+  pac_bg_text.text = gameArt
+  pac_bg_text.color = #7e1515
+  pac_bg_text.x = 5
+  pac_bg_text.y = 0
+  pac_bg_text.w = 100
+  pac_bg_text.h = 25
+  pac_bg_text.align = left
+
+  txt_lives = createtext("Lives: 3", canvas.x-14, canvas.y - 10, 10, 3, #eef130, left)
+  txt_score = createtext("Score: 0", canvas.x-5, canvas.y - 10, 20, 3, #FFFFFF, center)
+  var start_col = color.Random()
+  txt_level = createtext("Level: 1", canvas.x-11, canvas.y - 11, 10, 3, start_col, right)
+  txt_message = createtext("",screen.w/10,screen.h/4,100,20,#FFFFFF,center)
+  txt_message.visible = false
+
+  // --> BUTTON COORDINATES <--
+  // 'bx' and 'by' are base coordinates for button group.
+  // Change values to move ALL buttons together.
+  var bx = canvas.x + map_w + 2
+  var by = canvas.y + 3
+
+  CreateButton("X",0,0,3,3,top_right,top_right,GoToMenu)
+
+  // Debug Buttons
+  //CreateButton("NEXT LVL", 0, 5, 8, 4, top_right, top_right, pac_next_level)
+
+  // Touch Controls (Mobile Only)
+  ?sys.isMobile
+    CreateButton("↑", bx-11, by - 2, 9, 5, top_left, center_center, MoveUp)
+    CreateButton("←", bx-11, by + 5, 9, 5, center_right, center_center, MoveLeft)
+    CreateButton("↓", bx-2, by + 5, 9, 5, center_right, center_center, MoveDown)
+    CreateButton("→", bx+2, by + 5, 9, 5, center_center, center_center, MoveRight)
+  
+  pac_x = 9
+  pac_y = 15
+  pac_dx = 0
+  pac_dy = 0
+  pac_next_dx = 0
+  pac_next_dy = 0
+  scared_timer = 0
+  pac_initialized = true
+
+// --- Update Loop ---
+func pac_update()
+  ?pac_state = "menu"
+    MenuUpdate()
+    return
+
+  ?pac_state ! "playing"
+    return
+
+  ?key = upBegin
+    MoveUp()
+  ?key = downBegin
+    MoveDown()
+  ?key = leftBegin
+    MoveLeft()
+  ?key = rightBegin
+    MoveRight()
+
+  // --- Move Player ---
+  move_timer--
+  ?move_timer <= 0
+    move_timer = move_speed // Reset player timer
+    // Try new direction, if invalid, use previous
+    var moved = pac_move_entity(pac_x, pac_y, pac_next_dx, pac_next_dy)
+    ?moved
+      pac_x = moved[0]
+      pac_y = moved[1]
+      pac_dx = pac_next_dx
+      pac_dy = pac_next_dy
+    :
+      moved = pac_move_entity(pac_x, pac_y, pac_dx, pac_dy)
+      ?moved
+        pac_x = moved[0]
+        pac_y = moved[1]
+    
+    ?pac_check_collisions()
+      return
+
+  ?scared_timer > 0
+    scared_timer--
+
+  // --- Cherry Logic ---
+  // Spawn condition
+  ?cherry_state = 0 & cherry_spawns_done = 0 & dots_count < 180
+    cherry_state = 1
+    cherry_timer = 600 // Lasts 10 seconds
+    cherry_spawns_done = 1
+  :?cherry_state = 0 & cherry_spawns_done = 1 & dots_count < 80
+    cherry_state = 1
+    cherry_timer = 600
+    cherry_spawns_done = 2
+  
+  // Disappear timer
+  ?cherry_state = 1
+    cherry_timer--
+    ?cherry_timer <= 0
+      cherry_state = 0
+
+  // Apple Timer (Low Life)
+  ?apple_state = 1
+    apple_timer--
+    ?apple_timer <= 0
+      apple_state = 0
+
+  // --- Move Ghosts ---
+  for i = 0 .. ghosts.Count() - 1
+    var g = ghosts[i]
+    
+    // Decrement ghost movement timer
+    g.Emplace(6, g[6] - 1) // g[6] is timer
+    ?g[6] > 0
+      continue // Skip if timer not 0
+
+    // --- Ghost Speed based on Level ---
+    // Speed = frames per move (lower is faster).
+    // Level 1: speed ~8. Level 10: speed ~3.
+    var speed = 8 - (current_level / 2)
+    ?speed < 2
+      speed = 2 // Max speed
+    
+    // Blinky AI (Red): Faster with fewer dots
+    ?i = 0
+      ?dots_count < 50
+        speed-- // One frame faster
+      ?dots_count < 25
+        speed-- // Another frame faster
+      ?speed < 2
+        speed = 2
+    
+    g.Emplace(5, speed) // Update ghost speed
+
+    // Reset timer with personal speed
+    g.Emplace(6, g[5]) // g[5] is speed
+
+    var gx = g[0]
+    var gy = g[1]
+    var cur_vx = g[2]
+    var cur_vy = g[3]
+    
+    // 1. DETERMINE TARGET (tx, ty)
+    var tx = pac_x
+    var ty = pac_y
+    var is_in_house = (gy >= 8 & gy <= 10 & gx >= 8 & gx <= 10)
+
+    // --- GHOST CODE SEPARATION ---
+    // Special logic if scared or in house
+    var special_state = false
+    ?scared_timer > 0
+      special_state = true
+    :?is_in_house
+      tx = 9
+      ty = 7
+      special_state = true
+
+    ?!special_state
+      ?i = 0
+        // =================================
+        // BLINKY CODE (Red)
+        // =================================
+        // Personality: Chases Pac-Man directly
+        tx = pac_x
+        ty = pac_y
+
+      :?i = 1
+        // =================================
+        // PINKY CODE (Pink)
+        // =================================
+        // Personality: Ambusher
+        // Tries to go 4 tiles ahead of Pacman
+        tx = pac_x + (pac_dx * 4)
+        ty = pac_y + (pac_dy * 4)
+
+      :?i = 2
+        // =================================
+        // INKY CODE (Cyan)
+        // =================================
+        // Personality: Strategist / Flanker
+        // Uses Blinky's position to calculate target
+        var pivot_x = pac_x + (pac_dx * 2)
+        var pivot_y = pac_y + (pac_dy * 2)
+        var blinky_x = ghosts[0][0]
+        var blinky_y = ghosts[0][1]
+        // Vector from Blinky to Pivot
+        tx = pivot_x + (pivot_x - blinky_x)
+        ty = pivot_y + (pivot_y - blinky_y)
+
+      :?i = 3
+        // =================================
+        // CLYDE CODE (Orange)
+        // =================================
+        // Personality: Fearful
+        // Chases if far (>8 tiles). Flees to corner (1, 19) if near.
+        var dist_sq = (gx - pac_x)*(gx - pac_x) + (gy - pac_y)*(gy - pac_y)
+        ?dist_sq < 64 
+          tx = 1 
+          ty = 19
+        :
+          tx = pac_x
+          ty = pac_y
+
+    // 2. DECIDE MOVEMENT DIRECTION
+    var best_vx = 0
+    var best_vy = 0
+
+    ?is_in_house
+      // Simple logic to exit house
+      ?gx ! 9
+        best_vx = math.Sign(9 - gx)
+      :
+        best_vy = -1 // Move up to exit
+    :
+      // Pathfinding logic outside house
+      var min_dist = 999999
+      var best_dir_found = false
+
+      // Evaluate directions: Up, Left, Down, Right
+      var dirs = [[0,-1], [-1,0], [0,1], [1,0]]
+      for j = 0 .. dirs.Count() - 1
+        var dir = dirs[j]
+        var vx = dir[0]
+        var vy = dir[1]
+
+        // Rule: Cannot turn back
+        ?vx = -cur_vx & vy = -cur_vy
+          continue
+
+        var nx = gx + vx
+        var ny = gy + vy
+        var cell = map_grid[ny][nx]
+
+        // Rule: Don't hit walls or enter house door
+        ?cell = "█" | cell = "-"
+          continue
+
+        // Calculate "distance". Random if scared.
+        var d
+        ?scared_timer > 0
+          d = rng
+        :
+          d = (nx - tx)*(nx - tx) + (ny - ty)*(ny - ty)
+
+        ?d < min_dist
+          min_dist = d
+          best_vx = vx
+          best_vy = vy
+          best_dir_found = true
+
+      // Dead end: must turn back
+      ?!best_dir_found
+        best_vx = -cur_vx
+        best_vy = -cur_vy
+
+    // 3. EXECUTE MOVEMENT
+    var moved = pac_move_entity(gx, gy, best_vx, best_vy)
+
+    ?moved
+      g.Emplace(0, moved[0])
+      g.Emplace(1, moved[1])
+      g.Emplace(2, best_vx)
+      g.Emplace(3, best_vy)
+  
+  var cell = map_grid[pac_y][pac_x]
+  ?cell = "." | cell = "O"
+    ?cell = "."
+      score += 10
+    :
+      score += 50 // Power pellet
+      scared_timer = 300 // Activate scared mode
+    map_grid[pac_y].Emplace(pac_x, " ")
+    dots_count--
+    txt_score.text = "Score: " + score
+  
+  // Cherry Collision
+  ?cherry_state = 1 & pac_x = cherry_x & pac_y = cherry_y
+    score += 100
+    txt_score.text = "Score: " + score
+    cherry_state = 0
+
+  // Apple Collision
+  ?apple_state = 1 & pac_x = 9 & pac_y = 11
+    score += 500
+    txt_score.text = "Score: " + score
+    lives++
+    txt_lives.text = "Lives: " + lives
+    apple_state = 0
+
+  // Ghost Collision
+  ?pac_check_collisions()
+    return
+
+  // --- Level Win Condition ---
+  ?dots_count <= 0
+    // Next level (or win if last)
+    pac_next_level()
+
+// --- Draw Function ---
+func pac_draw()
+  ?pac_state = "menu"
+    return
+
+  ?pac_state ! "playing" & pac_state ! "game_over" & pac_state ! "win"
+    return
+
+  for y = 0 .. map_h - 1
+    for x = 0 .. map_w - 1
+      var char
+      char = map_grid[y][x]
+      var col = #FFFFFF
+      ?char = "█"
+        col = #000058
+      :?char = "."
+        char = "·"
+      :?char = "O"
+        col = #d1d1b8a9
+      // Hide tunnel symbol
+      :?char = "#"
+        char = " "
+      canvas.Set(x, y, col, char)
+
+  // Draw Cherry
+  ?cherry_state = 1
+    canvas.Set(cherry_x, cherry_y, #862020, "♂")
+
+  // Draw Apple
+  ?apple_state = 1
+    canvas.Set(9, 11, #FF0000, "ó")
+
+  // Draw Pac-Man
+  var p_frame = totaltime % 12
+  var is_closed = p_frame < 6
+  var p_char
+  
+  // Right
+  ?is_closed
+    p_char = "("
+  :
+    p_char = "<"
+
+  // Left
+  ?pac_dx = -1
+    ?is_closed
+      p_char = ")"
+    :
+      p_char = ">"
+
+  // Up
+  ?pac_dy = -1
+    ?is_closed
+      p_char = "U"
+    :
+      p_char = "V"
+
+  // Down
+  ?pac_dy = 1
+    ?is_closed
+      p_char = "Ω"
+    :
+      p_char = "n"
+
+  canvas.Set(pac_x, pac_y, #FFFF00, p_char)
+
+  // Draw Ghosts
+  for i = 0 .. ghosts.Count() - 1
+    var g = ghosts[i]
+    var char = "B"
+    ?i = 1
+      char = "P"
+    :?i = 2
+      char = "I"
+    :?i = 3
+      char = "C"
+    var col = g[4]
+    ?scared_timer > 0
+      col = #5555FF
+    canvas.Set(g[0], g[1], col, char)
+
+// --- Utility Functions ---
+func pac_check_collisions()
+  for i = 0 .. ghosts.Count() - 1
+    var g = ghosts[i]
+    ?g[0] = pac_x & g[1] = pac_y
+      ?scared_timer > 0
+        // Eat ghost
+        score += 200
+        txt_score.text = "Score: " + score
+        // Send ghost home
+        g.Emplace(0, 9)
+        g.Emplace(1, 9)
+        g.Emplace(6, 120) // Respawn time
+      :
+        // Hit ghost (lose life)
+        lives--
+        txt_lives.text = "Lives: " + lives
+        ?lives > 0
+          pac_reset_level()
+        :
+          pac_state = "game_over"
+          DrawEndScreen()
+        return true
+  return false
+
+func pac_move_entity(ex, ey, edx, edy)
+  var nx = ex + edx
+  var ny = ey + edy
+  
+  ?map_grid[ny][nx] = "-" & ex = pac_x & ey = pac_y
+    return null
+
+  // --- TUNNEL LOGIC ---
+  // Check if target tile is tunnel "#"
+  ?map_grid[ny][nx] = "#"
+    // Left tunnel (<10) -> Right (17)
+    ?nx < 10
+      nx = 17
+    : // Right tunnel -> Left (1)
+      nx = 1
+  
+  // Safety: don't exit map if tunnels off
+  ?nx < 0 | nx >= map_w
+    return null
+
+  var cell = map_grid[ny][nx]
+  ?cell = "█"
+    return null // Hit wall
+  return [nx, ny]
+
+func pac_reset_level()
+  pac_x = 9
+  pac_y = 15
+  pac_dx = 0
+  pac_dy = 0
+  pac_next_dx = 0
+  pac_next_dy = 0
+  scared_timer = 0
+  cherry_state = 0 // Hide cherry if active on death
+  apple_state = 0
+
+  ?lives = 1
+    apple_state = 1
+    apple_timer = 600
+  
+  // Dynamic calculation: Higher level = faster exit (less wait)
+  var level_factor = current_level - 1
+  var t
+
+  var g
+  // Reset positions and timers
+  g = ghosts[0]
+  g.Emplace(0, 8) 
+  g.Emplace(1, 9)
+  g.Emplace(6, 0)
+
+  g = ghosts[1]
+  g.Emplace(0, 10)
+  g.Emplace(1, 9)
+  t = 60 - (level_factor * 5) // Pinky reduces 5 frames/level
+  ?t < 0
+    t = 0
+  g.Emplace(6, t) 
+  
+  g = ghosts[2]
+  g.Emplace(0, 9)
+  g.Emplace(1, 8)
+  t = 180 - (level_factor * 15) // Inky reduces 15 frames/level
+  ?t < 0
+    t = 0
+  g.Emplace(6, t)
+  
+  g = ghosts[3]
+  g.Emplace(0, 9)
+  g.Emplace(1, 9)
+  t = 360 - (level_factor * 30) // Clyde reduces 30 frames/level
+  ?t < 0
+    t = 0
+  g.Emplace(6, t)
+  
+  move_timer = 0 // Pause before resume
+
+func pac_next_level()
+  // If last level, win game.
+  ?current_level >= max_levels
+    pac_state = "win"
+    DrawEndScreen()
+    return
+
+  current_level++
+  
+  // Repopulate dots
+  dots_count = 0
+  var lines = string.Split(map_data, "\n")
+  for y = 0 .. lines.Count() - 1
+    var row_str = lines[y]
+    for x = 0 .. string.Size(row_str) - 1
+      var char = string.Sub(row_str, x, 1)
+      map_grid[y].Emplace(x, char) // Reset the cell
+      ?char = "." | char = "O"
+        dots_count++
+
+  // Reset Pac-Man and Ghosts to starting positions
+  pac_reset_level()
+  
+  // Update level display
+  txt_level.text = "Level: " + current_level
+  txt_level.color = color.Random()
+  
+  // Brief pause to let the player get ready
+  move_timer = 0
+
+// --- Main Loop and Load Logic ---
+var initialized = 0
+
+// Ensure script only runs at waterfall.
+?initialized = 0
+  ?loc ! waterfall
+    initialized = -1
+
+// Game runs only if initialized.
+?initialized = 0
+  disable pause
+  disable hud
+  disable loadout print
+  ?!pac_initialized
+    pac_initialized = true
+    DrawMenu()
+
+  pac_update()
+
+  pac_draw()
