@@ -98,7 +98,7 @@ func SetLang()
     s_triple = "¡COMBO TRIPLO!"
     s_pair = "¡PAR! +15"
     s_lose = "MAIS SORTE NA PRÓXIMA"
-    s_dang = "AH, QUE PENA!"
+    s_dang = "AH, QUE DROGA"
     s_reset = "REINICIAR"
     s_cant_stop = "NÃO CONSIGO PARAR DE GANHAR!"
 
