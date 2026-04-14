@@ -1,5 +1,4 @@
 // Piedra Papel Tijera de Dos Manos + Ruleta de la Muerte
-// Autor: Gemini Code Assist
 //
 // Descripción:
 // Juegas Piedra Papel o Tijera pero eligiendo 2 manos al principio.
@@ -8,7 +7,7 @@
 // Cada vez que alguien sobrevive, la ruleta añade una "bala" extra.
 //
 // Uso:
-// import Games/RPSRoulette
+// import RPSRoulette
 
 var state = 0 
 // Estados:
