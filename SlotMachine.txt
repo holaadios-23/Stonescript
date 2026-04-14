@@ -1,5 +1,5 @@
-// SLOT MACHINE - TRAGAPERRAS PRO
-// Autor: Gemini Code Assist
+// SLOT MACHINE
+// Autor: Hibye
 
 var initialized = 0
 
