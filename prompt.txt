@@ -30,3 +30,9 @@ Actúa como un experto en software engineering y especialista en Stonescript par
       disable loadout print
       // Aquí va el código del juego
     ```
+11. Salida y Cierre: Para permitir que el jugador abandone el minijuego o la zona, usa exclusivamente `loc.Leave()`. Es la forma oficial de "salir al mapa" desde un script. Ejemplo: `CreateButton("X",0,0,3,3,top_right,top_right,exitgame)`.
+12. Limpieza de UI: Es obligatorio usar `ui.Clear()` antes de redibujar una interfaz completa o cambiar radicalmente de estado (ej: de "Menú" a "Juego"). Los objetos de UI persisten en memoria; si no se limpian, se acumularán y causarán lag o superposiciones.
+13. Formato de Colores: Los colores deben ser strings en hexadecimal (ej: `"#FF0000"`) o constantes precedidas por `#` (ej: `#red`). Al concatenar colores dinámicos, asegúrate de no duplicar el símbolo `#`.
+14. Manejo de Strings Largos: Para el arte ASCII, usa bloques `ascii / asciiend`. Si necesitas concatenar variables dentro de un string de UI, usa el operador `+`. No uses `\n` dentro de botones, ya que no procesan saltos de línea.
+15. Referencias de Objetos: Cuando crees un componente de UI (como un botón o texto), guarda su referencia en una variable para modificar sus propiedades (`.text`, `.color`, `.visible`) en el frame actual sin tener que recrear el objeto.
+16. Modularidad y Helpers: Para mantener el código de los minijuegos limpio y eficiente, se deben utilizar funciones de ayuda para la creación de elementos de UI. Las funciones estándar (CreateButton, createtext, Createbg, Createpanel) están centralizadas en `Funciones.txt`. Úsalas mediante `import` o copiándolas para asegurar la consistencia visual y técnica en todos tus proyectos.
