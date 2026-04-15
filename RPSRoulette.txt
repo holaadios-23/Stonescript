@@ -6,8 +6,16 @@
 // El perdedor debe girar una ruleta mortal.
 // Cada vez que alguien sobrevive, la ruleta añade una "bala" extra.
 //
-// Uso:
-// import RPSRoulette
+
+var initialized = 0
+?initialized = 0
+  ?!(loc = "waterfall")
+    initialized = -1
+?initialized = 0
+  disable pause
+  disable hud
+  disable loadout print
+  initialized = 1
 
 var state = 0 
 // Estados:
@@ -18,16 +26,19 @@ var state = 0
 // 4: Ruleta Girando
 // 5: Fin del Juego (Muerte)
 
+var testMode = 0 // 0: Juego normal, 1: Previsualización de arte
 var pHand = [-1, -1] // 0:Piedra, 1:Papel, 2:Tijera
 var eHand = [-1, -1]
 var pFinal = -1
 var eFinal = -1
+var roundResult = 0 // 0:Empate, 1:Gana Jugador, -1:Gana Enemigo
 var pickCount = 0
 
 // Configuración Ruleta
 var bullets = 1
 var maxBullets = 8 // Probabilidad x/8
 var victim = 0 // 0:Jugador, 1:Enemigo
+var roll = 0
 
 var timer = 0
 var animFrame = 0
@@ -41,11 +52,16 @@ var btnScissors
 var btnKeep1
 var btnKeep2
 var btnReset
+var btnPreview
 
 // Símbolos y Textos
 var sRock = "O"
 var sPaper = "[]"
 var sScissors = "8<"
+// Símbolo de bala cargada (Rojo)
+var bld = "[color=#FF0000]•[/color]"
+// Símbolo de cámara vacía
+var emp = " "
 
 func GetSymbol(id)
   ?id = 0
@@ -58,18 +74,23 @@ func GetSymbol(id)
 
 func GetName(id)
   ?id = 0
-    return "Piedra"
+    return "Rock"
   ?id = 1
-    return "Papel"
+    return "Paper"
   ?id = 2
-    return "Tijera"
+    return "Scissors"
   return "?"
 
 // --- Funciones de Lógica ---
 
 func Init()
+  var r0
+  r0 = rng % 3
+  var r1
+  r1 = rng % 3
   state = 1
-  pHand = [-1, -1]
+  pHand.Emplace(0, -1)
+  pHand.Emplace(1, -1)
   pickCount = 0
   bullets = 1
   DrawUI()
@@ -81,16 +102,34 @@ func PickSymbol(id)
   ?pickCount = 0
     pHand[0] = id
     pickCount = 1
-    txtInfo.text = "Elige tu 2da mano"
+    txtInfo.text = "Choose your 2nd hand"
   :
     pHand[1] = id
     pickCount = 2
-    // IA del Enemigo: Elige 2 manos al azar
-    eHand[0] = rng % 3
-    eHand[1] = rng % 3
+    var r0 = rng % 3
+    var r1 = rng % 3
+    eHand.Emplace(0, r0)
+    eHand.Emplace(1, r1)
     state = 2
-    txtInfo.text = "¡Elige con cuál quedarte!"
+    txtInfo.text = "Choose which one to keep!"
     DrawUI()
+
+// --- Funciones de Test ---
+func StartPreview()
+  state = 4
+  testMode = 1
+  bullets = 1
+  DrawUI()
+
+func NextBullet()
+  bullets++
+  ?bullets > 8
+    bullets = 1
+  DrawUI()
+
+func StopPreview()
+  testMode = 0
+  Init()
 
 // Wrappers para los botones (SetPressed requiere función sin argumentos)
 func PickRock()
@@ -107,7 +146,7 @@ func KeepHand(idx)
     pFinal = pHand[1]
   
   // IA Enemigo: Elige una mano al azar para quedarse
-  ?rng % 2 = 0
+  ? (rng % 2) = 0
     eFinal = eHand[0]
   :
     eFinal = eHand[1]
@@ -123,47 +162,53 @@ func Resolve()
   state = 3
   DrawUI()
   
-  var res = 0 // 0:Empate, 1:Gana Jugador, -1:Gana Enemigo
-  
   ?pFinal = eFinal
-    res = 0
+    roundResult = 0
   :?pFinal = 0 & eFinal = 2 // Piedra vs Tijera
-    res = 1
+    roundResult = 1
   :?pFinal = 1 & eFinal = 0 // Papel vs Piedra
-    res = 1
+    roundResult = 1
   :?pFinal = 2 & eFinal = 1 // Tijera vs Papel
-    res = 1
+    roundResult = 1
   :
-    res = -1
+    roundResult = -1
     
-  ?res = 0
-    txtInfo.text = "¡EMPATE! Repitiendo ronda..."
+  ?roundResult = 0
+    txtInfo.text = "DRAW! Repeating round..."
     timer = 45
-  :?res = 1
-    txtInfo.text = "¡GANASTE! El enemigo gira la ruleta..."
+  :?roundResult = 1
+    txtInfo.text = "YOU WIN! Enemy spins the wheel..."
     victim = 1
     timer = 60
   :
-    txtInfo.text = "¡PERDISTE! Debes girar la ruleta..."
+    roundResult = -1
+    txtInfo.text = "YOU LOSE! You spin the wheel..."
     victim = 0
     timer = 60
 
 func Update()
+  ?!(initialized = 1)
+    return
   ?state = 3 // Esperando leer el resultado
     timer--
     ?timer <= 0
-      ?txtInfo.text = "EMPATE"
+      ?roundResult = 0
         state = 1
-        pHand = [-1, -1]
+        pHand.Emplace(0, -1)
+        pHand.Emplace(1, -1)
         pickCount = 0
         DrawUI()
       :
         state = 4
         timer = 60 // Tiempo de giro de ruleta
+        roll = rng % maxBullets
         DrawUI()
 
   ?state = 4 // Ruleta Girando
+    ?testMode = 1
+      return
     timer--
+    DrawUI()
     animFrame = (animFrame + 1) % 4
     var spinText = "|"
     ?animFrame = 1
@@ -173,19 +218,18 @@ func Update()
     ?animFrame = 3
       spinText = "\\"
       
-    var vName = "JUGADOR"
+    var vName = "PLAYER"
     ?victim = 1
-      vName = "ENEMIGO"
+      vName = "ENEMY"
       
-    txtInfo.text = vName + " GIRANDO... " + spinText + "\nRiesgo Actual: " + bullets + "/" + maxBullets
+    txtInfo.text = vName + " SPINNING... " + spinText + "\nCurrent Risk: " + bullets + "/" + maxBullets
     
     ?timer <= 0
       // Resultado Ruleta
-      var roll = rng % maxBullets
       ?roll < bullets
         // Muerte
         state = 5
-        txtInfo.text = vName + " HA MUERTO.\nFin del Juego."
+        txtInfo.text = vName + " HAS DIED.\nGame Over."
         DrawUI()
       :
         // Vive
@@ -193,132 +237,305 @@ func Update()
         ?bullets >= maxBullets
           bullets = maxBullets - 1
         state = 1
-        pHand = [-1, -1]
+        pHand.Emplace(0, -1)
+        pHand.Emplace(1, -1)
         pickCount = 0
-        txtInfo.text = vName + " SOBREVIVIÓ.\nEl riesgo aumenta (+1 Bala)."
+        txtInfo.text = vName + " SURVIVED.\nRisk increases (+1 Bullet)."
         DrawUI()
 
 // --- UI ---
 
 func DrawUI()
   ui.Clear()
+  var sw
+  sw = screen.w
+  var sh
+  sh = screen.h
   rootPanel = ui.AddPanel()
-  rootPanel.w = screen.w
-  rootPanel.h = screen.h
+  rootPanel.w = sw
+  rootPanel.h = sh
   rootPanel.color = #222222
   
   txtInfo = ui.AddText()
-  txtInfo.x = 0
-  txtInfo.y = 2
-  txtInfo.w = screen.w
+  txtInfo.x = 0 // Pos: Centrado X
+  txtInfo.y = 2 // Pos: Y=2 (Arriba)
+  txtInfo.w = sw
   txtInfo.align = center
-  txtInfo.text = "Piedra Papel Tijera (2 Manos)"
   rootPanel.Add(txtInfo)
   
   ?state = 1
-    txtInfo.text = "Elige mano " + (pickCount + 1) + "/2"
+    txtInfo.text = "Choose hand " + (pickCount + 1) + "/2"
     
+    var bw
+
     btnRock = ui.AddButton()
-    btnRock.text = sRock + " Piedra"
-    btnRock.x = 5
-		btnRock.y = 6
-		btnRock.w = 10
+    btnRock.text = sRock + " Rock"
+    btnRock.x = 5 // Pos: X=5
+    btnRock.y = 6 // Pos: Y=6
+    bw = string.Size(btnRock.text) + 4
+    btnRock.w = bw
 		btnRock.h = 3
     btnRock.SetPressed(PickRock)
     rootPanel.Add(btnRock)
     
     btnPaper = ui.AddButton()
-    btnPaper.text = sPaper + " Papel"
-    btnPaper.x = 16
-		btnPaper.y = 6
-		btnPaper.w = 10
+    btnPaper.text = sPaper + " Paper"
+    btnPaper.x = 17 // Pos: X ajustado para evitar solapamiento
+    btnPaper.y = 6  // Pos: Y=6
+    bw = string.Size(btnPaper.text) + 4
+    btnPaper.w = bw
 		btnPaper.h = 3
     btnPaper.SetPressed(PickPaper)
     rootPanel.Add(btnPaper)
     
     btnScissors = ui.AddButton()
-    btnScissors.text = sScissors + " Tijera"
-    btnScissors.x = 27
-		btnScissors.y = 6
-		btnScissors.w = 10
+    btnScissors.text = sScissors + " Scissors"
+    btnScissors.x = 31 // Pos: X ajustado para el nuevo ancho
+    btnScissors.y = 6  // Pos: Y=6
+    bw = string.Size(btnScissors.text) + 4
+    btnScissors.w = bw
 		btnScissors.h = 3
     btnScissors.SetPressed(PickScissors)
     rootPanel.Add(btnScissors)
     
     ?pickCount > 0
       var sel = ui.AddText()
-      sel.text = "Mano 1: " + GetName(pHand[0])
-      sel.x = 15
-		  sel.y = 10
+      sel.text = "Hand 1: " + GetName(pHand[0])
+      sel.x = 15 // Pos: X=15
+      sel.y = 10 // Pos: Y=10
       rootPanel.Add(sel)
 
-  ?state = 2
+/* 
+    // Botón en comentarios por si se necesita depurar el arte de nuevo
+    btnPreview = ui.AddButton()
+    btnPreview.text = "Art Preview"
+    btnPreview.x = 14
+    btnPreview.y = 13
+    var bpw
+    bpw = string.Size(btnPreview.text) + 4
+    btnPreview.w = bpw
+    btnPreview.h = 3
+    btnPreview.SetPressed(StartPreview)
+    rootPanel.Add(btnPreview)
+*/
+
+  :?state = 2
     var tE = ui.AddText()
-    tE.text = "Enemigo tiene:\n" + GetSymbol(eHand[0]) + "  " + GetSymbol(eHand[1])
+    tE.text = "Enemy has:\n" + GetSymbol(eHand[0]) + "  " + GetSymbol(eHand[1])
     tE.align = center
-		tE.y = 5
-		tE.w = screen.w
+    tE.y = 5 // Pos: Y=5 (Info Enemigo)
+    tE.w = sw
     rootPanel.Add(tE)
     
     var tP = ui.AddText()
-    tP.text = "Tus manos (Elige una para jugar):"
+    tP.text = "Your hands (Choose one to play):"
     tP.align = center
-		tP.y = 9
-		tP.w = screen.w
+    tP.y = 9 // Pos: Y=9 (Instrucción)
+    tP.w = sw
     rootPanel.Add(tP)
     
+    var bw2
+
     btnKeep1 = ui.AddButton()
-    btnKeep1.text = GetSymbol(pHand[0]) + "\n" + GetName(pHand[0])
-    btnKeep1.x = 10
-		btnKeep1.y = 11
-		btnKeep1.w = 8
-		btnKeep1.h = 4
+    btnKeep1.text = GetSymbol(pHand[0]) + " " + GetName(pHand[0])
+    btnKeep1.x = 8 // Pos: X Ajustado
+    btnKeep1.y = 11 // Pos: Y=11
+    bw2 = string.Size(btnKeep1.text) + 4
+    btnKeep1.w = bw2
+		btnKeep1.h = 3
     btnKeep1.SetPressed(Keep1)
     rootPanel.Add(btnKeep1)
     
     btnKeep2 = ui.AddButton()
-    btnKeep2.text = GetSymbol(pHand[1]) + "\n" + GetName(pHand[1])
-    btnKeep2.x = 24
-		btnKeep2.y = 11
-		btnKeep2.w = 8
-		btnKeep2.h = 4
+    btnKeep2.text = GetSymbol(pHand[1]) + " " + GetName(pHand[1])
+    btnKeep2.x = 24 // Pos: X
+    btnKeep2.y = 11 // Pos: Y=11
+    bw2 = string.Size(btnKeep2.text) + 4
+    btnKeep2.w = bw2
+		btnKeep2.h = 3
     btnKeep2.SetPressed(Keep2)
     rootPanel.Add(btnKeep2)
 
-  ?state = 3
+  :?state = 3
     var resTxt = ui.AddText()
-    resTxt.text = "Tú: " + GetName(pFinal) + " vs " + GetName(eFinal) + " :Enemigo"
+    resTxt.text = "You: " + GetName(pFinal) + " vs " + GetName(eFinal) + " :Enemy"
     resTxt.align = center
-		resTxt.y = 8
-		resTxt.w = screen.w
+    resTxt.y = 8 // Pos: Y=8 (Resultado Ronda)
+    resTxt.w = sw
     rootPanel.Add(resTxt)
 
-  ?state = 4
+  :?state = 4 | state = 5
     var rVisual = ui.AddText()
-    rVisual.text = ascii
-   .---.
-  /  |  \
- |   *   |
-  \  |  /
-   '---'
-asciiend
-    rVisual.x = 18
-		rVisual.y = 6
-		rVisual.color = #red
-    rootPanel.Add(rVisual)
+    
+    // Selección de Arte según nivel de balas (Riesgo)
+    var drawBullets
+    drawBullets = bullets
+    
+    // Variables para las 8 recámaras
+    var v1
+    var v2
+    var v3
+    var v4
+    var v5
+    var v6
+    var v7
+    var v8
+    v1 = emp
+    v2 = emp
+    v3 = emp
+    v4 = emp
+    v5 = emp
+    v6 = emp
+    v7 = emp
+    v8 = emp
 
-  ?state = 5
-    btnReset = ui.AddButton()
-    btnReset.text = "Reiniciar"
-    btnReset.x = 15
-		btnReset.y = 10
-		btnReset.w = 12
-		btnReset.h = 3
-    btnReset.SetPressed(Restart)
-    rootPanel.Add(btnReset)
+    // Llenamos según las balas actuales
+    ?drawBullets >= 1
+      v1 = bld
+    ?drawBullets >= 2
+      v2 = bld
+    ?drawBullets >= 3
+      v3 = bld
+    ?drawBullets >= 4
+      v4 = bld
+    ?drawBullets >= 5
+      v5 = bld
+    ?drawBullets >= 6
+      v6 = bld
+    ?drawBullets >= 7
+      v7 = bld
+    ?drawBullets >= 8
+      v8 = bld
+
+    // Indicador de giro (Punto Azul)
+    var sp
+    sp = roll
+    ?state = 4
+      ?timer > 0
+        sp = totaltime / 2
+        sp = sp % 8
+
+    var indicator
+    indicator = "[color=#0000FF].[/color]"
+
+    ?sp = 0
+      v1 = indicator
+    :?sp = 1
+      v2 = indicator
+    :?sp = 2
+      v3 = indicator
+    :?sp = 3
+      v4 = indicator
+    :?sp = 4
+      v5 = indicator
+    :?sp = 5
+      v6 = indicator
+    :?sp = 6
+      v7 = indicator
+    :
+      v8 = indicator
+
+    var cArt = ""
+    cArt = "  .─────.\n /" + v7 + "\\" + v8 + "|" + v1 + "/" + v2 + "\\ \n|───-*-───|\n \\" + v5 + "/" + v6 + "|" + v3 + "\\" + v4 + "/ \n  `─────´"
+
+    rVisual.text = cArt
+    rVisual.x = 15 // Pos: X Ajustado para centrar el cilindro
+    rVisual.y = 6  // Pos: Y=6
+    rVisual.w = 30
+    rootPanel.Add(rVisual)
+    
+    ?state = 5
+      btnReset = ui.AddButton()
+      btnReset.text = "Restart"
+      var brw
+      brw = string.Size(btnReset.text) + 4
+      btnReset.x = 15 // Pos: X=15
+      btnReset.y = 11 // Bajado un poco para no tapar la ruleta
+      btnReset.w = brw
+      btnReset.h = 3
+      btnReset.SetPressed(Restart)
+      rootPanel.Add(btnReset)
+
+    ?testMode = 1
+      txtInfo.text = "--- ART PREVIEW MODE ---"
+      var btnNext = ui.AddButton()
+      btnNext.text = "Next Phase (" + bullets + "/8)"
+      btnNext.x = 4
+      btnNext.y = 13
+      var bnw
+      bnw = string.Size(btnNext.text) + 4
+      btnNext.w = bnw
+      btnNext.h = 3
+      btnNext.SetPressed(NextBullet)
+      rootPanel.Add(btnNext)
+      
+      var btnBack = ui.AddButton()
+      btnBack.text = "Back"
+      btnBack.x = 28
+      btnBack.y = 13
+      btnBack.w = 8
+      btnBack.h = 3
+      btnBack.SetPressed(StopPreview)
+      rootPanel.Add(btnBack)
 
 // Bucle Principal
-?state = 0
+?state = 0 & initialized = 1
   Init()
 
-Update()
+?initialized = 1
+  Update()
+
+/*ruleta-ascii
+(a este dejarlo asi)
+##.─────.
+#/#\#|#/#\
+|───-*-───|
+#\#/#|#\#/
+##`─────´
+(usar script para remplazar # por otro simbolo y ponerlo de color)
+1/8
+  .─────.
+ / \ |#/ \
+|───-*-───|
+ \ / | \ /
+  `─────´
+
+2/8
+  .─────.
+ / \ |#/#\
+|───-*-───|
+ \ / | \ /
+  `─────´
+3/8
+  .─────.
+ / \ |#/#\
+|───-*-───|
+ \ / | \#/
+  `─────´
+4/8
+  .─────.
+ / \ |#/#\
+|───-*-───|
+ \ / |#\#/
+  `─────´
+5/8
+  .─────.
+ / \ |#/#\
+|───-*-───|
+ \ /#|#\#/
+  `─────´
+6/8
+  .─────.
+ / \ |#/#\
+|───-*-───|
+ \#/#|#\#/
+  `─────´
+7/8
+  .─────.
+ /#\ |#/#\
+|───-*-───|
+ \#/#|#\#/
+  `─────´
+8/8
+(aqui va el original pero que los # cambien a otro simbolo)
+*/
