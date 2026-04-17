@@ -1,0 +1,59 @@
+// BuffManager.txt
+// Módulo centralizado para la gestión de estados y pociones
+
+// IDs y nombres para la visualización general
+var ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
+var names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
+
+// Configuración específica de pociones para la barra de cooldown
+var potIds = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience"]
+var potMax = [180, 300, 300, 450, 600, 900]
+
+// Devuelve un string con todos los buffs activos
+func GetActiveString()
+  var s = ""
+  var count
+  count = ids.Count()
+  
+  for i = 0 .. count - 1
+    var tid
+    tid = ids[i]
+    var t_buff
+    t_buff = buffs.GetTime(tid)
+    
+    ?t_buff > 0
+      ?string.Size(s) > 0
+        s = s + " "
+      s = s + names[i]
+  return s
+
+// Devuelve info para la barra de poción: [nombre, tiempo_restante, tiempo_maximo]
+func GetCurrentPotionInfo()
+  var p_id = "none"
+  var p_time = 0
+  var p_max = 0
+  
+  var count
+  count = potIds.Count()
+  
+  // Buscamos la primera poción activa según prioridad del array
+  for i = 0 .. count - 1
+    var tid
+    tid = potIds[i]
+    var t
+    t = buffs.GetTime(tid)
+    
+    ?t > 0
+      p_id = tid
+      p_time = t
+      p_max = potMax[i]
+      break
+      
+  return [p_id, p_time, p_max]
+
+// Helper para formatear tiempo (Frames -> M:S:F)
+func Format(t)
+  var m = t / 1800
+  var s = (t / 30) % 60
+  var f = t % 30
+  return m + "m " + s + "s " + f + "f"
