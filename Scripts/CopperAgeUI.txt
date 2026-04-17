@@ -15,8 +15,6 @@ var fps_dps
 var playerinfo
 var lp = 0
 
-var ui_initialized = false
-var txt_buff_status
 
 // Map item IDs to their max cooldown in frames (inspired by ClickAbilities.txt)
 func GetMaxCD(id)
@@ -43,18 +41,6 @@ var sec_l = 0
 var hp_l = 0
 var dmg_l = []
 
-// Función de formateo de tiempo (Regla 6: Variables internas)
-func FormatLongTime(total_f)
-  var h
-  var m
-  var s
-  var f
-  h = total_f / 108000
-  m = (total_f / 1800) % 60
-  s = (total_f / 30) % 60
-  f = total_f % 30
-  return h + "h " + m + "m " + s + "s " + f + "f"
-
 // Updates FPS, DPS, and HPS every frame
 func UpdateStats()
  fps_c++
@@ -77,8 +63,9 @@ func UpdateStats()
   ?x > 0
    hps++
 
+
 // Helper to create text elements
-func createtext(texto, x, y, w, h, color, align)
+func createtext(texto, x, y, w, h, color)
  var t = ui.AddText()
  t.x = x
  t.y = y
@@ -86,7 +73,6 @@ func createtext(texto, x, y, w, h, color, align)
  t.h = h
  t.color = color
  t.text = texto
- t.align = align
  return t
 
 // Helper to create buttons
@@ -176,7 +162,6 @@ func ToggleUI()
   btn.text = "SHOW :3"
 
 // UI Initialization at start of location
-// Reset al inicio de cada loop o localización (Regla 9)
 ?loc.begin | loc.loop
  disable hud rp
  disable loadout print
@@ -193,7 +178,6 @@ func ToggleUI()
  infoPanel.w = 0
  infoPanel.h = 0
  infoPanel.visible = ui_visible
-  ui_initialized = false
 
  btn = CrearBoton("HIDE :3", 9, 3, ToggleUI)
  ?ui_visible
@@ -207,13 +191,6 @@ func ToggleUI()
  timetotal = createtext("", 5, -2, 100, 12, #FFFFFF)
  txt_element = createtext("", 5,4 , 100, 20, #FFFFFF)
  fps_dps = createtext("", 5, 1, 100, 12, #FFFFFF)
-// Inicialización de UI (Regla 12 y 15)
-?!ui_initialized
-  ui.Clear()
-  txt_buff_status = createtext("", -1, 1, 40, 1, "#FFD700", right)
-  txt_buff_status.anchor = top_right
-  txt_buff_status.dock = top_right
-  ui_initialized = true
 
  txt_cd = createtext("", 75, 12, 100, 12, #00A36C) 
  
@@ -221,9 +198,6 @@ func ToggleUI()
  panel.Add(btn)
  panel.Add(infoPanel)
  AddList(infoPanel, [itemRL, itemstats, foeinfo, timetotal, txt_cd, locinfo, txt_element, fps_dps, playerinfo])
-// Manejo de datos dinámicos (Regla 6: Declaración y asignación separadas)
-var b_time
-b_time = buffs.GetTime("strength")
 
 var ColourList = ["#91E60A","#A1DB04","#B1CE01","#C0C000","#CEB101","#DBA104","#E6910A","#EF8011","#F66F1A","#FC5F25","#FF4F32","#FF4040","#FF324F","#FC255F","#F61A6F","#EF1180","#E60A91","#DB04A1","#CE01B1","#C000C0","#B101CE","#A104DB","#910AE6","#8011EF","#6F1AF6","#5F25FC","#4F32FF","#4040FF","#324FFF","#255FFC","#1A6FF6","#1180EF","#0A91E6","#04A1DB","#01B1CE","#00C0C0","#01CEB1","#04DBA1","#0AE691","#11EF80","#1AF66F","#25FC5F","#32FF4F","#40FF40","#4FFF32","#5FFC25","#6FF61A","#80EF11","#91E60A"]
 
@@ -254,19 +228,20 @@ var ColourList = ["#91E60A","#A1DB04","#B1CE01","#C0C000","#CEB101","#DBA104","#
   locinfo.color = #FFFF00 // Amarillo si estás en el límite
  :
   locinfo.color = #00FF00 // Blanco por defecto
-
  playerinfo.color = #d915c5
  ?time % 15 = 0
   foeinfo.color = ColourList[rng % ColourList.Count()]
   txt_element.color = color.Random()
   timetotal.color = #rainff
- 
+ //button
  btn.x = screen.FromWorldX(pos.x) - 58
  btn.y = screen.FromWorldZ(pos.z - pos.y) - 18
  //other
  coldex++
  ?coldex >= ColourList.Count()
   coldex = 0
+
+
 /*
 >o-17,-3,#CB6D51,ascii
  ┌─┐   ┌─┐
@@ -314,12 +289,16 @@ var i = 0
 ?i >= copg.Count()
  i = 0
 
+
 ?ai.walking
  >o-17,-3,#CB6D51,@copg[i]@
+
 ?time % 25
  >o-14,-1,#4ec9b0,█#█
 :
  >o-14,-1,#4ec9b0,▄#▄
+
+?!ai.walking
  >o-17,-3,#CB6D51,ascii
 .─. ▄ .─.
 │#.-┴-.#│
@@ -332,4 +311,3 @@ asciiend
  >h-14,-1,#4ec9b0,█#█
  ?foe = phase & foe.hp < 0
   >h-14,-1,#4ec9b0,^#^
-  txt_buff_status.visible = false
