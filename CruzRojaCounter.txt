@@ -1,0 +1,48 @@
+// CruzRojaCounter.txt
+// Gestiona el estado de la "Cruz Roja" basado en el rendimiento de salud
+
+var loops_limpios = 0
+var tiene_cruz = false
+var recibio_dano = false
+var hp_inicio_loop = 0
+var hp_actual
+
+// --- Lógica de Transición de Nivel (Inicio y Loops) ---
+?loc.begin | loc.loop
+  // Si terminamos el nivel habiendo recibido daño
+  ?recibio_dano
+    loops_limpios = 0
+    tiene_cruz = true
+  :
+    // Si el loop fue exitoso y limpio, incrementamos el contador
+    loops_limpios++
+  
+  // Si alcanzamos los 20 loops, se quita la alerta
+  ?loops_limpios >= 20
+    tiene_cruz = false
+  
+  // Resetear el estado de daño para el nuevo nivel/loop
+  recibio_dano = false
+  hp_inicio_loop = hp
+
+// --- Monitorización de Salud en Tiempo Real ---
+// Según las reglas, asignamos valores dinámicos en líneas separadas
+hp_actual = hp
+
+?hp_actual < hp_inicio_loop
+  // Si la vida baja de lo que empezamos en este loop, marcamos daño
+  recibio_dano = true
+  // Reiniciamos el contador inmediatamente por si acaso
+  loops_limpios = 0
+
+// --- Visualización de Mensajes ---
+// Usamos coordenadas fijas para que no interfiera con otros elementos
+?tiene_cruz
+  // Mensaje de alerta en rojo si fallamos
+  >`0,2,#red,alerta cruz roja (@loops_limpios@/20)
+:?loops_limpios >= 20
+  // Mensaje de éxito en verde al cumplir el reto
+  >`0,2,#green,cruz roja quitada
+:
+  // Feedback opcional del progreso
+  >`0,2,#yellow,Progreso limpio: @loops_limpios@/20

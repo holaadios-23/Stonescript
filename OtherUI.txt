@@ -121,13 +121,6 @@ func createtext(text, x, y, w, h, color, align)
 func Color(c, t)
  return "[color=" + c + "]" + t + "[/color]"
 
-/*idea para el print de el AI: (asi debe salir en el juego, cada uno en la posicion que pongo en este comentario)
-AI
-->Enabled //cambia el color si esta activo o no, si se puede cambiar texto
-->Paused //cambia el color si esta activo o no, si se puede cambiar texto
-->Idle //cambia el color si esta activo o no, si se puede cambiar texto
-->Walking //cambia el color si esta activo o no, si se puede cambiar texto
-*/
 
 func setAI()
  var e
