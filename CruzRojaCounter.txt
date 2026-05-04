@@ -1,48 +1,57 @@
 // CruzRojaCounter.txt
-// Gestiona el estado de la "Cruz Roja" basado en el rendimiento de salud
+// Gestiona el estado de la "Cruz Roja" basado en el balance neto de HP (Wiki Logic)
 
-var loops_limpios = 0
-var tiene_cruz = false
-var recibio_dano = false
-var hp_inicio_loop = 0
-var hp_actual
+var secure = true
+var loop = 0
+var hp_loss = 0
+var hp_gain = 0
+var last_hp = 0
 
-// --- Lógica de Transición de Nivel (Inicio y Loops) ---
-?loc.begin | loc.loop
-  // Si terminamos el nivel habiendo recibido daño
-  ?recibio_dano
-    loops_limpios = 0
-    tiene_cruz = true
+?loc.begin
+  loop = 0
+  secure = true
+  hp_loss = 0
+  hp_gain = 0
+  last_hp = hp
+
+// --- Monitorización de balance de vida (Lógica de Cruz Roja) ---
+var current_hp
+current_hp = hp
+
+?current_hp < last_hp
+  var d
+  d = last_hp - current_hp
+  hp_loss = hp_loss + d
+:?current_hp > last_hp
+  var g
+  g = current_hp - last_hp
+  // Registramos curación (lifesteal, vigor, etc.)
+  hp_gain = hp_gain + g
+
+// Si el daño total supera a la sanación acumulada, la run se marca como fallida
+?hp_loss > hp_gain
+  secure = false
+  loop = 0
+
+last_hp = current_hp
+
+// --- Lógica al completar un Loop ---
+?loc.loop
+  ?secure
+    loop++
   :
-    // Si el loop fue exitoso y limpio, incrementamos el contador
-    loops_limpios++
+    loop = 0
   
-  // Si alcanzamos los 20 loops, se quita la alerta
-  ?loops_limpios >= 20
-    tiene_cruz = false
-  
-  // Resetear el estado de daño para el nuevo nivel/loop
-  recibio_dano = false
-  hp_inicio_loop = hp
-
-// --- Monitorización de Salud en Tiempo Real ---
-// Según las reglas, asignamos valores dinámicos en líneas separadas
-hp_actual = hp
-
-?hp_actual < hp_inicio_loop
-  // Si la vida baja de lo que empezamos en este loop, marcamos daño
-  recibio_dano = true
-  // Reiniciamos el contador inmediatamente por si acaso
-  loops_limpios = 0
+  // Resetear balance para la siguiente vuelta de Ouroboros
+  secure = true
+  hp_loss = 0
+  hp_gain = 0
+  last_hp = hp
 
 // --- Visualización de Mensajes ---
-// Usamos coordenadas fijas para que no interfiera con otros elementos
-?tiene_cruz
-  // Mensaje de alerta en rojo si fallamos
-  >`0,2,#red,alerta cruz roja (@loops_limpios@/20)
-:?loops_limpios >= 20
-  // Mensaje de éxito en verde al cumplir el reto
-  >`0,2,#green,cruz roja quitada
+?loop >= 20
+  >`0,10,#green,cruz roja quitada
+:?secure = false | loop = 0
+  >`0,10,#red,alerta cruz roja (@loop@/20)
 :
-  // Feedback opcional del progreso
-  >`0,2,#yellow,Progreso limpio: @loops_limpios@/20
+  >`0,10,#yellow,Progreso limpio: @loop@/20

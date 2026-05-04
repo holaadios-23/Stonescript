@@ -12,66 +12,33 @@ func Equipelemt(lf)
   equipL sword ice
 
 ?loc = rocky
- ?LoopCount <=1
-  ?fd > 20
-   ?quar()
-    return
-   : 
-    equipR mask
-    equipL tr
-   ?pickup.distance < 8
-    equipL star
-  :?dash()
+ ?fd > 20
+  ?quar()
    return
-  :?fd < 9
-   ?foe = boss
-    equipL vigor sw
-    equipR mas
-    activate P
-   ?foe = phase1
-    equipL poison s
-    equipR mas
-   ?foe = phase2
-    Equipelemt("mask")
-   ?foe = phase3
-    ?igc("poison_staff")<=0 & ica() & armor > 8
-     equip poison staff
-     activate R
-    equipL poison sw
-    mask()
-    ?foe.state = 115 & foe.time > 54
-     equipL mind
- :
-  ?fd > 20
-   ?quar()
-    return
-   : 
-    equipR compound shield
-    equipL triskelion
-   ?pickup.distance < 8
-    equipL star
-  :?dash()
-   return
-  :?fd < 9
-   moon("poison sword","poison sword -shiny")
-   ?hp < maxhp
-    moon("vigor sword","vigor sword -shiny")
-   ?foe = phase1
-    Blade()
-   ?foe = phase2
-     ?foe = ice
-      equipL fire sword
-     :?foe = fire
-      equipL aether sword
-     :?foe = aether
-      equipL vigor sword
-     :?foe = vigor
-      equipL poison sword
-     :?foe = poison
-      equipL ice sword +21/21
-   ?foe = phase3
-    ?igc("poison_staff")<=0 & ica() & armor > 8
-     equip poison staff
-     activate R
-    mask()
-    heavy()
+  : 
+   equipR compound shield
+   equipL tr
+  ?pickup.distance < 8
+   equipL star
+ :?dash()
+  return
+ :?fd < 9
+  equipR aether sword
+  equipR aether sword +21/17
+  ?foe = boss
+   equipL vigor sw
+   equipR mas
+   activate P
+  ?foe = phase1
+   equipL poison s
+   equipR ice sword
+  ?foe = phase2
+   Equipelemt("moon")
+  ?foe = phase3
+   ?igc("poison_staff")<=0 & ica() & armor > 8
+    equip poison staff
+    activate R
+   equipL poison sw
+   mask()
+   ?foe.state = 115 & foe.time > 54
+    equipL mind
