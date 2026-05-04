@@ -57,3 +57,24 @@ func Format(t)
   var s = (t / 30) % 60
   var f = t % 30
   return m + "m " + s + "s " + f + "f"
+
+/*
+como llamar a la funcion si estoy en lo correcto:
+GetActiveString() -> devuelve un string con los buffs activos separados por espacio
+
+Para mostrarlo en pantalla sobre el jugador:
+var misBuffs
+misBuffs = GetActiveString()
+>o0,-3,#green,@misBuffs@
+
+Explicación: o0,-3 centra el texto sobre la cabeza (X=0, Y=-3).
+
+Para llamar a GetCurrentPotionInfo():
+var pInfo
+pInfo = GetCurrentPotionInfo()
+?!(pInfo[0] = "none")
+  // Extraemos el tiempo del array (índice 1) para formatearlo
+  var fTime
+  fTime = Format(pInfo[1])
+  >o0,-4,#yellow,Poción: @pInfo[0]@ (@fTime@)
+*/
