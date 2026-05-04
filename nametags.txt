@@ -1,235 +1,205 @@
-// ============================================
-// EASTER EGGS SYSTEM - WEAPON NAMETAG DETECTOR
-// ============================================
-// Basado en videojuegos icónicos y referencias
-// Carga hats, pets, games y UI dinámicamente
-
 func CheckWeaponEasterEgg(hand)
-  var weaponName = ""
-  
-  // Obtener nombre del arma según la mano
-  ?hand = "left"
+  var weaponName = ＂＂
+  ?hand = ＂left＂
     weaponName = item.left.id
   :
     weaponName = item.right.id
-  
-  // ===== MINECRAFT =====
-  ?weaponName = "dragon"
+  ?weaponName = ＂dragon＂
     import Pets/Dragon
     import Hats/DragonHead
-  :?weaponName = "creeper"
+    return
+  ?weaponName = ＂creeper＂
     import Pets/SpringBuddy
-    >c0,-3,#lime, ░░░░
-    >c0,-2,#lime, ░▓░░
-    >c0,-1,#lime, ░░░░
-  
-  :?weaponName = "wither"
+    >c0,-3, ░░░░
+    >c0,-2, ░▓░░
+    >c0,-1, ░░░░
+    return
+  ?weaponName = ＂wither＂
     import Hats/SilentSkull
     import Hats/Skully
-  
-  :?weaponName = "enderman"
+    return
+  ?weaponName = ＂enderman＂
     import Hats/Dysanhead
-  
-  :?weaponName = "skeleton"
+    return
+  ?weaponName = ＂skeleton＂
     import Pets/Stonehead
     import Hats/Skully
-  
-  :?weaponName = "zombie"
+    return
+  ?weaponName = ＂zombie＂
     import Hats/Mughead
-  
-  // ===== THE LEGEND OF ZELDA =====
-  :?weaponName = "link"
+    return
+  ?weaponName = ＂link＂
     import Hats/TennaHat
     import Pets/Bird
-  
-  :?weaponName = "triforce"
+    return
+  ?weaponName = ＂triforce＂
     import UI/InfoFloat
-  
-  :?weaponName = "ganon"
+    return
+  ?weaponName = ＂ganon＂
     import Pets/Dracula
-  
-  // ===== SUPER MARIO =====
-  :?weaponName = "mario"
+    return
+  ?weaponName = ＂mario＂
     import Hats/CatHat
     import Pets/Mushroom
-  
-  :?weaponName = "bowser"
+    return
+  ?weaponName = ＂bowser＂
     import Pets/Dragon
     import Hats/DragonHead
-  
-  :?weaponName = "yoshi"
+    return
+  ?weaponName = ＂yoshi＂
     import Pets/Bird
-  
-  :?weaponName = "toad"
+    return
+  ?weaponName = ＂toad＂
     import Pets/Mushroom
     import Hats/MushroomHat
-  
-  // ===== PAC-MAN =====
-  :?weaponName = "pacman"
+    return
+  ?weaponName = ＂pacman＂
     import Games/Snake
-    import UI/BetterUI
-  
-  :?weaponName = "blinky"
+    return
+  ?weaponName = ＂blinky＂
     import Pets/Boo
-  
-  // ===== AMONG US / SPOOKY =====
-  :?weaponName = "among"
+    return
+  ?weaponName = ＂among＂
     import Hats/ReindeerHead
-    >c0,0,#red,Ⓧ IMPOSTOR DETECTED
-  
-  :?weaponName = "spooky"
+    >c0,0,#red,IMPOSTOR DETECTED
+    return
+  ?weaponName = ＂spooky＂
     import Hats/SilentSkull
     import Pets/Boo
     import Hats/WitchHat
-  
-  :?weaponName = "pumpkin"
+    return
+  ?weaponName = ＂pumpkin＂
     import Pets/JackOLantern
     import Hats/ShuffleHat
-  
-  // ===== HALLOWEEN/CHRISTMAS =====
-  :?weaponName = "santa"
+    return
+  ?weaponName = ＂santa＂
     import Hats/SantaHat
     import Pets/SnowBunny
-    import Pets/Reindeer
-  
-  :?weaponName = "reindeer"
+    return
+  ?weaponName = ＂reindeer＂
     import Hats/ReindeerHead
     import Pets/Snowman
-  
-  :?weaponName = "frosty"
+    return
+  ?weaponName = ＂frosty＂
     import Pets/Snowman
     import Hats/Helmet
-  
-  :?weaponName = "grinch"
+    return
+  ?weaponName = ＂grinch＂
     import Hats/WitchHat
-  
-  // ===== STARDEW VALLEY =====
-  :?weaponName = "farmer"
+    return
+  ?weaponName = ＂farmer＂
     import Hats/ChefHat
     import Pets/Bird
-  
-  :?weaponName = "abigail"
+    return
+  ?weaponName = ＂abigail＂
     import Pets/Snail
     import Hats/WitchHat
-  
-  // ===== TERRARIA =====
-  :?weaponName = "cthulhu"
+    return
+  ?weaponName = ＂cthulhu＂
     import Pets/Boo
     import Hats/Dysanhead
-  
-  :?weaponName = "slime"
+    return
+  ?weaponName = ＂slime＂
     import Pets/Mushroom
-  
-  // ===== HOLLOW KNIGHT =====
-  :?weaponName = "knight"
+    return
+  ?weaponName = ＂knight＂
     import Hats/Helmet
     import Pets/Spider
-  
-  :?weaponName = "hollow"
+    return
+  ?weaponName = ＂hollow＂
     import Hats/SilentSkull
-  
-  :?weaponName = "hornet"
+    return
+  ?weaponName = ＂hornet＂
     import Pets/Spider
-  
-  // ===== DARK SOULS =====
-  :?weaponName = "solaire"
+    return
+  ?weaponName = ＂solaire＂
     import Hats/Helmet
     import UI/ItemName
-  
-  :?weaponName = "pyromancer"
+    return
+  ?weaponName = ＂pyromancer＂
     import Hats/DiscoVisor
     import Games/Rhythm
-  
-  // ===== CYBERPUNK =====
-  :?weaponName = "cyberpunk"
+    return
+  ?weaponName = ＂cyberpunk＂
     import Hats/DiscoVisor
     import Hats/IroncladMask
-  
-  :?weaponName = "v"
+    return
+  ?weaponName = ＂v＂
     import Hats/NewWaveHat
-  
-  // ===== PIRATE =====
-  :?weaponName = "pirate"
+    return
+  ?weaponName = ＂pirate＂
     import Hats/PirateHat
-    import Pets/Parrot
     import UI/MiniMap
-  
-  :?weaponName = "davy"
+    return
+  ?weaponName = ＂davy＂
     import Hats/SilentSkull
     import Hats/PirateHat
-  
-  // ===== JESTER/CIRCUS =====
-  :?weaponName = "jester"
+    return
+  ?weaponName = ＂jester＂
     import Hats/JesterHat
     import Games/Simon
-  
-  :?weaponName = "clown"
+    return
+  ?weaponName = ＂clown＂
     import Hats/JesterHat
     import Pets/Bird
-  
-  // ===== WITCH/MAGIC =====
-  :?weaponName = "wizard"
+    return
+  ?weaponName = ＂wizard＂
     import Hats/WitchHat
     import Hats/RainbowWitch
-  
-  :?weaponName = "sorceress"
+    return
+  ?weaponName = ＂sorceress＂
     import Hats/RainbowWitch
     import UI/ClickAbilities
-  
-  // ===== CYBERSECURITY/TECH =====
-  :?weaponName = "glitch"
+    return
+  ?weaponName = ＂glitch＂
     import Hats/GlitchHead
     import UI/BetterText
-  
-  :?weaponName = "ai"
+    return
+  ?weaponName = ＂ai＂
     import Hats/DiscoVisor
     import Games/SSRPGIdle
-  
-  // ===== SPECIAL THEMES =====
-  :?weaponName = "disco"
+    return
+  ?weaponName = ＂disco＂
     import Hats/DiscoVisor
     import Games/Rhythm
-  
-  :?weaponName = "tropical"
+    return
+  ?weaponName = ＂tropical＂
     import Pets/Seagull
     import Hats/ShuffleHat
-  
-  :?weaponName = "forest"
+    return
+  ?weaponName = ＂forest＂
     import Hats/Treeman
     import Pets/Bird
-  
-  :?weaponName = "underwater"
+    return
+  ?weaponName = ＂underwater＂
     import Pets/Crab
     import Pets/Snail
-  
-  :?weaponName = "volcano"
+    return
+  ?weaponName = ＂volcano＂
     import Pets/Sun
     import Hats/DiscoVisor
-  
-  // ===== ANIMALS =====
-  :?weaponName = "bear"
+    return
+  ?weaponName = ＂bear＂
     import Pets/Bear
-  
-  :?weaponName = "wolf"
+    return
+  ?weaponName = ＂wolf＂
     import Pets/Dog
-  
-  :?weaponName = "spider"
+    return
+  ?weaponName = ＂spider＂
     import Pets/Spider
-  
-  :?weaponName = "snake"
+    return
+  ?weaponName = ＂snake＂
     import Pets/Snake
     import Games/Snake
-  
-  :?weaponName = "frog"
+    return
+  ?weaponName = ＂frog＂
     import Pets/Frog
     import Games/FrogJump
-  
-  :?weaponName = "bunny"
+    return
+  ?weaponName = ＂bunny＂
     import Pets/Bunny
     import Pets/SnowBunny
+    return
 
-// Ejecutar para ambas manos
-CheckWeaponEasterEgg("right")
-CheckWeaponEasterEgg("left")
-
->Loaded Easter Eggs System!
+CheckWeaponEasterEgg(＂right＂)
+CheckWeaponEasterEgg(＂left＂)
