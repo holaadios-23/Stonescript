@@ -1,6 +1,9 @@
 // Variables de control
 var ui_init = false
 var info_visible = false
+
+// Importamos el Rainbowifier para acceder a su lista de colores
+var rb = import Components/Rainbowifier
 var anim_timer = 0
 var anim_speed = 1 // Frames por caracter (1 = muy rápido, 3 = normal)
 var msg_player
@@ -307,16 +310,10 @@ func GetBuffString()
   var s = ""
   var b_ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
   var b_names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
-  // Paleta Prism de 6 puntos (Rojo, Amarillo, Verde, Cian, Azul, Magenta)
-  var p_clrs = ["#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF"]
-
   var count
   count = b_ids.Count()
-  
-  // Velocidad del flujo (menor es más rápido)
-  var speed = 12
-  var t_base
-  t_base = totaltime / speed
+  var clr_max
+  clr_max = rb.ColourList.Count()
 
   for i = 0 .. count - 1
     var id
@@ -325,24 +322,18 @@ func GetBuffString()
     t = buffs.GetTime(id)
     
     ?t > 0
-      // Lógica Prism: Interpolación circular entre los 6 colores
+      // Usamos el índice de la lista de Rainbowifier
+      // Sumamos 'i * 2' para que los colores se distribuyan entre los nombres
       var c_idx
-      c_idx = (t_base + i) % 6
-      var n_idx
-      n_idx = (c_idx + 1) % 6
-      
-      var ratio
-      ratio = (1.0 * (totaltime % speed)) / speed
-
-      var clr
-      clr = color.Lerp(p_clrs[c_idx], p_clrs[n_idx], ratio)
+      c_idx = (totaltime + i * 2) % clr_max
 
       var n
       n = b_names[i]
       
       ?string.Size(s) > 0
         s = s + " "
-      s = s + "[color=" + clr + "]" + n + "[/color]"
+      // Ya no necesitamos abrir el tag [color=] porque rb.ColourList ya lo tiene
+      s = s + rb.ColourList[c_idx] + n + "[/color]"
   return s
 
 func FormatTime(t)
