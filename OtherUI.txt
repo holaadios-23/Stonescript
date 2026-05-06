@@ -307,19 +307,16 @@ func GetBuffString()
   var s = ""
   var b_ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
   var b_names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
+  // Paleta Prism de 6 puntos (Rojo, Amarillo, Verde, Cian, Azul, Magenta)
+  var p_clrs = ["#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF"]
 
   var count
   count = b_ids.Count()
   
-  // Definimos un ciclo de 90 frames (3 segundos) para que sea lento
-  var cycle
-  cycle = totaltime % 90
-
-  var base_ratio
-  ?cycle > 45
-    base_ratio = 1.0 * (90 - cycle) / 45
-  :
-    base_ratio = 1.0 * cycle / 45
+  // Velocidad del flujo (menor es más rápido)
+  var speed = 12
+  var t_base
+  t_base = totaltime / speed
 
   for i = 0 .. count - 1
     var id
@@ -328,12 +325,17 @@ func GetBuffString()
     t = buffs.GetTime(id)
     
     ?t > 0
-      // Añadimos un pequeño offset (i * 0.1) para que no todos cambien a la vez
-      var final_ratio
-      final_ratio = (base_ratio + i * 0.1) % 1.0
+      // Lógica Prism: Interpolación circular entre los 6 colores
+      var c_idx
+      c_idx = (t_base + i) % 6
+      var n_idx
+      n_idx = (c_idx + 1) % 6
+      
+      var ratio
+      ratio = (1.0 * (totaltime % speed)) / speed
 
       var clr
-      clr = color.Lerp("#00FFFF", "#FF00FF", final_ratio)
+      clr = color.Lerp(p_clrs[c_idx], p_clrs[n_idx], ratio)
 
       var n
       n = b_names[i]
