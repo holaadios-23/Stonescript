@@ -9,12 +9,22 @@ var names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Cri
 var potIds = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience"]
 var potMax = [180, 300, 300, 450, 600, 900]
 
+// Paleta de colores para el efecto aleatorio
+var cList = ["#FF0000", "#00FF00", "#5555FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FFFFFF", "#FFA500", "#7FFF00", "#40E0D0"]
+var cCount = 10
+// Variable para almacenar el color aleatorio actual
+var rnd_c = "#FFFFFF"
+
 // Devuelve un string con todos los buffs activos
 func GetActiveString()
   var s = ""
   var count
   count = ids.Count()
   
+  // Actualizamos el color aleatorio cada 20 frames (0.6s aprox)
+  ?totaltime % 20 = 0
+    rnd_c = color.Random()
+
   for i = 0 .. count - 1
     var tid
     tid = ids[i]
@@ -22,9 +32,21 @@ func GetActiveString()
     t_buff = buffs.GetTime(tid)
     
     ?t_buff > 0
+      // Seleccionamos un color al azar de la lista
+      var t_slow
+      t_slow = totaltime / 20
+      var r
+      r = (t_slow + i) % cCount
+      var clr
+      clr = cList[r]
+      var n
+      n = names[i]
+      var clr
+      clr = rnd_c
+      
       ?string.Size(s) > 0
         s = s + " "
-      s = s + names[i]
+      s = s + "[color=" + clr + "]" + n + "[/color]"
   return s
 
 // Devuelve info para la barra de poción: [nombre, tiempo_restante, tiempo_maximo]

@@ -1,0 +1,56 @@
+// ButtonComparison.txt
+// Este script demuestra la diferencia entre crear botones manualmente
+// usando una función helper y crearlos dinámicamente mediante una lista (array).
+
+var ui_init = false
+
+// --- 1. Definición de Funciones de Acción ---
+
+func AccionManual()
+  > Has pulsado un botón creado manualmente.
+
+func AccionLista(btn)
+  // Al usar listas, la función recibe el objeto 'btn' automáticamente.
+  // Esto nos permite saber exactamente qué elemento se pulsó.
+  > Seleccionado desde la lista: @btn.text@
+
+// --- 2. Función Helper para crear botones ---
+// Esta función encapsula el estilo para que ambos métodos se vean igual.
+func MyButtonHelper(txt, px, py, act)
+  var b = ui.AddButton()
+  b.text = txt
+  b.x = px
+  b.y = py
+  b.w = 15
+  b.h = 3
+  b.SetPressed(act)
+  return b
+
+// --- 3. Bucle de Inicialización ---
+
+?loc.begin | loc.loop
+  ui.Clear()
+  ui_init = false
+
+?!ui_init
+  // --- MÉTODO A: USANDO FUNCIONES (Manual) ---
+  // Aquí llamamos a la función por cada botón que queremos.
+  // Es rígido: si quieres 10 botones, escribes 10 líneas.
+  MyButtonHelper("Boton F1", -15, 2, AccionManual)
+  MyButtonHelper("Boton F2", -15, 6, AccionManual)
+
+  // --- MÉTODO B: USANDO LISTAS (Arrays) ---
+  // Aquí definimos los datos primero y luego iteramos.
+  // Es flexible: si añades un elemento al array, el botón se crea solo.
+  var botonesArray = ["Boton L1", "Boton L2", "Boton L3"]
+  var y_offset = 2
+
+  for nombre : botonesArray
+    // Usamos la misma función helper, pero dentro de un bucle.
+    MyButtonHelper(nombre, 5, y_offset, AccionLista)
+    // Incrementamos la Y para que no se solapen
+    y_offset = y_offset + 4
+
+  ui_init = true
+
+// Fin del archivo

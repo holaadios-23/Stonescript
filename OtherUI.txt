@@ -85,7 +85,7 @@ func ToggleInfo()
   txt_map.text = ""
   pnl_foe.visible = true
   txt_foe.text = ""
-  txt_buffs.visible = true
+  //txt_buffs.visible = true
  :
   // Si cerramos, ocultamos el panel
   pnl_player.visible = false
@@ -94,7 +94,7 @@ func ToggleInfo()
   txt_player.text = ""
   txt_map.text = ""
   txt_foe.text = ""
-  txt_buffs.visible = false
+  //txt_buffs.visible = false
 
 func Createpanel(x,y,w,h,c,s,v)
  var panel = ui.AddPanel()
@@ -215,8 +215,8 @@ func InitUI()
  txt_player = createtext("", -15, 14, 70, 4, #00FFFF, left)
  
  // TEXTO DE BUFFS (Separado del panel principal)
- txt_buffs = createtext("", -5, 12, 70, 4, #00FF00, left)
- txt_buffs.visible = false
+ txt_buffs = createtext("", -10, -3, 70, 4, #00FF00, left)
+ txt_buffs.visible = true
  
  // 2. Panel Mapa (Estilo Dorado Antiguo) - Centro
  pnl_map = Createpanel(-4, -12, 80, 3, #443300, 1, false)
@@ -229,11 +229,11 @@ func InitUI()
  // --- Barra de Cooldown con texto "---" ---
  // Usamos la función 'createtext' que ya tienes.
  // Se posicionará arriba en el centro de la pantalla.
- cd_text_bar = createtext("", -30, -7, 22, 1, #FFFF00, 1) // 1 = Alineación centrada
+ cd_text_bar = createtext("", -27, -6, 22, 1, #FFFF00, 1) // 1 = Alineación centrada
  cd_text_bar.visible = false 
  cdpotion()
 
- ai_text = createtext("", -15, -3, 60, 6, #FFFFFF, left)
+ ai_text = createtext("", -15, -1, 60, 6, #FFFFFF, left)
 
  ui_init = true
 
@@ -304,126 +304,44 @@ func cdpotion()
   return ["none", 0]
 
 func GetBuffString()
- var s = ""
- 
- // --- Pociones ---
- ?buffs.GetTime("lucky") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Lcky"
- 
- ?buffs.GetTime("berserk") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Bers"
- 
- ?buffs.GetTime("strength") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Str"
- 
- ?buffs.GetTime("invisibility") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Inv"
- 
- ?buffs.GetTime("vampiric") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Vamp"
- 
- ?buffs.GetTime("experience") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Exp"
- 
- // --- Armas y Otros ---
- ?buffs.GetTime("buff_damage") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Dmg"
+  var s = ""
+  var b_ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
+  var b_names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
+
+  var count
+  count = b_ids.Count()
   
- ?buffs.GetTime("bardiche_buff_aoe_chance") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "B.AoE"
- 
- ?buffs.GetTime("bardiche_buff_crit_chance") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "B.Crit"
+  // Definimos un ciclo de 90 frames (3 segundos) para que sea lento
+  var cycle
+  cycle = totaltime % 90
 
- ?buffs.GetTime("bardiche_buff_crit_mult") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "B.Mult"
+  var base_ratio
+  ?cycle > 45
+    base_ratio = 1.0 * (90 - cycle) / 45
+  :
+    base_ratio = 1.0 * cycle / 45
 
- ?buffs.GetTime("bardiche_buff_move_speed") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "B.Spd"
+  for i = 0 .. count - 1
+    var id
+    id = b_ids[i]
+    var t
+    t = buffs.GetTime(id)
+    
+    ?t > 0
+      // Añadimos un pequeño offset (i * 0.1) para que no todos cambien a la vez
+      var final_ratio
+      final_ratio = (base_ratio + i * 0.1) % 1.0
 
- ?buffs.GetTime("shovel_damage") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Shvl"
+      var clr
+      clr = color.Lerp("#00FFFF", "#FF00FF", final_ratio)
 
- ?buffs.GetTime("quarterstaff_buff_attack_speed") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Q.Spd"
-
- ?buffs.GetTime("quarterstaff_buff_stun") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Q.Stn"
-
- ?buffs.GetTime("pick_pocket") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Pick"
-
- ?buffs.GetTime("smite") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Smt"
-
- ?buffs.GetTime("buff_staff_berserk") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "S.Brk"
-
- ?buffs.GetTime("buff_staff_protection") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "S.Pro"
-
- ?buffs.GetTime("buff_range") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Rng"
-
- ?buffs.GetTime("buff_bullet_width") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Wdth"
-
- ?buffs.GetTime("buff_infernal") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Infr"
-
- ?buffs.GetTime("buff_inf_speed") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "I.Spd"
-
- ?buffs.GetTime("buff_frozen") > 0
-  ?string.Size(s) > 0
-   s += " "
-  s += "Frzn"
-
- return s
+      var n
+      n = b_names[i]
+      
+      ?string.Size(s) > 0
+        s = s + " "
+      s = s + "[color=" + clr + "]" + n + "[/color]"
+  return s
 
 func FormatTime(t)
  return t/1800 + "m " + (t/30)%60 + "s " + t%30 + "f"// -> in frames: " + t
