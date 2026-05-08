@@ -136,3 +136,58 @@ fps_frame_count++
   fps_last_sec = time.second
 
 >`0,0,#FFFFFF,FPS: @fps_current_value@
+
+/*use of the shinypp*/
+
+// --- Ejemplo 1: Hello World con Brillo ---
+var s_hello = new SSRPG_Code/Misc/Shinypp/Main
+var init_hello = false
+var txt_hello
+
+?loc.begin | loc.loop
+  init_hello = false
+
+?!init_hello
+  txt_hello = ui.AddText("HELLO WORLD")
+  txt_hello.dock = "center_center"
+  txt_hello.anchor = "center_center"
+  txt_hello.y = -5
+  s_hello.InitShinyEffect(txt_hello)
+  // Ajustamos los lienzos para que sigan el anclaje central
+  for c_h : s_hello.canvii
+    c_h.dock = "center_center"
+    c_h.anchor = "center_center"
+  init_hello = true
+
+s_hello.Main("1")
+
+// --- Ejemplo 2: Arte ASCII con Brillo ---
+var s_art = new SSRPG_Code/Misc/Shinypp/Main
+var init_art = false
+var txt_art
+
+?!init_art
+  var sword_art = ascii
+  ### /| ________________
+  O|===|________________/
+  ### \|
+  asciiend
+
+  txt_art = ui.AddText(sword_art)
+  // Centramos el arte ASCII
+  txt_art.dock = "center_center"
+  txt_art.anchor = "center_center"
+  txt_art.x = 0
+  txt_art.y = 5 
+  txt_art.color = #DDDDDD
+  
+  s_art.InitShinyEffect(txt_art)
+
+  // PARCHE: Ajustamos los lienzos internos para que coincidan con el dock central
+  for c_a : s_art.canvii
+    c_a.dock = "center_center"
+    c_a.anchor = "center_center"
+
+  init_art = true
+
+s_art.Main("1")
