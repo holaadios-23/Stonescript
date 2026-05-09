@@ -1,4 +1,5 @@
-          (
+ /*
+         (
        ==== 
    _D _|  |
     |(_)---
@@ -9,23 +10,9 @@
 __/ =| O  
  |/-=|___
   \_/       \
+*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var t = ascii
+var miAnim = ui.AddAnim(ascii
 
        ====        _______                 ___________
    _D _|  |_______/       \___I_I_____===__|_________|
@@ -92,4 +79,29 @@ __/ =| O  |=-~0=====0=====0=====0\ ____Y___________|__|_________________________
 __/ =| O  |=-0=====0=====0=====0 \ ____Y___________|__|__________________________|_
  |/-=|____|=    ||    ||    ||    |_____/~\___/          |_D__D__D_|  |_D__D__D_|
   \_/       \__/  \__/  \__/  \__/      \_/               \_/   \_/    \_/   \_/
-asciiend
+asciiend)
+
+/*
+// Crear la animación
+var miAnim = ui.AddAnim(ascii
+#(^_^)#
+asciiend)
+*/
+
+// Configurar propiedades
+miAnim.x = 0        // Posición inicial X
+miAnim.duration = 60 // Duración en frames (ajusta según necesites)
+miAnim.loop = false  // No se repite
+miAnim.Play()        // Iniciar animación
+
+// Animar el movimiento de x=20 a x=-30
+var frame = 0
+var startX = 20
+var endX = -30
+var totalFrames = 60
+
+frame++
+?frame <= totalFrames
+  miAnim.x = startX + (endX - startX) * (frame / totalFrames)
+:
+  frame = 0
