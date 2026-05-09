@@ -90,7 +90,7 @@ asciiend)
 
 // Configurar propiedades
 miAnim.x = 0        // Posición inicial X
-miAnim.duration = 60 // Duración en frames (ajusta según necesites)
+miAnim.duration = 20 // Duración en frames (ajusta según necesites)
 miAnim.loop = false  // No se repite
 miAnim.Play()        // Iniciar animación
 
@@ -98,7 +98,7 @@ miAnim.Play()        // Iniciar animación
 var frame = 0
 var startX = 20
 var endX = -30
-var totalFrames = 60
+var totalFrames = 20
 
 frame++
 ?frame <= totalFrames
