@@ -12,10 +12,6 @@ __/ =| O  |=-~~\  /~~\  /~~\  /~~\ ____Y___________|__|_________________________
 asciiend
 */
 
-
-    
-
-
 var panel
 panel = UI.AddPanel()
 panel.w = screen.w
@@ -85,21 +81,21 @@ var maxFrameRuedas = 5
   trenAnim.loop = true
   trenAnim.playOnStart = true
   trenAnim.duration = 150
-  trenAnim.anchor = top_left
-  trenAnim.dock = top_left
+  trenAnim.anchor = center_center
+  trenAnim.dock = center_center
   trenAnim.color = #FFFFFF
   trenAnim.gamePause = true        // Se pausa cuando el juego se pausa
-  panel.Add(trenAnim)
+  //panel.Add(trenAnim)
 
   // ===== CONFIGURACIÓN DE LAS RUEDAS =====
   ruedasAnim.loop = true
   ruedasAnim.playOnStart = true
   ruedasAnim.duration = 12
-  ruedasAnim.anchor = top_left
-  ruedasAnim.dock = top_left
+  ruedasAnim.anchor = center_center
+  ruedasAnim.dock = center_center
   ruedasAnim.color = #FFFFFF
   ruedasAnim.gamePause = true       // Se pausa cuando el juego se pausa
-  panel.Add(ruedasAnim)
+  //panel.Add(ruedasAnim)
   
   // Reiniciar variables
   trainX = screenWidth + trainWidth
@@ -110,9 +106,9 @@ var maxFrameRuedas = 5
   ?time % 1 = 0
     // Movimiento de ambos (tren y ruedas)
     trainX = trainX - speed
-    trenAnim.x = trainX
-    ruedasAnim.x = trainX + 12       // Alinea l
-    ruedasAnim.y = 7                // Posición 
+    trenAnim.x = trainX + 18
+    ruedasAnim.x = trainX     // Alinea l
+    ruedasAnim.y = 3               // Posición 
     
     // Animar las ruedas
     frameCounter++
@@ -126,3 +122,6 @@ var maxFrameRuedas = 5
     ?trainX < -trainWidth
       trainX = screenWidth + trainWidth
       ruedasAnim.frame = 0
+
+panel.Add(trenAnim)
+panel.Add(ruedasAnim)
