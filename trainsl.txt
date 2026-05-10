@@ -99,7 +99,7 @@ var maxFrameRuedas = 5
   ruedasAnim.dock = top_left
   ruedasAnim.color = #FFFFFF
   ruedasAnim.gamePause = true       // Se pausa cuando el juego se pausa
-  p
+  pa
   
   // Reiniciar variables
   trainX = screenWidth + trainWidth
