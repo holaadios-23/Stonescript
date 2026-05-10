@@ -89,7 +89,7 @@ var maxFrameRuedas = 5
   trenAnim.dock = top_left
   trenAnim.color = #FFFFFF
   trenAnim.gamePause = true        // Se pausa cuando el juego se pausa
-  trenAnim.Add
+  trenAnim.Add(
 
   // ===== CONFIGURACIÓN DE LAS RUEDAS =====
   ruedasAnim.loop = true
