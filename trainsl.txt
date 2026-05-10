@@ -71,10 +71,9 @@ var miAnim = ui.AddAnim(ascii
    \_/       \__/  \__/  \__/  \__/      \_/               \_/   \_/    \_/   \_/
 asciiend)
 
-// Configuración de la animación
 miAnim.loop = true                  // Se repite infinitamente
 miAnim.playOnStart = true           // Comienza automáticamente
-miAnim.duration = 150               // Duración en frames (ajusta para velocidad)
+miAnim.duration = 150               // Duración en frames
 miAnim.anchor = top_left
 miAnim.dock = top_left
 miAnim.color = #FFFFFF
@@ -87,10 +86,20 @@ var trainWidth = 115                // Ancho del tren ASCII
 var trainX = screenWidth + trainWidth
 var speed = 2                       // Píxeles por frame
 
+// Variables para animar las ruedas
+var frameCounter = 0
+
 ?time % 1 = 0
   trainX = trainX - speed
   miAnim.x = trainX
   
+  // Animar las ruedas
+  frameCounter++
+  ?frameCounter >= 3                // Ajusta este número para cambiar velocidad de ruedas
+    miAnim.NextFrame()
+    frameCounter = 0
+  
   // Reiniciar cuando sale completamente de pantalla
   ?trainX < -trainWidth
     trainX = screenWidth + trainWidth
+    miAnim.frame = 0
