@@ -20,48 +20,102 @@ panel.h = screen.h
 
 // ===== TREN SIN RUEDAS =====
 var train = ascii
-        ====        _______                 ___________
-    _D _|  |_______/       \___I_I_____===__|_________|
-     |(_)---  |   H\_______/  |   |        =|_______|      _______________________A  
-    /      |  |   H  |  |     |   |         ||_| |_||     _|                      |
-   |       |  |   H  |__--------------------| ［___］ |   =|                        |
-   | _________|___H__/__|_____/［］［］~\_______|       |   -|                        |
-   |/ |    |-----------I__   I ［］［］ ［］  D   |=======|____|________________________|_
- __/ =| O  |####################### ____Y___________|__|__________________________|_
-  |/-=|____|########################_____/~\___/          |_D__D__D_|  |_D__D__D_|
-   \_/       ######################      \_/               \_/   \_/    \_/   \_/
+#######====########_______#################___________
+   _D _|  |_______/#######\___I_I_____===__|_________|
+    |(_)---  |   H\_______/  |   |########=|_______|      _______________________A  
+   /      |  |   H  |  |     |   |#########||_| |_||     _|######################|
+  |#######|  |   H  |__--------------------| [___] |   =|######################  |
+  | _________|___H__/__|_____/[][]~\_______|#######|   -|######################  |
+  |/ |    |-----------I__   I [][] []  D   |=======|____|________________________|_
+__/ =| O  |####################### ____Y___________|__|__________________________|_
+ |/-=|____|########################_____/~\___/##########|_D__D__D_|  |_D__D__D_|
+  \_/#############################      \_/###########    \_/   \_/    \_/   \_/
 asciiend
 
 // ===== RUEDAS ANIMADAS =====
 var whels = ascii
-=-~~\  /~~\  /~~\  /~~\
-=O=====O=====O=====O   |
- \__/  \__/  \__/  \__/
+=-~~\##/~~\##/~~\##/~~\
+=O=====O=====O=====O###|
+#\__/##\__/##\__/##\__/
 %%
-=-~~\  /~~\  /~~\  /~~\
-=    ||    ||    ||    |
- \O=====O=====O=====O_/
+=-~~\##/~~\##/~~\##/~~\
+=####||####||####||####|
+#\O=====O=====O=====O_/
 %%
-=-~~\  /~~\  /~~\  /~~\ 
-=    ||    ||    ||    |
- \_O=====O=====O=====O/
+=-~~\##/~~\##/~~\##/~~\ 
+=####||####||####||####|
+#\_O=====O=====O=====O/
 %%
-=-~~\  /~~\  /~~\  /~~\
-=   O=====O=====O=====O|
- \__/  \__/  \__/  \__/
+=-~~\##/~~\##/~~\##/~~\
+=###O=====O=====O=====O|
+#\__/##\__/##\__/##\__/
 %%
-=-~0=====0=====0=====0\
-=    ||    ||    ||    |
- \__/  \__/  \__/  \__/
+=-~O=====O=====O=====O\
+=####||####||####||####|
+#\__/##\__/##\__/##\__/
 %%
-=-0=====0=====0=====0 \
-=    ||    ||    ||    |
- \__/  \__/  \__/  \__/
+=-O=====O=====O=====O \
+=####||####||####||####|
+#\__/##\__/##\__/##\__/
 asciiend
+
+var smoke = ascii
+###########(   )
+#######(@@@@)
+     (   )
+  
+   (@@@)
+%%
+###########(@@@)
+#######(    )
+     (@@@@)
+  
+   (   )
+%%
+##########(   )
+      (@@@@)
+     (   )
+  
+  (@@@)
+%%
+##########(@@@)
+      (    )
+    (@@@@)
+  
+  (   )
+%%
+#########(   )
+     (@@@@)
+   (   )
+  
+ (@@@)
+%%
+#########(@@@)
+     (    )
+   (@@@@)
+  
+ (   )
+%%
+########(   )
+    (@@@@)
+  (   )
+  
+(@@@)
+%%
+########(@@@)
+    (    )
+  (@@@@)
+  
+(   )
+
+asciiend
+
+
 
 // ===== CREAR ANIMACIONES =====
 var trenAnim
 var ruedasAnim
+var humoAnim
 
 // ===== VARIABLES DE MOVIMIENTO =====
 var screenWidth = screen.w
@@ -71,12 +125,13 @@ var speed = 2
 
 var frameCounter = 0
 var maxFrameRuedas = 5
+var maxFrameHumo = 7
 
 // ===== INICIALIZAR EN ENTRADA =====
 ?loc.begin
   trenAnim = ui.AddAnim(train)
   ruedasAnim = ui.AddAnim(whels)
-  
+  humoAnim = ui.AddAnim(smoke)
   // ===== CONFIGURACIÓN DEL TREN =====
   trenAnim.loop = true
   trenAnim.playOnStart = true
@@ -84,8 +139,7 @@ var maxFrameRuedas = 5
   trenAnim.anchor = center_center
   trenAnim.dock = center_center
   trenAnim.color = #FFFFFF
-  trenAnim.gamePause = true        // Se pausa cuando el juego se pausa
-  //panel.Add(trenAnim)
+  trenAnim.gamePause = true// Se pausa cuando el juego se pausa
 
   // ===== CONFIGURACIÓN DE LAS RUEDAS =====
   ruedasAnim.loop = true
@@ -95,20 +149,29 @@ var maxFrameRuedas = 5
   ruedasAnim.dock = center_center
   ruedasAnim.color = #FFFFFF
   ruedasAnim.gamePause = true       // Se pausa cuando el juego se pausa
-  //panel.Add(ruedasAnim)
+  
+  humoAnim.loop = true
+  humoAnim.playOnStart = true
+  humoAnim.duration = 12
+  humoAnim.anchor = center_center
+  humoAnim.dock = center_center
+  humoAnim.color = #FFFFFF
+  humoAnim.gamePause = true 
   
   // Reiniciar variables
   trainX = screenWidth + trainWidth
   frameCounter = 0
 
 // ===== MOVIMIENTO Y ANIMACIÓN =====
-?trenAnim & ruedasAnim
+?trenAnim & ruedasAnim & humoAnim
   ?time % 1 = 0
     // Movimiento de ambos (tren y ruedas)
     trainX = trainX - speed
     trenAnim.x = trainX + 18
-    ruedasAnim.x = trainX     // Alinea l
-    ruedasAnim.y = 3               // Posición 
+    ruedasAnim.x = trainX   // Alinea l
+    ruedasAnim.y = 3// Posición 
+    humoAnim.x = trainX - 7
+    humoAnim.y = -8
     
     // Animar las ruedas
     frameCounter++
@@ -116,12 +179,19 @@ var maxFrameRuedas = 5
       ruedasAnim.frame = ruedasAnim.frame + 1
       ?ruedasAnim.frame > maxFrameRuedas
         ruedasAnim.frame = 0
+      
+      humoAnim.frame = humoAnim.frame + 1
+      ?humoAnim.frame > maxFrameHumo
+        humoAnim.frame = 0
+      
       frameCounter = 0
     
     // Reiniciar cuando sale de pantalla
     ?trainX < -trainWidth
       trainX = screenWidth + trainWidth
       ruedasAnim.frame = 0
+      humoAnim.frame = 0
 
 panel.Add(trenAnim)
 panel.Add(ruedasAnim)
+panel.Add(humoAnim)
