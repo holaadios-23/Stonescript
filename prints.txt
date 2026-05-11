@@ -1,68 +1,156 @@
->`0,1,left: @item.left@\nright: @item.right@
->`0,3,left state: @item.left.state@
-^ right state: @item.right.state@
->`0,4,screen: @screen.i@
-var incre = 0
+var ui_init = false
+var txt_output
+
+?loc.begin | loc.loop
+  ui_init = false
+
+func Color(c, t)
+  return "[color=" + c + "]" + t + "[/color]"
+
+var loops = 0
 ?loc.loop
- incre++
->`0,5,foe state: @foe.state@
-^ time: @foe.time@ distance: @foe.distance@
->`0,6,foe @foe.id@ hp: @foe.hp@
->`0,7,foes: @foe.count@
->`0,8,stars: @loc.stars@
->`0,9,loop: @incre@
-?loc.gp > MaxGP()
- >`0,10,#FF0000,GP @loc.gp@/@MaxGP()@
-:?loc.gp = MaxGP()
- >`0,10,#FFFF00,GP @loc.gp@/@MaxGP()@
-:
- >`0,10,#00FF00,GP @loc.gp@/@MaxGP()@
->`0,11,total time @totaltime/1800@m
-^ @(totaltime/30)%60@s => @totaltime@f\n
-^best time: @loc.bestTime/1800@m 
-^@(loc.bestTime/30)%60@s => @loc.bestTime@f
-var element = "stone"
-var eledebil = "stone"
-?foe = ice
- element = "ice"
- eledebil = "fire"
-:?foe = poison
- element = "poison"
- eledebil = "ice"
-:?foe = vigor
- element = "vigor"
- eledebil = "poison"
-:?foe = aether
- element = "aether"
- eledebil = "vigor"
-:?foe = fire
- element = "fire"
- eledebil = "aether"
->`0,13,@element@ is weak to @eledebil@
->`0,14,@buffs.string@
->`0,15,#7d5926,armor: @armor@.@armor.f@
+  loops++
 
 func MaxGP()
- var gp = 999999
- ?loc.stars = 5
-  gp = 150
- ?loc.stars = 10
-  gp = 200
- ?loc = ＂rocky＂
-  gp = gp * 3
- return gp
- 
->c-27,12,#rainbow, Player: @player.name@
+  ?loc.stars = 15 | loc.stars = 20
+    return "inf"
+  var gp
+  ?loc.stars = 5
+    gp = 150
+  :?loc.stars = 10
+    gp = 200
+  :
+    return -1
+  ?loc = "rocky"
+    gp = gp * 3
+  return gp
 
-/*
->o-14,0,#FFD700,ascii
-#,###-.-'\
-#)`,#\##ω#)
-(##;#/`###\
-`-·#(__`,|_)
-asciiend
->h-7,1,#4ec9b0,o#°
-var fr = 7
-?time / fr % 7 = 4
- >h-7,1,#4ec9b0,°#o
-*/
+func GetAIStatus()
+  var e
+  e = ai.enabled
+  var p
+  p = ai.paused
+  var i
+  i = ai.idle
+  var w
+  w = ai.walking
+  var res
+  res = ""
+  var c_e
+  c_e = "#FF0000"
+  ?e
+    c_e = "#00FF00"
+  res = Color(c_e, "Enabled")
+  var c_p
+  c_p = "#00FF00"
+  ?!(p)
+    c_p = "#FF0000"
+  res = res + "\n" + Color(c_p, "Paused")
+  var c_i
+  c_i = "#FF0000"
+  ?i
+    c_i = "#00FF00"
+  res = res + "\n" + Color(c_i, "Idle")
+  var c_w
+  c_w = "#FF0000"
+  ?w
+    c_w = "#00FF00"
+  res = res + "\n" + Color(c_w, "Walking")
+  return res
+
+func FormatTime(t)
+  var m
+  m = t / 1800
+  var s
+  s = (t / 30) % 60
+  var f
+  f = t % 30
+  return m + "m:" + s + "s:" + f + "f"
+
+?!ui_init
+  ui.Clear()
+  txt_output = ui.AddText("")
+  // Posición ajustada para que sea visible (centro-izquierda)
+  txt_output.x =  55
+  txt_output.y =  11
+  txt_output.w = 200
+  txt_output.h = 45
+  ui_init = true
+
+var ai_s
+ai_s = GetAIStatus()
+
+var b_ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
+var b_names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
+var b_str
+b_str = Color("#00FF00", "buffs: ")
+var bt
+var bft
+for i = 0 .. b_ids.Count() - 1
+  var bid = b_ids[i]
+  bt = buffs.GetTime(bid)
+  ?bt > 0
+    bft = FormatTime(bt)
+    var bname = b_names[i]
+    b_str = b_str + bname + " (" + bft + ") "
+
+var d_ids = ["poison", "fire", "frozen", "webbed", "stunned", "fear", "blind", "debuff_dot", "debuff_attack_speed", "debuff_yeti_chill", "debuff_chill", "debuff_move_speed", "puff_debuff_damage", "pallas_phase2_debuff", "spider_debuff_damage", "debuff_duration_damage", "debuff_damage", "dysangelos_debuff_damage", "debuff_darkness_move_speed", "debuff_darkness_range", "debuff_darkness_accuracy", "debuff_weapon_swap_lock"]
+var d_names = ["Psn", "Fire", "Frz", "Web", "Stun", "Fear", "Blind", "DoT", "Chl", "ChlY", "ChlC", "MSlw", "HBlk", "Pals", "WknS", "WknD", "Wkn", "WknA", "D.MS", "D.Rg", "D.Ac", "Lock"]
+var d_str
+d_str = Color("#FF0000", "debuffs: ")
+var dt
+var dft
+
+for i = 0 .. d_ids.Count() - 1
+  var did = d_ids[i]
+  dt = debuffs.GetTime(did)
+  ?dt > 0
+    dft = FormatTime(dt)
+    var dname = d_names[i]
+    d_str = d_str + dname + " (" + dft + ") "
+
+var m_gp
+m_gp = MaxGP()
+var c_gp
+c_gp = loc.gp
+var gp_ratio
+gp_ratio = 0
+?!(m_gp = -1) & !(m_gp = "inf")
+  gp_ratio = 1.0 * c_gp / m_gp
+var gp_color
+gp_color = "#00FFFF"
+?!(m_gp = -1) & !(m_gp = "inf")
+  gp_color = color.Lerp("#00FFFF", "#FF00FF", gp_ratio)
+:?m_gp = "inf"
+  gp_color = "#FFD700"
+var s_val
+s_val = loc.stars
+var tt
+tt = totaltime
+var ftt
+ftt = FormatTime(tt)
+var fs
+fs = foe.state
+var ft
+ft = foe.time
+var fd
+fd = foe.distance
+var h
+h = hp
+var a
+a = armor
+var af
+af = armor.f
+
+var final_txt
+final_txt = Color("#FFD700", "totaltime: ") + ftt
+?!(m_gp = -1)
+  final_txt = final_txt + "\n" + Color(gp_color, "GP: " + c_gp + "/" + m_gp)
+final_txt = final_txt + "\n" + Color("#FFFF00", "Stars: ") + s_val
+final_txt = final_txt + "\n" + Color("#FF00FF", "runs: ") + loops
+final_txt = final_txt + "\n" + ai_s
+final_txt = final_txt + "\n" + Color("#FF5555", "foe state: ") + fs + "\n" + Color("#FF5555", "time: ") + ft + "\n" + Color("#FF5555", "distance: ") + fd
+final_txt = final_txt + "\n\n\n\n\n\n\n\n" + b_str
+final_txt = final_txt + "\n\n" + d_str
+final_txt = final_txt + "\n\n" + Color("#FF5555", "hp: ") + h + Color("#00FFFF", " armor: ") + a + "." + af
+txt_output.text = final_txt

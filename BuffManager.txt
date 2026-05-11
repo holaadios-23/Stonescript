@@ -9,6 +9,10 @@ var names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Cri
 var potIds = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience"]
 var potMax = [180, 300, 300, 450, 600, 900]
 
+// IDs y nombres para Debuffs (Estados negativos)
+var debuffIds = ["poison", "fire", "frozen", "webbed", "stunned", "fear", "blind", "debuff_dot", "debuff_attack_speed", "debuff_yeti_chill", "debuff_chill", "debuff_move_speed", "puff_debuff_damage", "pallas_phase2_debuff", "spider_debuff_damage", "debuff_duration_damage", "debuff_damage", "dysangelos_debuff_damage", "debuff_darkness_move_speed", "debuff_darkness_range", "debuff_darkness_accuracy", "debuff_weapon_swap_lock"]
+var debuffNames = ["Psn", "Fire", "Frz", "Web", "Stun", "Fear", "Blind", "DoT", "Chl", "ChlY", "ChlC", "MSlw", "HBlk", "Pals", "WknS", "WknD", "Wkn", "WknA", "D.MS", "D.Rg", "D.Ac", "Lock"]
+
 // Paleta de colores para el efecto aleatorio
 var cList = ["#FF0000", "#00FF00", "#5555FF", "#FFFF00", "#00FFFF", "#FF00FF", "#FFFFFF", "#FFA500", "#7FFF00", "#40E0D0"]
 var cCount = 10
@@ -47,6 +51,29 @@ func GetActiveString()
       ?string.Size(s) > 0
         s = s + " "
       s = s + "[color=" + clr + "]" + n + "[/color]"
+  return s
+
+// Devuelve un string con todos los debuffs activos y su tiempo
+func GetActiveDebuffsString()
+  var s = ""
+  var count
+  count = debuffIds.Count()
+  
+  for i = 0 .. count - 1
+    var tid
+    tid = debuffIds[i]
+    var t_deb
+    t_deb = debuffs.GetTime(tid)
+    
+    ?t_deb > 0
+      var dft
+      dft = Format(t_deb)
+      var n
+      n = debuffNames[i]
+      
+      ?string.Size(s) > 0
+        s = s + " "
+      s = s + "[color=#FF5555]" + n + " (" + dft + ")[/color]"
   return s
 
 // Devuelve info para la barra de poción: [nombre, tiempo_restante, tiempo_maximo]
@@ -99,4 +126,22 @@ pInfo = GetCurrentPotionInfo()
   var fTime
   fTime = Format(pInfo[1])
   >o0,-4,#yellow,Poción: @pInfo[0]@ (@fTime@)
+*/
+
+/*
+Cómo llamar a las funciones restantes (sin import):
+GetActiveDebuffsString() -> devuelve un string con los debuffs y su tiempo
+
+Para mostrar los debuffs en el HUD:
+var listaDebuffs
+listaDebuffs = GetActiveDebuffsString()
+>o0,-5,#red,@listaDebuffs@
+
+Para usar la función Format(t) individualmente:
+var tLabel
+tLabel = Format(totaltime)
+>0,0,#white,Run Time: @tLabel@
+
+Nota: Sin usar 'import', invocas la función directamente por su nombre
+siempre que el código esté presente en el mismo archivo.
 */
