@@ -1,7 +1,10 @@
 /*
+ |\---/|
+ | o_o |
+  \_^_/
 Cat 
 by holadios_ (Discord)
-v1.0
+v2.0 (Optimized with ui.AddAnim)
 description:
 Cat with changes of humor and that holds your
 refer to scooty
@@ -9,42 +12,56 @@ usage
 to change the code (your reffer to scotty) put
 this in the mindstone:
  var mycode = import Cat
- mycode.reffer = ＂ABCD＂ <--- here your code
+ mycode.reffer = "ABCD" <--- here your code
 */
 
-var reffer
-reffer = ＂CODE＂
-var randomcolor = #white
-var cat = ［ascii
+var reffer = "CODE"
+var initialized = 0
+var catAnim
+
+// --- Bloque de Inicialización Única ---
+?initialized = 0
+  ui.Clear()
+  // Definimos la hoja de sprites usando %% como separador de frames
+  var spriteSheet = ascii
 ##_###/\##/\    
 ###)#(  °w° )
 ##(##/=    =\     
 ###\(        )
-asciiend,ascii
+%%
 ######/\  /\
 _####(  •w• )
 #`.##/-    -\
 ###\(        )
-asciiend,ascii
+%%
 ######/\  /\
 #####(  -_- )
 -._##/_    _\
 ###\(        )
-asciiend,ascii
+%%
 ######/\  /\
 #####(  ;-; )
 #####/\    /\
 -´¯\(        )
-asciiend］
+asciiend
+  // Creamos la animación y configuramos propiedades base
+  catAnim = ui.AddAnim(spriteSheet)
+  catAnim.x = -25
+  catAnim.y = 0
+  // 68 frames totales (17 frames por cada uno de los 4 estados)
+  catAnim.duration = 68
+  catAnim.loop = true
+  catAnim.Play()
+  initialized = 1
 
-var i = 0
->o-25,0,#red,@cat［i］@
-?totaltime % 17 = 0
- i++
-?i >= cat.Count()
- i = 0
+// --- Lógica de Actualización Dinámica (Frame a Frame) ---
 
-?time%2 = 0
- randomcolor = color.Random()
+// Regla 6: Declaración y asignación separada para valores dinámicos
+var c
+c = color.Random()
 
->o-18,2,@randomcolor@,@reffer@
+// Regla 15: Modificar propiedad del objeto mediante su referencia
+catAnim.color = c
+
+// Mostramos el código de referencia con el mismo color dinámico
+>o-18,2,@c@,@reffer@
