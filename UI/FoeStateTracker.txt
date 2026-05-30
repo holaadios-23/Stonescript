@@ -1,5 +1,5 @@
 /*///////////////////////////////////
-FoeStateTracker v5.10001
+FoeStateTracker v5.2
 
 This is a simple script that will list the last 5 previous enemy states and times.
 You can adjust the number of states that are retained with the settings button.
@@ -57,10 +57,11 @@ var StyleInvisible = ui.AddStyle("
 ^###
 ^###")
 
-func Create_UI_Element(_UI,X,Y,W)
+func Create_UI_Element(_UI,X,Y,W,H)
   _UI.x = X
   _UI.y = Y
   _UI.w = W
+  _UI.h = H
   _UI.dock = top_left
   _UI.anchor = top_left
   return _UI
@@ -77,34 +78,31 @@ var z
   init = false
   EventRecorder.Clear()
   StateList.Clear()
-  StateListBox = Create_UI_Element( ui.AddPanel(), XSet,YSet,9)
-  StateListBox.h = 2+MaxListLength
+  StateListBox = Create_UI_Element( ui.AddPanel(), XSet,YSet,9,2+MaxListLength)
 
 
   z = ""
   for a = 1..MaxListLength
     z += "\n│"
-  Label = Create_UI_Element( ui.AddText("S : T"+z),-5,0,20)
+  Label = Create_UI_Element( ui.AddText("S : T"+z),-5,0,20,1)
   Label.align = center
   Label.color = #808080
 
-  StateListText = Create_UI_Element( ui.AddText(),1,1,20)
+  StateListText = Create_UI_Element( ui.AddText(),1,1,20,MaxListLength)
   StateListText.align = left
 
-  TimeListText =  Create_UI_Element( ui.AddText(),5,1,20)
+  TimeListText =  Create_UI_Element( ui.AddText(),5,1,20,MaxListLength)
   TimeListText.align = left
 
-  EventDisplayText =  Create_UI_Element( ui.AddText(),0,2+MaxListLength,99)
+  EventDisplayText =  Create_UI_Element( ui.AddText(),0,2+MaxListLength,99,2)
   EventDisplayText.align = left
 
-  DragButton = Create_UI_Element( ui.AddButton() ,-1,0,3)
-  DragButton.h = 1
+  DragButton = Create_UI_Element( ui.AddButton() ,-1,0,3,1)
   DragButton.text = "ʘ"
   DragButton.style = StyleInvisible
   DragButton.SetDown(DragToggle)
 
-  SettingsButton = Create_UI_Element( ui.AddButton() ,7,0,3)
-  SettingsButton.h = 1
+  SettingsButton = Create_UI_Element( ui.AddButton() ,7,0,3,1)
   SettingsButton.text = "≡"
   SettingsButton.style = StyleInvisible
   SettingsButton.SetDown(OpenSettings)
@@ -160,47 +158,40 @@ func OpenSettings()
     SettingsPanel.h = 9
     SettingsPanel.style = 1
 
-    SettingsText = Create_UI_Element( ui.AddText() ,0,0,23)
+    SettingsText = Create_UI_Element( ui.AddText() ,0,0,23,10)
     SettingsText.text = GetSettingsText()
 
-    ListDecreaseButton = Create_UI_Element( ui.AddButton() ,14,1,3)
-    ListDecreaseButton.h = 1
+    ListDecreaseButton = Create_UI_Element( ui.AddButton() ,14,1,3,1)
     ListDecreaseButton.text = "-"
     ListDecreaseButton.style = StyleInvisible
     ListDecreaseButton.SetDown(ListDecrease)
 
-    ListIncreaseButton = Create_UI_Element( ui.AddButton() ,18,1,3)
-    ListIncreaseButton.h = 1
+    ListIncreaseButton = Create_UI_Element( ui.AddButton() ,18,1,3,1)
     ListIncreaseButton.text = "+"
     ListIncreaseButton.style = StyleInvisible
     ListIncreaseButton.SetDown(ListIncrease)
 
-    DamageToggleButton = Create_UI_Element( ui.AddButton() ,17,4,5)
-    DamageToggleButton.h = 1
+    DamageToggleButton = Create_UI_Element( ui.AddButton() ,17,4,5,1)
     DamageToggleButton.text = ""
     DamageToggleButton.style = StyleInvisible
     DamageToggleButton.SetDown(CheckingDamageToggle)
 
-    DebuffsToggleButton = Create_UI_Element( ui.AddButton() ,17,5,5)
-    DebuffsToggleButton.h = 1
+    DebuffsToggleButton = Create_UI_Element( ui.AddButton() ,17,5,5,1)
     DebuffsToggleButton.text = ""
     DebuffsToggleButton.style = StyleInvisible
     DebuffsToggleButton.SetDown(CheckingDebuffsToggle)
 
-    FoeBuffsToggleButton = Create_UI_Element( ui.AddButton() ,17,6,5)
-    FoeBuffsToggleButton.h = 1
+    FoeBuffsToggleButton = Create_UI_Element( ui.AddButton() ,17,6,5,1)
     FoeBuffsToggleButton.text = ""
     FoeBuffsToggleButton.style = StyleInvisible
     FoeBuffsToggleButton.SetDown(CheckingFoeBuffsToggle)
 
-    HealingToggleButton = Create_UI_Element( ui.AddButton() ,17,7,5)
-    HealingToggleButton.h = 1
+    HealingToggleButton = Create_UI_Element( ui.AddButton() ,17,7,5,1)
     HealingToggleButton.text = ""
     HealingToggleButton.style = StyleInvisible
     HealingToggleButton.SetDown(CheckingHealingToggle)
  
-    CloseSettings = Create_UI_Element( ui.AddButton() ,21,0,3)
-    CloseSettings.h = 1
+    CloseSettings = Create_UI_Element( ui.AddButton() ,21,0,3,1)
     CloseSettings.text = "[x]"
     CloseSettings.style = StyleInvisible
     CloseSettings.SetDown(OpenSettings)

@@ -1,5 +1,5 @@
 /*///////////////////////////
-Pet Dragon v1.4
+Pet Dragon v1.5
 
 A Chinese dragon follower which will launch fireballs at your foes
 and where-ever you click.
@@ -256,13 +256,6 @@ var DragonHead
 var FirePanel
 var ResetPosition
 
-?key = UpBegin
-  y++
-  MotherPanel.y = y
-:?key = DownBegin
-  y--
-  MotherPanel.y = y
-
 
 ScreenX = screen.FromWorldX(x)
 px = pos.x
@@ -280,8 +273,10 @@ tt = totalTime
   MotherPanel.Add(DragonBody)
   MotherPanel.Add(DragonHead)
   DragonBody.w = 99
+  DragonBody.h = 8
   DragonHead.w = 99
   DragonHead.y = -1
+  DragonHead.h = 8
   DragonHead.x = 19
   ResetPosition = true
   MotherPanel.y = y

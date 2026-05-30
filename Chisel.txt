@@ -1,5 +1,5 @@
 var TITLE = "Chisel"
-var VERSION = "v1.2"
+var VERSION = "v1.3"
 var AUTHOR = "fruloo +\nSven & Toast"
 
 
@@ -322,7 +322,7 @@ func Init()
   // About
   titleText = MakeText(1, basePanel.h - 4, 16, 1, "left", TITLE + " " + VERSION)
   toolsPanel.Add(titleText)
-  authorText = MakeText(1, basePanel.h - 3, 16, 1, "left", "By " + AUTHOR)
+  authorText = MakeText(1, basePanel.h - 3, 16, 2, "left", "By " + AUTHOR)
   toolsPanel.Add(authorText)
   logoSprite = MakeSprite(14, basePanel.h - 4, 4, 3, "#ffffff", LOGO)
   toolsPanel.Add(logoSprite)
@@ -1166,5 +1166,5 @@ func RecreateLayers()
   for T : TextLayers
     T.TextUI = ui.AddText(T.CanvasLineAdder())
     T.TextUI.w = screen.w - 38
-    T.TextUI.y = -10
+    T.TextUI.h = screen.h - 2
     T.TextUI.align = center

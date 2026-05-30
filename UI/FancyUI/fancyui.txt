@@ -1,5 +1,5 @@
 /*
-	FancyUI v1.7
+	FancyUI v1.8
 	
 	Written By: Cancerorus Potatoes (Discord: 10100111001)
 	
@@ -38,7 +38,7 @@
 */
 
 
-var Print = import FancyUI/print
+var Print = import UI/FancyUI/print
 //note - this could probably be redone now that floats are a thing, but not going to do that. All the bars use integer math workarounds.
 
 
@@ -114,16 +114,16 @@ var Enamey = 5
 	Bar Colour Customisation
    ========================== */
 //colour of the hp bars
-var colHP = new FancyUI/colour
+var colHP = new UI/FancyUI/colour
 colHP.Init(255, 0, 0) //RGB
 //base colour of the armour bars
-var colShield = new FancyUI/colour
+var colShield = new UI/FancyUI/colour
 colShield.Init(63, 63, 63)
 //the blending colour used for 'overshields'. This colour is added to the base colour each time the armour bar is exceeded.
-var colOverShield = new FancyUI/colour
+var colOverShield = new UI/FancyUI/colour
 colOverShield.Init(0, 40, 40)
 //the colour used for negative armour
-var colUnderShield = new FancyUI/colour
+var colUnderShield = new UI/FancyUI/colour
 colUnderShield.Init(255, 127, 0)
 
 /* ==============================
@@ -242,7 +242,7 @@ var shieldMaxPlayer = 3 //for best results set this to about 1/4 of the max armo
 var shieldMaxEnemy = 1000 //leave this one
 
 //slow rainbow
-var slowRainbow = new FancyUI/colour
+var slowRainbow = new UI/FancyUI/colour
 slowRainbow.Init(255, 0, 0) //RGB
 var colSlowRainbow = slowRainbow.ToString()
 var slowRainbowState = 0 //0=+r, 1=+g, 2=+b

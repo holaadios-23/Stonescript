@@ -1,4 +1,4 @@
-//BossBar 3.99.1
+//BossBar 3.99.2
 //By Lazy
 
 var screenW = screen.w
@@ -15,11 +15,11 @@ var BossHP //Curr health
 var BossTHP //total health
 var BossAP //curr armor
 var BossTAP //total armor
-var BarText = ＂＂ //health and armor
+var BarText = "" //health and armor
 var CharCount = 0
 var Blocks = 43
-var ArmorBlocks = ＂▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀＂
-var ArmorFades = ＂▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀＂
+var ArmorBlocks = "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
+var ArmorFades = "▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀"
 var HealthFade
 var BossHPLost
 var BossAPLost
@@ -94,18 +94,18 @@ func BossStats()
   ?BossAPLost >= BossTAP
     BossAPLost = BossTAP
 
-  ?BossHP <= 0 & foe = ＂boss＂
+  ?BossHP <= 0 & foe = "boss"
     BossHP = 0 //stops -hp
-  ?BossAP <= 0 & foe = ＂boss＂
+  ?BossAP <= 0 & foe = "boss"
     BossAP = 0 //stops -ap
   ?BossAP ! 0
-    BarText = BossAP+＂│＂+BossTAP
-    CharCount = string.Size(BarText + ＂＂)
+    BarText = BossAP+"│"+BossTAP
+    CharCount = string.Size(BarText + "")
   :
-    BarText = BossHP+＂│＂+BossTHP
-    CharCount = string.Size(BarText + ＂＂)
+    BarText = BossHP+"│"+BossTHP
+    CharCount = string.Size(BarText + "")
 
-?foe = ＂boss＂
+?foe = "boss"
   BossStats()
 
 
@@ -127,7 +127,7 @@ var LastAPBarLength = 0
   BossAPFade = ui.AddText() //Fade of AP decreasing
   BossBar.Add(BossAPFade)
   BossAPFade.w = 43
-  BossAPFade.h = 0
+  BossAPFade.h = 1
   BossAPFade.anchor = center_center
   BossAPFade.text = ArmorFades
   BossAPFade.color = #373535
@@ -135,16 +135,16 @@ var LastAPBarLength = 0
   BossArmorBar = ui.AddText() //Blocks for boss AP
   BossBar.Add(BossArmorBar)
   BossArmorBar.w = 43
-  BossArmorBar.h = 0
+  BossArmorBar.h = 1
   BossArmorBar.anchor = center_center
   BossArmorBar.color = #5b5b5b //#ADD8E6
 
   BossBarText = ui.AddText() //Writes boss HP & AP
   BossBar.Add(BossBarText)
-  BossBarText.h = -4
+  BossBarText.h = 4
   BossBarText.anchor = center_center
 
-?foe = ＂boss＂
+?foe = "boss"
   BossBar.visible = true
   BossBarText.visible = true
   BossArmorBar.visible = true
@@ -156,7 +156,7 @@ var LastAPBarLength = 0
   BossAPFade.visible = false
 
 
-?foe = ＂boss＂
+?foe = "boss"
   BossArmorBar.text = ArmorBlocks
   BossBarText.text = BarText //Writes boss HP & AP
   BossBarText.w = CharCount //Length of # or ABC
