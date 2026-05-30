@@ -17,12 +17,8 @@ Customization:
   comments.
 ================================================
 Changelog
-beta: https://discord.com/channels/
-      423242655498240000/1419229720154738768/
-      1424037802219409449
-alpha: https://discord.com/channels/
-       423242655498240000/1419229720154738768/
-       1425369504719831110
+beta: https://discord.com/channels/423242655498240000/1419229720154738768/1424037802219409449
+alpha: https://discord.com/channels/423242655498240000/1419229720154738768/1425369504719831110
 v0.1: disabled pause button (thanks standarcombo for remembering me of this)
       changed the "BACK" button for "DEL"
       position of the button changed
