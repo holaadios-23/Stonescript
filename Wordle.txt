@@ -11,9 +11,9 @@ Instructions:
 Import with: import Games/Wordle
 Customization:
 - To change the number of attempts, search for
-  the ＂MODIFY ATTEMPTS＂ comments.
+  the "MODIFY ATTEMPTS" comments.
 - To change the keyboard layout or message
-  positions, search for ＂MODIFY POSITION＂
+  positions, search for "MODIFY POSITION"
   comments.
 ================================================
 Changelog
@@ -48,46 +48,46 @@ var KEY_W = 4
 var KEY_H = 3
 
 // --- Colors ---
-var COLOR_DEFAULT = ＂#333333＂
-var COLOR_CORRECT = ＂#008800＂ // Green
-var COLOR_PRESENT = ＂#B8B800＂ // Yellow
-var COLOR_ABSENT = ＂#555555＂  // Gray
-var COLOR_TEXT = ＂#FFFFFF＂
+var COLOR_DEFAULT = "#333333"
+var COLOR_CORRECT = "#008800" // Green
+var COLOR_PRESENT = "#B8B800" // Yellow
+var COLOR_ABSENT = "#555555"  // Gray
+var COLOR_TEXT = "#FFFFFF"
 
 // --- Game State Variables ---
-var wordList = ［
- ＂STONE＂, ＂QUEST＂, ＂SWORD＂, ＂MAGIC＂, ＂FIGHT＂,
- ＂ENEMY＂, ＂ARMOR＂, ＂SHARD＂, ＂BLADE＂, ＂CRAFT＂,
- ＂HEART＂, ＂MIGHT＂, ＂POWER＂, ＂SHINE＂, ＂SPELL＂,
- ＂STORY＂, ＂WATER＂, ＂WORLD＂, ＂ANGER＂, ＂BEAST＂, 
- ＂BONES＂, ＂CAVES＂, ＂CHEST＂, ＂CRATE＂, ＂DEATH＂, 
- ＂DEMON＂, ＂DRUID＂, ＂FLAME＂, ＂GHOST＂, ＂GIANT＂, 
- ＂GUARD＂, ＂HANDS＂, ＂HATCH＂, ＂HORDE＂, ＂HUMAN＂, 
- ＂IDOLS＂, ＂JEWEL＂, ＂KINGS＂, ＂KNIFE＂, ＂LEVER＂,
- ＂LIGHT＂, ＂METAL＂, ＂MINES＂, ＂MYTHS＂, ＂NIGHT＂,
- ＂PLACE＂, ＂RINGS＂, ＂ROCKS＂, ＂RUINS＂, ＂SHELL＂,
- ＂SKULL＂, ＂SLIME＂, ＂SOULS＂, ＂SPAWN＂, ＂SPIKE＂, 
- ＂STAFF＂, ＂STEEL＂, ＂TAROT＂, ＂THROW＂, ＂TOKEN＂, 
- ＂TOMBS＂, ＂TRADE＂, ＂TRAPS＂, ＂TREES＂, ＂TROLL＂, 
- ＂VAULT＂, ＂VENOM＂, ＂VIGOR＂, ＂WALLS＂, ＂WANDS＂, 
- ＂WINGS＂, ＂WITCH＂, ＂WORMS＂, ＂YETIS＂, ＂ZONES＂
-］
-var secretWord = ＂＂
-var secretWordArr = ［］
-var currentGuess = ＂＂
+var wordList = [
+ "STONE", "QUEST", "SWORD", "MAGIC", "FIGHT",
+ "ENEMY", "ARMOR", "SHARD", "BLADE", "CRAFT",
+ "HEART", "MIGHT", "POWER", "SHINE", "SPELL",
+ "STORY", "WATER", "WORLD", "ANGER", "BEAST", 
+ "BONES", "CAVES", "CHEST", "CRATE", "DEATH", 
+ "DEMON", "DRUID", "FLAME", "GHOST", "GIANT", 
+ "GUARD", "HANDS", "HATCH", "HORDE", "HUMAN", 
+ "IDOLS", "JEWEL", "KINGS", "KNIFE", "LEVER",
+ "LIGHT", "METAL", "MINES", "MYTHS", "NIGHT",
+ "PLACE", "RINGS", "ROCKS", "RUINS", "SHELL",
+ "SKULL", "SLIME", "SOULS", "SPAWN", "SPIKE", 
+ "STAFF", "STEEL", "TAROT", "THROW", "TOKEN", 
+ "TOMBS", "TRADE", "TRAPS", "TREES", "TROLL", 
+ "VAULT", "VENOM", "VIGOR", "WALLS", "WANDS", 
+ "WINGS", "WITCH", "WORMS", "YETIS", "ZONES"
+]
+var secretWord = ""
+var secretWordArr = []
+var currentGuess = ""
 var currentRow = 0
 var isGameOver = false
-var message = ＂＂
+var message = ""
 
 // --- UI Element Variables ---
 var mainPanel
 /*
 MODIFY ATTEMPTS: The number of empty arrays
 here defines the number of rows (attempts).
-Default is 4. For 6: ［ ［］, ［］, ［］, ［］, ［］, ［］ ］
+Default is 4. For 6: [ [], [], [], [], [], [] ]
 */
-var gridTiles = ［ ［］, ［］, ［］, ［］ ］ 
-var keyboardButtons = ［］
+var gridTiles = [ [], [], [], [] ] 
+var keyboardButtons = []
 var messageText
 
 /*
@@ -112,7 +112,7 @@ func StartGame()
  title.dock = top_left
  title.y = 3
  title.x = 46
- title.text = ＂S T O N E - L E＂
+ title.text = "S T O N E - L E"
  title.w = String.Size(title.text)
  title.color = #yellow
  mainPanel.Add(title)
@@ -152,13 +152,13 @@ func StartGame()
    tile.y = r * (TILE_SIZE + TILE_GAP) - gridPanel.h/2 + TILE_SIZE/2
    gridPanel.Add(tile)
 
-   var letter = ui.AddText(＂＂)
+   var letter = ui.AddText("")
    letter.dock = center_center
    letter.align = center
    letter.y = 2
    tile.Add(letter)
 
-   gridTiles［r］.Add(［tile, letter］)
+   gridTiles[r].Add([tile, letter])
 
  // --- Keyboard ---
  var keyboardPanel = ui.AddPanel()
@@ -170,12 +170,12 @@ func StartGame()
  keyboardPanel.h = 3 * KEY_H + 2 * TILE_GAP
  mainPanel.Add(keyboardPanel)
 
- var keys = ［ ＂QWERTYUIOPASDFG＂, ＂HJKLZXCVBNM＂ ］
+ var keys = [ "QWERTYUIOPASDFG", "HJKLZXCVBNM" ]
  var enterKey
  var backKey
 
  for r = 0..1
-  var keyRow = keys［r］
+  var keyRow = keys[r]
   var rowLen = string.Size(keyRow)
   for c = 0..rowLen-1
    var keyChar = string.Sub(keyRow, c, 1)
@@ -187,13 +187,13 @@ func StartGame()
    btn.y = r * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
    btn.SetPressed(OnKeyPress)
    keyboardPanel.Add(btn)
-   keyboardButtons.Add(［keyChar, btn］)
+   keyboardButtons.Add([keyChar, btn])
 
  // Keys Specials (ENTER and DEL)
  enterKey = ui.AddButton()
  enterKey.w = 6
  enterKey.h = KEY_H
- enterKey.text = ＂ENTER＂
+ enterKey.text = "ENTER"
  // Position x,y of the key ENTER
  enterKey.x = 6 * (KEY_W + TILE_GAP)
  enterKey.y = 1 * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
@@ -203,7 +203,7 @@ func StartGame()
  backKey = ui.AddButton()
  backKey.w = 6
  backKey.h = KEY_H
- backKey.text = ＂DEL＂
+ backKey.text = "DEL"
  // Position of the key DEL
  backKey.x = -6 * (KEY_W + TILE_GAP)
  backKey.y = 1 * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
@@ -215,7 +215,7 @@ func StartGame()
  resetButton.dock = top_left
  resetButton.x = 5
  resetButton.y = 1
- resetButton.text = ＂RESET＂
+ resetButton.text = "RESET"
  resetButton.w = 8
  resetButton.h = 3
  resetButton.SetPressed(ResetGame)
@@ -226,7 +226,7 @@ func StartGame()
  exitButton.dock = top_right
  exitButton.x = -2
  exitButton.y = 1
- exitButton.text = ＂X＂
+ exitButton.text = "X"
  exitButton.w = 3
  exitButton.h = 3
  exitButton.SetPressed(ExitGame)
@@ -240,16 +240,16 @@ func ExitGame()
 func ResetGame()
  // Select a new word
  var wordIndex = rng % wordList.Count()
- secretWord = wordList［wordIndex］
+ secretWord = wordList[wordIndex]
  secretWordArr.Clear()
  for i = 0..4
   secretWordArr.Add(string.Sub(secretWord, i, 1))
 
  // Reset game state
- currentGuess = ＂＂
+ currentGuess = ""
  currentRow = 0
  isGameOver = false
- message = ＂Guess the 5-letter word!＂
+ message = "Guess the 5-letter word!"
 
  /* Reset grid UI
  MODIFY ATTEMPTS: This loop must match the
@@ -257,13 +257,13 @@ func ResetGame()
  this should also be 'for r = 0..5'. */ 
  for r = 0..3
   for c = 0..4
-   gridTiles［r］［c］［0］.color = COLOR_DEFAULT
-   gridTiles［r］［c］［1］.text = ＂＂
+   gridTiles[r][c][0].color = COLOR_DEFAULT
+   gridTiles[r][c][1].text = ""
 
  // Reset keyboard UI
  for i = 0..keyboardButtons.Count()-1
-  keyboardButtons［i］［1］.bcolor = ＂#888888＂
-  keyboardButtons［i］［1］.tcolor = COLOR_TEXT
+  keyboardButtons[i][1].bcolor = "#888888"
+  keyboardButtons[i][1].tcolor = COLOR_TEXT
 
 func OnKeyPress(btn)
  ?isGameOver | string.Size(currentGuess) >= 5
@@ -277,7 +277,7 @@ func OnEnterPress()
   return
 
  ?string.Size(currentGuess) ! 5
-  message = ＂Not enough letters!＂
+  message = "Not enough letters!"
   return
 
  SubmitGuess()
@@ -290,76 +290,76 @@ func OnBackPress()
  UpdateCurrentRow()
 
 func UpdateCurrentRow()
- message = ＂＂ 
+ message = "" 
  var guessLen = string.Size(currentGuess) 
  for c = 0..4
   ?c < guessLen
-   gridTiles［currentRow］［c］［1］.text = string.Sub(currentGuess, c, 1)
+   gridTiles[currentRow][c][1].text = string.Sub(currentGuess, c, 1)
   : 
-   gridTiles［currentRow］［c］［1］.text = ＂＂
+   gridTiles[currentRow][c][1].text = ""
 
 func SubmitGuess()
- var tempSecret = ［］
+ var tempSecret = []
  for i = 0..4
-  tempSecret.Add(secretWordArr［i］)
+  tempSecret.Add(secretWordArr[i])
 
- var feedback = ［＂＂, ＂＂, ＂＂, ＂＂, ＂＂］
+ var feedback = ["", "", "", "", ""]
 
 //First pass: Check for correct letters (green)
  for i = 0..4
   var letter = string.Sub(currentGuess, i, 1)
-  ?letter = tempSecret［i］
-   feedback［i］ = ＂correct＂
-   tempSecret［i］ = null // Mark as used
+  ?letter = tempSecret[i]
+   feedback[i] = "correct"
+   tempSecret[i] = null // Mark as used
 
 //Second pass: Check for present letters(yellow)
  for i = 0..4
-  ?feedback［i］ = ＂＂
+  ?feedback[i] = ""
    var letter = string.Sub(currentGuess, i, 1)
    var found = false
    for j = 0..4
-    ?letter = tempSecret［j］
-     feedback［i］ = ＂present＂
-     tempSecret［j］ = null // Mark as used
+    ?letter = tempSecret[j]
+     feedback[i] = "present"
+     tempSecret[j] = null // Mark as used
      found = true
      break
    ? !found
-    feedback［i］ = ＂absent＂
+    feedback[i] = "absent"
 
  // Apply feedback to grid and keyboard
  for i = 0..4
   var color
-  ?feedback［i］ = ＂correct＂
+  ?feedback[i] = "correct"
    color = COLOR_CORRECT
-  :?feedback［i］ = ＂present＂
+  :?feedback[i] = "present"
    color = COLOR_PRESENT
   :
    color = COLOR_ABSENT
 
-  gridTiles［currentRow］［i］［0］.color = color
+  gridTiles[currentRow][i][0].color = color
   UpdateKeyboardColor(string.Sub(currentGuess, i, 1), color)
 
  // Check for win/loss
  ?currentGuess = secretWord
-  message = ＂You won! Well done!＂
+  message = "You won! Well done!"
   isGameOver = true
   play treasure_item_show
   return
 
  currentRow++
- currentGuess = ＂＂
+ currentGuess = ""
  /* MODIFY ATTEMPTS: This is the condition that
  determines if you've run out of attempts.
  Default is 4. For 6, use '?currentRow >= 6'. */
  ?currentRow >= 4
-  message = ＂Game Over! The word was ＂ + secretWord
+  message = "Game Over! The word was " + secretWord
   isGameOver = true
   play haunted_gate_point_lost
 
 func UpdateKeyboardColor(keyChar, color)
  for i = 0..keyboardButtons.Count()-1
-  ?keyboardButtons［i］［0］ = keyChar
-   var btn = keyboardButtons［i］［1］
+  ?keyboardButtons[i][0] = keyChar
+   var btn = keyboardButtons[i][1]
    // Don't downgrade from green
    ?btn.bcolor = COLOR_CORRECT
     return
