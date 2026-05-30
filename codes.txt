@@ -191,3 +191,112 @@ var txt_art
   init_art = true
 
 s_art.Main("1")
+
+/*ajolote animated
+*/
+
+
+var axolot = ［ascii
+###/\     /\
+ __\.'¯¯¯`./__
+│__'#######`__│
+  /`.#####.'\
+##\/ ´¯¯¯` \/
+####/>###<\
+####'.___.'
+#######\#\
+########\/
+asciiend,ascii
+###/\     /\
+ __\.'¯¯¯`./__
+│__'#######`__│
+  /`.#####.'\
+##\/ ´¯¯¯` \/
+####/´###`\
+####'.___.'        
+######/#/
+######\/
+asciiend］
+
+var i = 0
+>o-32,-5,#d680b7,@axolot［i］@
+?totaltime % 17 = 0
+ i++
+?i >= axolot.Count()
+ i = 0
+
+?time % 30
+ >o-27,-3,#33bda4,O###O
+
+?time % 70
+ >o-25,-2,#a2aaee,U
+:
+ >o-25,-2,#a2aaee,-
+
+/*
+  /`.     .'\
+  \/ ´¯¯¯` \/
+    / . . \
+    '.___.'
+*/
+
+/*buff timer:
+*/
+// LuckyTimer.txt
+// Convierte el tiempo restante del buff "Lucky" a formato H:M:S:F
+
+var t_lucky
+var hh
+var mm
+var ss
+var ff
+
+// Obtenemos el tiempo actual (valor dinámico, línea separada)
+t_lucky = buffs.GetTime("lucky")
+
+?t_lucky > 0
+  // Cálculos matemáticos
+  // 1 hora = 108,000 frames (30 * 60 * 60)
+  hh = t_lucky / 108000
+  
+  // 1 minuto = 1,800 frames (30 * 60)
+  mm = (t_lucky / 1800) % 60
+  
+  // 1 segundo = 30 frames
+  ss = (t_lucky / 30) % 60
+  
+  // Frames restantes
+  ff = t_lucky % 30
+
+  >`0,4,#yellow,Lucky restante: @hh@h @mm@m @ss@s @ff@f
+:
+  >`0,4,#gray,Lucky: Inactivo
+
+/*velocidad movimiento?
+*/
+// Speedometer
+// Mide la velocidad actual del personaje en unidades por segundo (u/s).
+
+var last_pos = pos.x
+var current_speed = 0.0
+var timer = 0
+var interval = 10 // Actualizar cada 10 frames (aprox 0.33 segundos) para suavizar la lectura
+
+?loc.begin
+  last_pos = pos.x
+  timer = 0
+
+timer++
+
+?timer >= interval
+  var dist = pos.x - last_pos
+  // Calcular velocidad: (Distancia / Frames transcurridos) * 30 FPS
+  // Usamos 30.0 para asegurar operación con decimales
+  current_speed = (dist * 30.0) / interval
+  
+  last_pos = pos.x
+  timer = 0
+
+// Mostrar información en pantalla (esquina superior izquierda)
+>`1,4,#00FF00,Velocidad Real: @current_speed@ u/s
+>`1,5,#FFFF00,Stat (Frames/Mov): @player.framesPerMove@

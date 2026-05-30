@@ -3,7 +3,9 @@
 
 var initialized = 0
 
-// --- Definición de Estados de Palanca ---
+
+// --- Arte ASCII ---
+
 var l2_up = ascii
 #.-.
 |###|
@@ -26,8 +28,15 @@ var l2_down = ascii
 #`-´
 asciiend
 
-// --- Arte ASCII ---
-
+func CreateButton(text, x, y, w, h, a, d, action)
+ var b = ui.AddButton()
+ b.text = text
+ b.x = x
+ b.y = y
+ b.w = w
+ b.h = h
+ b.SetPressed(action)
+ return b
 
 // --- Configuración de Juego ---
 var balance = 100
@@ -378,34 +387,16 @@ func CheckPrize()
   pnl_main.Add(txt_stats)
 
   // Botón para jugar
-  btn_spin = ui.AddButton()
-  btn_spin.text = ""
-  btn_spin.y = -3
-  btn_spin.x = -6
-  btn_spin.w = 2
-  btn_spin.h = 1
-  btn_spin.SetPressed(DoSpin)
+  btn_spin = CreateButton("",-6,-3,2,1,DoSpin())
   pnl_main.Add(btn_spin)
 
   // Botón para reiniciar
-  btn_reset = ui.AddButton()
-  btn_reset.text = s_reset
-  btn_reset.y = 7
-  btn_reset.w = 16
-  btn_reset.h = 3
-  btn_reset.x = 0
+  btn_reset = CreateButton(s_reset,7,0,16,3,DoReset())
   btn_reset.visible = false
-  btn_reset.SetPressed(DoReset)
   pnl_main.Add(btn_reset)
 
   // Botón Idioma
-  btn_lang = ui.AddButton()
-  btn_lang.text = "EN"
-  btn_lang.x = 5
-  btn_lang.y = -9
-  btn_lang.w = 10
-  btn_lang.h = 3
-  btn_lang.SetPressed(ToggleLang)
+  btn_lang = CreateButton("EN",5,-9,10,3,ToggleLang())
   var sl
   sl = te.language
   ?sl = "EN"

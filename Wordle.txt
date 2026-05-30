@@ -33,6 +33,13 @@ v0.2: changed the tries to 4, title changed,
 ================================================
 */
 
+var initialized = false
+?initialized
+ update()
+ return
+
+?loc.begin
+ initialized = true
 
 // --- UI & Layout Constants ---
 var TILE_SIZE = 5
@@ -69,8 +76,6 @@ var secretWord = ＂＂
 var secretWordArr = ［］
 var currentGuess = ＂＂
 var currentRow = 0
-var menuPanel
-var playButton
 var isGameOver = false
 var message = ＂＂
 
@@ -83,7 +88,7 @@ Default is 4. For 6: ［ ［］, ［］, ［］, ［］, ［］, ［］ ］
 */
 var gridTiles = ［ ［］, ［］, ［］, ［］ ］ 
 var keyboardButtons = ［］
-var messageText 
+var messageText
 
 /*
 ================================================
@@ -91,56 +96,33 @@ var messageText
 ================================================
 */
 
-func ShowMenu()
+func StartGame()
  disable hud
+ disable player
+ disable pause
  ui.Clear()
-
- menuPanel = ui.AddPanel()
- menuPanel.w = 0
- menuPanel.h = 0
-
- // --- Title ---
- var title = ui.AddText()
- title.dock = top_center
- title.y = -9
- title.x = 9
- title.text = title2[0]
- title.w = 80
- title.color = color.Lerp(#red, #blue, 0.5)
- menuPanel.Add(title)
-
- // --- Play Button ---
- playButton = ui.AddButton()
- playButton.dock = center_center
- playButton.y = 4
- playButton.text = ""
- playButton.w = 29
- playButton.h = 7
- playButton.SetPressed(InitializeGameUI)
- menuPanel.Add(playButton)
-
- var playtext = ui.AddText()
- playtext.dock = center_center
- playtext.y = 4
- playtext.x = 0
- playtext.text = play1[0]
- playtext.w = 25
- playtext.color = color.Lerp(#49c15d,#a4b9f1, 0.7)
- menuPanel.Add(playtext)
-
-func InitializeGameUI()
- disable hud
- 
 
  // --- Main Panel ---
  mainPanel = ui.AddPanel()
  mainPanel.w = screen.w
  mainPanel.h = screen.h
 
+ // --- Title ---
+ var title = ui.AddText()
+ title.dock = top_left
+ title.y = 3
+ title.x = 46
+ title.text = ＂S T O N E - L E＂
+ title.w = String.Size(title.text)
+ title.color = #yellow
+ mainPanel.Add(title)
+
  // --- Message Text ---
-/* MODIFY POSITION - FINAL MESSAGE: The properties of 'messageText' control
- The properties of 'messageText' control where messages appear, including the secret
- word at the end of the game. Change 'dock', 'x', and 'y' to move it. */
+/* MODIFY POSITION - FINAL MESSAGE:
+ The properties of 'messageText' control
+ where messages appear, including the secret
+ word at the end of the game.
+ Change 'dock', 'x', and 'y' to move it. */
  messageText = ui.AddText()
  messageText.dock = top_right
  messageText.y = 3
@@ -166,10 +148,8 @@ func InitializeGameUI()
    tile.h = TILE_SIZE - 2
    tile.style = 2 // Box style
    tile.color = COLOR_DEFAULT
-   tile.x = c * (TILE_SIZE + TILE_GAP) - 
-   ^ gridPanel.w/2 + TILE_SIZE/2
-   tile.y = r * (TILE_SIZE + TILE_GAP) - 
-   ^ gridPanel.h/2 + TILE_SIZE/2
+   tile.x = c * (TILE_SIZE + TILE_GAP) - gridPanel.w/2 + TILE_SIZE/2
+   tile.y = r * (TILE_SIZE + TILE_GAP) - gridPanel.h/2 + TILE_SIZE/2
    gridPanel.Add(tile)
 
    var letter = ui.AddText(＂＂)
@@ -203,10 +183,8 @@ func InitializeGameUI()
    btn.w = KEY_W
    btn.h = KEY_H
    btn.text = keyChar
-   btn.x = c * (KEY_W + TILE_GAP) -
-   ^ (rowLen * (KEY_W + TILE_GAP) / 2) + KEY_W/2
-   btn.y = r * (KEY_H + TILE_GAP) -
-   ^ keyboardPanel.h/2 + KEY_H/2
+   btn.x = c * (KEY_W + TILE_GAP) - (rowLen * (KEY_W + TILE_GAP) / 2) + KEY_W/2
+   btn.y = r * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
    btn.SetPressed(OnKeyPress)
    keyboardPanel.Add(btn)
    keyboardButtons.Add(［keyChar, btn］)
@@ -218,8 +196,7 @@ func InitializeGameUI()
  enterKey.text = ＂ENTER＂
  // Position x,y of the key ENTER
  enterKey.x = 6 * (KEY_W + TILE_GAP)
- enterKey.y = 1 * (KEY_H + TILE_GAP) -
- ^ keyboardPanel.h/2 + KEY_H/2
+ enterKey.y = 1 * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
  enterKey.SetPressed(OnEnterPress)
  keyboardPanel.Add(enterKey)
 
@@ -229,8 +206,7 @@ func InitializeGameUI()
  backKey.text = ＂DEL＂
  // Position of the key DEL
  backKey.x = -6 * (KEY_W + TILE_GAP)
- backKey.y = 1 * (KEY_H + TILE_GAP) -
- ^ keyboardPanel.h/2 + KEY_H/2
+ backKey.y = 1 * (KEY_H + TILE_GAP) - keyboardPanel.h/2 + KEY_H/2
  backKey.SetPressed(OnBackPress)
  keyboardPanel.Add(backKey)
 
@@ -253,10 +229,13 @@ func InitializeGameUI()
  exitButton.text = ＂X＂
  exitButton.w = 3
  exitButton.h = 3
- exitButton.SetPressed(ShowMenu)
+ exitButton.SetPressed(ExitGame)
  mainPanel.Add(exitButton)
 
  ResetGame()
+
+func ExitGame()
+ loc.Leave()
 
 func ResetGame()
  // Select a new word
@@ -307,8 +286,7 @@ func OnBackPress()
  ?isGameOver | string.Size(currentGuess) = 0
   return
 
- currentGuess = string.Sub(currentGuess, 0,
- ^ string.Size(currentGuess) - 1)
+ currentGuess = string.Sub(currentGuess, 0, string.Size(currentGuess) - 1)
  UpdateCurrentRow()
 
 func UpdateCurrentRow()
@@ -316,8 +294,7 @@ func UpdateCurrentRow()
  var guessLen = string.Size(currentGuess) 
  for c = 0..4
   ?c < guessLen
-   gridTiles［currentRow］［c］［1］.text =
-   ^ string.Sub(currentGuess, c, 1)
+   gridTiles［currentRow］［c］［1］.text = string.Sub(currentGuess, c, 1)
   : 
    gridTiles［currentRow］［c］［1］.text = ＂＂
 
@@ -329,26 +306,11 @@ func SubmitGuess()
  var feedback = ［＂＂, ＂＂, ＂＂, ＂＂, ＂＂］
 
 //First pass: Check for correct letters (green)
-/*
  for i = 0..4
   var letter = string.Sub(currentGuess, i, 1)
   ?letter = tempSecret［i］
    feedback［i］ = ＂correct＂
    tempSecret［i］ = null // Mark as used
-*/
-
- for i = 0..4
-  ?feedback［i］ = ＂＂
-   var letter = string.Sub(currentGuess, i, 1)
-   var found = false
-   for j = 0..4
-    ?letter = tempSecret［j］
-     feedback［i］ = ＂correct＂
-     tempSecret［j］ = null // Mark as used
-     found = true
-     break
-   ? !found
-    feedback［i］ = ＂absent＂
 
 //Second pass: Check for present letters(yellow)
  for i = 0..4
@@ -375,8 +337,7 @@ func SubmitGuess()
    color = COLOR_ABSENT
 
   gridTiles［currentRow］［i］［0］.color = color
-  UpdateKeyboardColor(
-  ^ string.Sub(currentGuess, i, 1), color)
+  UpdateKeyboardColor(string.Sub(currentGuess, i, 1), color)
 
  // Check for win/loss
  ?currentGuess = secretWord
@@ -403,8 +364,7 @@ func UpdateKeyboardColor(keyChar, color)
    ?btn.bcolor = COLOR_CORRECT
     return
    // Don't downgrade from yellow to gray
-   ?btn.bcolor = COLOR_PRESENT &
-   ^ color = COLOR_ABSENT
+   ?btn.bcolor = COLOR_PRESENT & color = COLOR_ABSENT
     return
 
    btn.bcolor = color
@@ -416,19 +376,7 @@ func update()
   messageText.text = message
 
 // =============================================
+// SCRIPT ENTRY POINT
+// =============================================
 
-var title2 = ［ascii
- ____ _____ ___  _   _ _____      ____  _     _____ 
-/ ___|_   _/ _ \| \ | | ____|    |  _ \| |   | ____|
-\___ \ | || | | |  \| |  _| _____| | | | |   |  _|  
- ___) || || |_| | |\  | |__|_____| |_| | |___| |___ 
-|____/ |_| \___/|_| \_|_____|    |____/|_____|_____|
-asciiend］
-
-var play1 = [ascii
- ____  _        _ __   __
-|  _ \| |      / \\ \ / /
-| |_) | |     / _ \\ V / 
-|  __/| |___ / ___ \| |  
-|_|   |_____/_/   \_\_|  
-asciiend]
+StartGame()
