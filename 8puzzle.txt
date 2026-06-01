@@ -10,6 +10,7 @@ var btn8
 //var btn9
 var btns
 var ui_init = false
+var l
 
 func Createpanel(x,y,w,h,c,s,v)
  var panel = ui.AddPanel()
