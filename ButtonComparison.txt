@@ -9,10 +9,6 @@ var ui_init = false
 func AccionManual()
   > Has pulsado un botón creado manualmente.
 
-func AccionLista(btn)
-  // Al usar listas, la función recibe el objeto 'btn' automáticamente.
-  // Esto nos permite saber exactamente qué elemento se pulsó.
-  > Seleccionado desde la lista: @btn.text@
 
 // --- 2. Función Helper para crear botones ---
 // Esta función encapsula el estilo para que ambos métodos se vean igual.
