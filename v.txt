@@ -1,0 +1,188 @@
+// Rubik's Square 2D - Stonescript Edition
+// Objetivo: Alinea cada fila con un mismo color.
+// Controles: Usa las flechas para desplazar filas y columnas.
+
+var initialized = 0
+?initialized = 0
+  ?!(loc = "waterfall")
+    initialized = -1
+?initialized = 0
+  disable pause
+  disable hud
+  disable loadout print
+  initialized = 1
+
+// --- Configuración del Juego ---
+var grid = [0, 0, 0, 1, 1, 1, 2, 2, 2]
+var colors = ["#FF0000", "#00FF00", "#5555FF"] // Rojo, Verde, Azul
+var win = false
+var needs_draw = true
+
+// --- Lógica de Movimiento ---
+
+func ShiftRow(r, dir)
+  var idx = r * 3
+  ?dir > 0 // Derecha
+    var t = grid[idx + 2]
+    grid.Emplace(idx + 2, grid[idx + 1])
+    grid.Emplace(idx + 1, grid[idx])
+    grid.Emplace(idx, t)
+  : // Izquierda
+    var t = grid[idx]
+    grid.Emplace(idx, grid[idx + 1])
+    grid.Emplace(idx + 1, grid[idx + 2])
+    grid.Emplace(idx + 2, t)
+  CheckWin()
+  needs_draw = true
+
+func ShiftCol(c, dir)
+  ?dir > 0 // Abajo
+    var t = grid[c + 6]
+    grid.Emplace(c + 6, grid[c + 3])
+    grid.Emplace(c + 3, grid[c])
+    grid.Emplace(c, t)
+  : // Arriba
+    var t = grid[c]
+    grid.Emplace(c, grid[c + 3])
+    grid.Emplace(c + 3, grid[c + 6])
+    grid.Emplace(c + 6, t)
+  CheckWin()
+  needs_draw = true
+
+func CheckWin()
+  var isWin = true
+  // Verifica si cada fila tiene el mismo color
+  ?!(grid[0] = grid[1]) | !(grid[0] = grid[2])
+    isWin = false
+  ?!(grid[3] = grid[4]) | !(grid[3] = grid[5])
+    isWin = false
+  ?!(grid[6] = grid[7]) | !(grid[6] = grid[8])
+    isWin = false
+  win = isWin
+
+func Shuffle()
+  for i = 0 .. 10
+    var r_row = rng % 3
+    var r_dir = rng % 2
+    ShiftRow(r_row, r_dir)
+    var r_col = rng % 3
+    ShiftCol(r_col, r_dir)
+  win = false
+  needs_draw = true
+
+// --- Handlers para Botones (Wrappers) ---
+func R0L()
+  ShiftRow(0, -1)
+func R0R()
+  ShiftRow(0, 1)
+func R1L()
+  ShiftRow(1, -1)
+func R1R()
+  ShiftRow(1, 1)
+func R2L()
+  ShiftRow(2, -1)
+func R2R()
+  ShiftRow(2, 1)
+func C0U()
+  ShiftCol(0, -1)
+func C0D()
+  ShiftCol(0, 1)
+func C1U()
+  ShiftCol(1, -1)
+func C1D()
+  ShiftCol(1, 1)
+func C2U()
+  ShiftCol(2, -1)
+func C2D()
+  ShiftCol(2, 1)
+
+// --- Interfaz de Usuario ---
+
+func DrawGame()
+  ui.Clear()
+  var sw = screen.w
+  var sh = screen.h
+  
+  var root = ui.AddPanel()
+  root.w = sw
+  root.h = sh
+  
+  // Título
+  var title = ui.AddText("RUBIK SQUARE 2D")
+  title.y = 2
+  title.w = sw
+  title.align = center
+  root.Add(title)
+
+  // Grid de Colores
+  var gx = 15
+  var gy = 5
+  for i = 0 .. 8
+    var val = grid[i]
+    var cell = ui.AddPanel()
+    cell.w = 4
+    cell.h = 2
+    cell.x = gx + (i % 3) * 5
+    cell.y = gy + (i / 3) * 3
+    cell.color = colors[val]
+    root.Add(cell)
+
+  // Controles de Filas (Lados)
+  AddArrow(gx - 4, gy, "<", R0L)
+  AddArrow(gx + 15, gy, ">", R0R)
+  AddArrow(gx - 4, gy + 3, "<", R1L)
+  AddArrow(gx + 15, gy + 3, ">", R1R)
+  AddArrow(gx - 4, gy + 6, "<", R2L)
+  AddArrow(gx + 15, gy + 6, ">", R2R)
+
+  // Controles de Columnas (Arriba/Abajo)
+  AddArrow(gx, gy - 2, "^", C0U)
+  AddArrow(gx, gy + 9, "v", C0D)
+  AddArrow(gx + 5, gy - 2, "^", C1U)
+  AddArrow(gx + 5, gy + 9, "v", C1D)
+  AddArrow(gx + 10, gy - 2, "^", C2U)
+  AddArrow(gx + 10, gy + 9, "v", C2D)
+
+  ?win
+    var wTxt = ui.AddText("[color=#FFFF00]¡LOGRADO![/color]")
+    wTxt.y = 15
+    wTxt.w = sw
+    wTxt.align = center
+    root.Add(wTxt)
+    
+    var btnReset = ui.AddButton()
+    btnReset.text = "Mezclar"
+    btnReset.x = 20
+    btnReset.y = 17
+    btnReset.w = 11
+    btnReset.h = 3
+    btnReset.SetPressed(Shuffle)
+    root.Add(btnReset)
+
+func AddArrow(px, py, txt, func_ref)
+  var b = ui.AddButton()
+  b.text = txt
+  b.x = px
+  b.y = py
+  b.w = 3
+  b.h = 2
+  b.SetPressed(func_ref)
+
+// --- Bucle Principal ---
+
+?initialized = 1
+  ?loc.begin
+    Shuffle()
+  
+  ?needs_draw
+    DrawGame()
+    needs_draw = false
+
+
+?initialized = -1
+  ?loc = "waterfall"
+    initialized = 0
+
+?loc.begin | loc.loop
+  needs_draw = true
+  win = false
