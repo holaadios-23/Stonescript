@@ -1,0 +1,406 @@
+var ui_init = false
+var info_visible = false
+var bm = import BuffManagerLite
+
+var fps = 0
+var dps = 0
+var hps = 0
+var fps_c = 0
+var sec_l = 0
+var hp_l = 0
+var dmg_l = []
+
+var pnl_player
+var txt_player
+var txt_buffs
+var pnl_map
+var txt_map
+var pnl_foe
+var txt_foe
+var ai_text
+var cd_text_bar
+
+func mindopen()
+  ui.OpenMind()
+
+func UpdateStats()
+  fps_c++
+  ?!(time.second = sec_l)
+    fps = fps_c
+    fps_c = 0
+    sec_l = time.second
+  
+  var d = 0
+  var hp_n
+  hp_n = foe.hp + foe.armor
+  ?hp_n < hp_l
+    d = hp_l - hp_n
+  hp_l = hp_n
+  dmg_l.Add(d)
+  ?dmg_l.Count() > 30
+    dmg_l.RemoveAt(0)
+  dps = 0
+  hps = 0
+  for x : dmg_l
+    dps += x
+    ?x > 0
+      hps++
+
+func MaxGP()
+  var gp
+  gp = 999999
+  ?loc.stars = 5
+    gp = 150
+  ?loc.stars = 10
+    gp = 200
+  ?loc = "rocky"
+    gp = gp * 3
+  return gp
+
+func AbbrevLoc(n)
+  ?n = "Rocky Plateau"
+    return "Rocky"
+  :?n = "Deadwood Canyon"
+    return "Canyon"
+  :?n = "Caves of Fear"
+    return "Caves"
+  :?n = "Mushroom Forest"
+    return "Forest"
+  :?n = "Mushroom Shop"
+    return "M.Shop"
+  :?n = "Haunted Gate"
+    return "H.Gate"
+  :?n = "Haunted Halls"
+    return "Halls"
+  :?n = "Boiling Mine"
+    return "Mine"
+  :?n = "Icy Ridge"
+    return "Ridge"
+  :?n = "Temple"
+    return "Temple"
+  :?n = "Hotspring Shop"
+    return "H.Shop"
+  :?n = "Balloon Shop"
+    return "B.Shop"
+  :?n = "Warm Stone Shop"
+    return "W.Shop"
+  :?n = "Candy Shop"
+    return "C.Shop"
+  :?n = "Hot Beverage Shop"
+    return "Bev.Shop"
+  :?n = "Waterfall"
+    return "Waterfall"
+  return n
+
+func nofoe()
+  return Color("#f2f065", foe.name) + " | ♥ " + foe.hp + " | " + Color("#43029a", "fd:" + foe.distance) + " | " + GetElementalInfo(foe)
+
+func setAI()
+  var e
+  e = ai.enabled
+  var p
+  p = ai.paused
+  var i
+  i = ai.idle
+  var w
+  w = ai.walking
+ 
+  var res
+  res = ""
+ 
+  var c_e
+  c_e = "#FF0000"
+  ?e
+    c_e = "#00FF00"
+  res = res + "\n" + Color(c_e, "Enabled")
+ 
+  var c_p
+  c_p = "#00FF00"
+  ?!(p)
+    c_p = "#FF0000"
+  res = res + "\n" + Color(c_p, "Paused")
+ 
+  var c_i
+  c_i = "#ff0000"
+  ?i
+    c_i = "#00FF00"
+  res = res + "\n" + Color(c_i, "Idle")
+ 
+  var c_w
+  c_w = "#ff0000"
+  ?w
+    c_w = "#00FF00"
+  res = res + "\n" + Color(c_w, "Walking")
+ 
+  return res
+
+func CreateButton(text, x, y, w, h, anchor, dock, action)
+ var b = ui.AddButton()
+ b.text = text
+ b.x = x
+ b.y = y
+ b.w = w
+ b.h = h
+ b.anchor = anchor
+ b.dock = dock 
+ b.SetPressed(action)
+ return b
+
+func ToggleInfo()
+  info_visible = !info_visible
+  pnl_player.visible = info_visible
+  txt_player.visible = info_visible
+  pnl_map.visible = info_visible
+  txt_map.visible = info_visible
+  pnl_foe.visible = info_visible
+  txt_foe.visible = info_visible
+
+func Createpanel(x,y,w,h,c,s,v)
+  var panel = ui.AddPanel()
+  panel.x = x
+  panel.y = y
+  panel.w = w
+  panel.h = h
+  panel.color = c
+  panel.style = s
+  panel.visible = v
+  return panel
+
+func createtext(text, x, y, w, h, color, align)
+  var t = ui.AddText()
+  t.text = text
+  t.x = x
+  t.y = y
+  t.w = w
+  t.h = h
+  t.color = color
+  t.align = align
+  return t
+
+func Color(c, t)
+  return "[color=" + c + "]" + t + "[/color]"
+
+func GetColoredGPText(m_gp)
+  var cur_gp
+  cur_gp = loc.gp
+  var s
+  s = loc.stars
+  var gp_color
+  var txt
+  ?s = 15 | s = 20
+    gp_color = "#00FF00"
+    txt = "GP: " + cur_gp + "/inf"
+  :
+    var gp_ratio
+    gp_ratio = 1.0 * cur_gp / m_gp
+    gp_color = color.Lerp("#00FF00", "#FF0000", gp_ratio)
+    txt = "GP: " + cur_gp + "/" + m_gp
+  return Color(gp_color, txt)
+
+func GetColoredStarsText(s)
+  var c
+  ?s >= 16
+    c = "#52BE80"
+  :?s >= 11
+    c = "#F4D03F"
+  :?s >= 6
+    c = "#5DADE2"
+  :
+    c = "#CCCCCC"
+  
+  var icon
+  icon = "☆ "
+  var res
+  res = icon + s
+  return Color(c, res)
+
+func GetElementalInfo(id)
+  ?id = ice
+    return Color("#c96d2f", "Fire") + " melts " + Color("#41606d", "Ice")
+  :?id = poison
+    return Color("#41606d", "Ice") + " slows " + Color("#4ca932", "Poison")
+  :?id = vigor
+    return Color("#4ca932", "Poison") + " infects " + Color("#d54d73", "Vigor")
+  :?id = aether
+    return Color("#d54d73", "Vigor") + " consumes " + Color("#c1cbab", "Aether")
+  :?id = fire
+    return Color("#c1cbab", "Aether") + " extinguishes " + Color("#c96d2f", "Fire")
+  :?id = stone
+    return Color("#494642", "Stone") + " break " + Color("#494642", "stone")
+  return ""
+
+func InitUI()
+  ui.Clear()
+  CreateButton("T", 1, 3, 3, 3, bottom_center, top_left, ToggleInfo)
+  CreateButton("M",1,6,3,3,bottom_center,top_left,mindopen)
+  CreateButton("I",0,0,3,3,bottom_left,bottom_left,ui.OpenInv)
+  pnl_player = Createpanel(0, 11, 1, 3, #000044, 1, true)
+  txt_player = createtext("", 1, 13, 50, 4, #00FFFF, left)
+  txt_buffs = createtext("", -6, -3, 70, 4, #00FF00, left)
+  txt_buffs.visible = true // Siempre visible
+  
+  pnl_map = Createpanel(0, -12, 1, 3, #443300, 1, true)
+  txt_map = createtext("", 1, -10, 1, 4, #FFD700, left)
+  
+  pnl_foe = Createpanel(0, -9, 1, 3, #440000, 1, false)
+  txt_foe = createtext("",1, -7, 1, 4, #FF5555, left)
+
+  ai_text = createtext("", -11, 0, 60, 6, #FFFFFF, left)
+  ai_text.visible = true
+  
+  cd_text_bar = createtext("", -10, -7, 20, 1, #FFFF00, center)
+  ui_init = true
+
+?loc.begin | loc.loop
+  ui_init = false
+  info_visible = true
+
+?!ui_init 
+  InitUI()
+
+UpdateStats()
+
+// Lógica de poción usando el import
+var pInfo
+pInfo = bm.GetCurrentPotionInfo()
+?!(pInfo[0] = "none")
+  cd_text_bar.visible = true
+  var ratio = 1.0 * pInfo[1] / pInfo[2]
+  cd_text_bar.color = color.Lerp("#63b6ba", "#c41e08", ratio)
+  var num = (pInfo[1] * 20) / pInfo[2]
+  var s_bar = ""
+  ?num > 0
+    for i = 0 .. num - 1
+      s_bar += "-"
+  cd_text_bar.text = s_bar
+:
+  cd_text_bar.visible = false
+
+// Actualización de textos (Sin animación)
+?info_visible
+  pnl_player.visible = true
+  txt_player.visible = true
+  pnl_map.visible = true
+  txt_map.visible = true
+  ai_text.visible = true
+
+  // --- Panel Jugador ---
+  var p_hp
+  p_hp = Color("#c92f30", " ♥ " + hp + "/" + maxhp)
+  var p_arm
+  p_arm = Color("#30524f", " [" + armor + "." + armor.f + "]")
+  var p_pos
+  p_pos = Color("#8e6c4a", "x=" + pos.x)
+  p_pos = p_pos + Color("#93a15e", " z=" + pos.z)
+  
+  var s_p
+  s_p = Color("#d0beef", player.name)
+  s_p = s_p + " |" + p_hp + p_arm + " | " + p_pos + " | DPS: " + dps
+  txt_player.text = s_p
+  var w_p
+  w_p = string.Size(s_p)
+  w_p = w_p - 115
+  w_p = w_p + 2
+  pnl_player.w = w_p
+  txt_player.w = w_p
+
+  // --- Panel Mapa ---
+  var l_name
+  l_name = loc.name
+  var l_short
+  l_short = AbbrevLoc(l_name)
+  var l_stars
+  l_stars = loc.stars
+  var m_gp
+  m_gp = MaxGP()
+  
+  var s_m
+  var fmt_t
+  fmt_t = bm.Format(totaltime)
+  var hidden_m
+  hidden_m = 46 // Base: Loc color (23) + Star color (23)
+  s_m = Color("#9098d2", l_short)
+  s_m = s_m + " | " + GetColoredStarsText(l_stars)
+  var show_gp
+  show_gp = l_stars = 5 | l_stars = 10 | l_stars = 15 | l_stars = 20
+  ?show_gp
+    s_m = s_m + " | " + GetColoredGPText(m_gp)
+    hidden_m = 69 // Loc (23) + Stars (23) + GP (23)
+  s_m = s_m + " | Time: " + fmt_t
+  
+  txt_map.text = s_m
+  var w_m
+  w_m = string.Size(s_m)
+  w_m = w_m - hidden_m
+  w_m = w_m + 2
+  pnl_map.w = w_m
+  txt_map.w = w_m
+
+  // --- Panel Enemigo ---
+  var f_near
+  f_near = foe.distance < 50
+  pnl_foe.visible = f_near
+  txt_foe.visible = f_near
+  ?f_near
+    var s_f
+    s_f = nofoe()
+    txt_foe.text = s_f
+    var w_f
+    w_f = string.Size(s_f)
+    w_f = w_f - 92
+    w_f = w_f + 2
+    pnl_foe.w = w_f
+    txt_foe.w = w_f
+  
+  ai_text.text = setAI()
+
+
+// Buffs sin colores usando el import
+var b_str
+b_str = bm.GetActiveString()
+var d_str
+d_str = bm.GetActiveDebuffsString()
+
+var final_buffs
+var b_label
+b_label = Color("#00FFCC", "Buffs: ")
+var d_label
+d_label = Color("#FF6600", "Debuffs: ")
+
+final_buffs = b_label + b_str
+final_buffs = final_buffs + "\n" + d_label + d_str
+
+txt_buffs.text = final_buffs
+
+disable hud rabupf
+disable loadout print
+
+/*
+var lS
+lS = loc.stars
+func Star(color, stars)
+ var s = ui.AddText()
+ s.text = ＂Playing : ＂ +
+^loc.name + ＂［color=#＂ + color
+^ + ＂］ ＂ +
+^ stars + ＂［/color］＂
+ s.y = -9
+ s.x = -20
+ s.w = 50
+func LS(L, H, one, two, three, four, five, C)
+ ?lS >= L & lS <= H
+   ?lS = one
+     Star(C, ☆)
+   ?lS = two
+     Star(C, ☆☆)
+   ?lS = three
+     Star(C, ☆☆☆)
+   ?lS = four 
+     Star(C, ☆☆☆☆)
+   ?lS = five
+     Star(C, ☆☆☆☆☆)
+LS(1, 5, 1, 2, 3, 4, 5, white)
+LS(6, 10, 6, 7, 8, 9, 10, cyan)
+LS(11, 15, 11, 12, 13, 14, 15, yellow)
+LS(16, 20, 16, 17, 18, 19, 20, green)
+*/

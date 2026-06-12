@@ -1,0 +1,82 @@
+// BuffManagerLite.txt
+// Versión simplificada sin colores para importación modular
+
+var ids = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience", "buff_damage", "bardiche_buff_aoe_chance", "bardiche_buff_crit_chance", "bardiche_buff_crit_mult", "bardiche_buff_move_speed", "shovel_damage", "quarterstaff_buff_attack_speed", "quarterstaff_buff_stun", "pick_pocket", "smite", "buff_staff_berserk", "buff_staff_protection", "buff_range", "buff_bullet_width", "buff_infernal", "buff_inf_speed", "buff_frozen"]
+var names = ["Lcky", "Bers", "Str", "Inv", "Vamp", "Exp", "Dmg", "B.AoE", "B.Crit", "B.Mult", "B.Spd", "Shvl", "Q.Spd", "Q.Stn", "Pick", "Smt", "S.Brk", "S.Pro", "Rng", "Wdth", "Infr", "I.Spd", "Frzn"]
+
+var potIds = ["lucky", "berserk", "strength", "invisibility", "vampiric", "experience"]
+var potMax = [180, 300, 300, 450, 600, 900]
+
+var debuffIds = ["poison", "fire", "frozen", "webbed", "stunned", "fear", "blind", "debuff_dot", "debuff_attack_speed", "debuff_yeti_chill", "debuff_chill", "debuff_move_speed", "puff_debuff_damage", "pallas_phase2_debuff", "spider_debuff_damage", "debuff_duration_damage", "debuff_damage", "dysangelos_debuff_damage", "debuff_darkness_move_speed", "debuff_darkness_range", "debuff_darkness_accuracy", "debuff_weapon_swap_lock"]
+var debuffNames = ["Psn", "Fire", "Frz", "Web", "Stun", "Fear", "Blind", "DoT", "Chl", "ChlY", "ChlC", "MSlw", "HBlk", "Pals", "WknS", "WknD", "Wkn", "WknA", "D.MS", "D.Rg", "D.Ac", "Lock"]
+
+// Devuelve string de buffs sin colores
+func GetActiveString()
+  var s = ""
+  var count
+  count = ids.Count()
+  
+  for i = 0 .. count - 1
+    var tid
+    tid = ids[i]
+    var t_buff
+    t_buff = buffs.GetTime(tid)
+    
+    ?t_buff > 0
+      ?string.Size(s) > 0
+        s = s + " "
+      s = s + names[i]
+  return s
+
+// Devuelve string de debuffs sin colores
+func GetActiveDebuffsString()
+  var s = ""
+  var count
+  count = debuffIds.Count()
+  
+  for i = 0 .. count - 1
+    var tid
+    tid = debuffIds[i]
+    var t_deb
+    t_deb = debuffs.GetTime(tid)
+    ?t_deb > 0
+      var dft
+      dft = Format(t_deb)
+      var n
+      n = debuffNames[i]
+      ?string.Size(s) > 0
+        s = s + " "
+      s = s + n + " (" + dft + ")"
+  return s
+
+// Info de poción actual
+func GetCurrentPotionInfo()
+  var p_id
+  p_id = "none"
+  var p_time
+  p_time = 0
+  var p_max
+  p_max = 0
+  
+  var count
+  count = potIds.Count()
+  
+  for i = 0 .. count - 1
+    var tid
+    tid = potIds[i]
+    var t
+    t = buffs.GetTime(tid)
+    
+    ?t > 0
+      p_id = tid
+      p_time = t
+      p_max = potMax[i]
+      break
+      
+  return [p_id, p_time, p_max]
+
+func Format(t)
+  var m = t / 1800
+  var s = (t / 30) % 60
+  var f = t % 30
+  return m + "m " + s + "s " + f + "f"
