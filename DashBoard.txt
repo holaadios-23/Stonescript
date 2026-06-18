@@ -237,7 +237,7 @@ func InitUI()
   pnl_player = Createpanel(0, 11, 1, 3, #000044, 1, true)
   txt_player = createtext("", 1, 13, 50, 4, #00FFFF, left)
   txt_buffs = createtext("", -6, -3, 70, 4, #00FF00, left)
-  txt_buffs.visible = true // Siempre visible
+  txt_buffs.visible = true
   
   pnl_map = Createpanel(0, -12, 1, 3, #443300, 1, true)
   txt_map = createtext("", 1, -10, 1, 4, #FFD700, left)
@@ -260,7 +260,6 @@ func InitUI()
 
 UpdateStats()
 
-// Lógica de poción usando el import
 var pInfo
 pInfo = bm.GetCurrentPotionInfo()
 ?!(pInfo[0] = "none")
@@ -276,7 +275,7 @@ pInfo = bm.GetCurrentPotionInfo()
 :
   cd_text_bar.visible = false
 
-// Actualización de textos (Sin animación)
+
 ?info_visible
   pnl_player.visible = true
   txt_player.visible = true
@@ -284,7 +283,6 @@ pInfo = bm.GetCurrentPotionInfo()
   txt_map.visible = true
   ai_text.visible = true
 
-  // --- Panel Jugador ---
   var p_hp
   p_hp = Color("#c92f30", " ♥ " + hp + "/" + maxhp)
   var p_arm
@@ -304,7 +302,6 @@ pInfo = bm.GetCurrentPotionInfo()
   pnl_player.w = w_p
   txt_player.w = w_p
 
-  // --- Panel Mapa ---
   var l_name
   l_name = loc.name
   var l_short
@@ -318,14 +315,14 @@ pInfo = bm.GetCurrentPotionInfo()
   var fmt_t
   fmt_t = bm.Format(totaltime)
   var hidden_m
-  hidden_m = 46 // Base: Loc color (23) + Star color (23)
+  hidden_m = 46
   s_m = Color("#9098d2", l_short)
   s_m = s_m + " | " + GetColoredStarsText(l_stars)
   var show_gp
   show_gp = l_stars = 5 | l_stars = 10 | l_stars = 15 | l_stars = 20
   ?show_gp
     s_m = s_m + " | " + GetColoredGPText(m_gp)
-    hidden_m = 69 // Loc (23) + Stars (23) + GP (23)
+    hidden_m = 69
   s_m = s_m + " | Time: " + fmt_t
   
   txt_map.text = s_m
@@ -336,7 +333,6 @@ pInfo = bm.GetCurrentPotionInfo()
   pnl_map.w = w_m
   txt_map.w = w_m
 
-  // --- Panel Enemigo ---
   var f_near
   f_near = foe.distance < 50
   pnl_foe.visible = f_near
@@ -355,7 +351,6 @@ pInfo = bm.GetCurrentPotionInfo()
   ai_text.text = setAI()
 
 
-// Buffs sin colores usando el import
 var b_str
 b_str = bm.GetActiveString()
 var d_str
@@ -374,33 +369,3 @@ txt_buffs.text = final_buffs
 
 disable hud rabupf
 disable loadout print
-
-/*
-var lS
-lS = loc.stars
-func Star(color, stars)
- var s = ui.AddText()
- s.text = ＂Playing : ＂ +
-^loc.name + ＂［color=#＂ + color
-^ + ＂］ ＂ +
-^ stars + ＂［/color］＂
- s.y = -9
- s.x = -20
- s.w = 50
-func LS(L, H, one, two, three, four, five, C)
- ?lS >= L & lS <= H
-   ?lS = one
-     Star(C, ☆)
-   ?lS = two
-     Star(C, ☆☆)
-   ?lS = three
-     Star(C, ☆☆☆)
-   ?lS = four 
-     Star(C, ☆☆☆☆)
-   ?lS = five
-     Star(C, ☆☆☆☆☆)
-LS(1, 5, 1, 2, 3, 4, 5, white)
-LS(6, 10, 6, 7, 8, 9, 10, cyan)
-LS(11, 15, 11, 12, 13, 14, 15, yellow)
-LS(16, 20, 16, 17, 18, 19, 20, green)
-*/

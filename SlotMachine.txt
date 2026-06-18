@@ -1,10 +1,10 @@
-// SLOT MACHINE
-// Autor: Hibye
+/*
+A slot machine you can take along on your adventure to gamble while you farm.
+made by holadios_
+import or copy the code
+*/
 
 var initialized = 0
-
-
-// --- Arte ASCII ---
 
 var l2_up = ascii
 #.-.
@@ -38,7 +38,6 @@ func CreateButton(text, x, y, w, h, a, d, action)
  b.SetPressed(action)
  return b
 
-// --- Configuración de Juego ---
 var balance = 100
 var bet = 10
 var spinning = false
@@ -46,8 +45,6 @@ var spin_timer = 0
 var result_msg = ""
 var last_res_key = "start"
 var win_count = 0
-
-// --- Sistema de Traducción ---
 var force_en = false
 var s_bal
 var s_start
@@ -61,7 +58,6 @@ var s_dang
 var s_reset
 var s_cant_stop
 
-
 func SetLang()
   var sys_lang
   sys_lang = te.language
@@ -71,7 +67,6 @@ func SetLang()
   is_pt = (sys_lang = "PT-BR")
   var is_zh
   is_zh = (sys_lang = "ZH-CN") | (sys_lang = "ZH-TW")
-
   ?force_en
     s_bal = "Credits: "
     s_start = "TRY YOUR LUCK!"
@@ -84,7 +79,6 @@ func SetLang()
     s_dang = "OH DANG IT!"
     s_reset = "RESET"
     s_cant_stop = "I CAN'T STOP WINNING!!!"
-
   :?is_es
     s_bal = "Créditos: "
     s_start = "¡PRUEBA TU SUERTE!"
@@ -97,7 +91,6 @@ func SetLang()
     s_dang = "¡OH, RAYOS!"
     s_reset = "REINICIAR"
     s_cant_stop = "¡NO PUEDO PARAR DE GANAR!"
-
   :?is_pt
     s_bal = "Créditos: "
     s_start = "TENTE A SUA SORTE!"
@@ -110,7 +103,6 @@ func SetLang()
     s_dang = "AH, QUE DROGA"
     s_reset = "REINICIAR"
     s_cant_stop = "NÃO CONSIGO PARAR DE GANHAR!"
-
   :?sys_lang = "FR"
     s_bal = "Crédits: "
     s_start = "TENTEZ VOTRE CHANCE !"
@@ -123,7 +115,6 @@ func SetLang()
     s_dang = "OH MINCE !"
     s_reset = "RÉINITIALISER"
     s_cant_stop = "JE N'ARRÊTE PAS DE GAGNER !"
-
   :?sys_lang = "DE"
     s_bal = "Guthaben: "
     s_start = "VERSUCHE DEIN GLÜCK!"
@@ -136,7 +127,6 @@ func SetLang()
     s_dang = "ACH VERDAMMT!"
     s_reset = "ZURÜCKSETZEN"
     s_cant_stop = "ICH KANN NICHT AUFHÖREN ZU GEWINNEN!"
-
   :?sys_lang = "RU"
     s_bal = "Кредиты: "
     s_start = "ИСПЫТАЙ УДАЧУ!"
@@ -149,7 +139,6 @@ func SetLang()
     s_dang = "О, ЧЕРТ!"
     s_reset = "СБРОС"
     s_cant_stop = "Я НЕ МОГУ ПЕРЕСТАТЬ ПОБЕЖДАТЬ!"
-
   :?sys_lang = "ZH-CN"
     s_bal = "余额: "
     s_start = "试试你的运气！"
@@ -162,7 +151,6 @@ func SetLang()
     s_dang = "哦，该死！"
     s_reset = "重置"
     s_cant_stop = "我停不下来了！"
-
   :?sys_lang = "ZH-TW"
     s_bal = "餘額: "
     s_start = "試試你的運氣！"
@@ -175,7 +163,6 @@ func SetLang()
     s_dang = "哦，該死！"
     s_reset = "重置"
     s_cant_stop = "我停不下來了！"
-
   :?sys_lang = "JP"
     s_bal = "クレジット: "
     s_start = "運試しをしよう！"
@@ -188,7 +175,6 @@ func SetLang()
     s_dang = "あちゃー！"
     s_reset = "リセット"
     s_cant_stop = "勝ちが止まらない！"
-
   :?sys_lang = "KR"
     s_bal = "크레딧: "
     s_start = "행운을 빌어요!"
@@ -230,9 +216,6 @@ func SetLang()
 func ToggleLang()
   force_en = !force_en
   SetLang()
-  
-  // Actualizar UI
-
   btn_reset.text = s_reset
   var l_code
   l_code = te.language
@@ -240,8 +223,6 @@ func ToggleLang()
     btn_lang.text = l_code
   :
     btn_lang.text = "EN"
-
-  // Sincronizar mensaje de estado usando la llave guardada
   ?last_res_key = "start"
     result_msg = s_start
   :?last_res_key = "nocreds"
@@ -261,15 +242,11 @@ func ToggleLang()
   :?last_res_key = "winning_streak"
     result_msg = s_cant_stop
 
-// Índices de los carretes
+
 var r1 = 0
 var r2 = 0
 var r3 = 0
-
-// Símbolos disponibles
 var sym = ["7", "$", "B", "C", "X"]
-
-// Referencias UI
 var pnl_main
 var pnl_reels
 var txt_reels
