@@ -25,9 +25,13 @@
 disable hud
 
 // --- Datos de los botones (listas) ---
-var ids   = ["potion", "mask"]
-var lados = ["P",      "R"]
-var etis  = ["POCION", "MASK"]
+// La Blade of the Fallen God es de dos manos
+// (se equipa con "equip blade", no equipR/L),
+// pero su habilidad se activa con R, asi que
+// entra como lado "R" igual que la mascara.
+var ids   = ["potion", "mask", "blade"]
+var lados = ["P",      "R",    "R"]
+var etis  = ["POCION", "MASK", "BLADE"]
 
 // --- Estado interno ---
 var botones = []   // un boton por entrada
