@@ -29,9 +29,9 @@ disable hud
 // (se equipa con "equip blade", no equipR/L),
 // pero su habilidad se activa con R, asi que
 // entra como lado "R" igual que la mascara.
-var ids   = ["potion", "mask", "blade"]
-var lados = ["P",      "R",    "R"]
-var etis  = ["POCION", "MASK", "BLADE"]
+var ids   = ["potion", "mask", "blade", "shovel"]
+var lados = ["P",      "R",    "R",     "R"]
+var etis  = ["POCION", "MASK", "BLADE", "SHOVEL"]
 
 // --- Estado interno ---
 var botones = []   // un boton por entrada
@@ -56,7 +56,7 @@ func OnTap(btn)
   activate L
 
 // --- Creacion: un solo bucle crea todo ---
-?loc.begin
+?loc.begin | loc.loop
  ui.Clear()
  botones.Clear()
  tiradores.Clear()
