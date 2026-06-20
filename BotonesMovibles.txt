@@ -1,0 +1,62 @@
+// ·:·:· Botones movibles ·:·:· //
+//
+// 12 botones con una "o" que se pueden
+// arrastrar por la pantalla con el
+// mouse/dedo.
+//
+// Para reducir codigo NO se usan funciones
+// (func). Toda la repeticion se resuelve
+// con una lista (array) y un bucle for.
+//
+// Idea: en vez de usar los callbacks del
+// boton (SetPressed/SetDown, que necesitan
+// funciones) leemos la entrada global con
+// ?key y ?input cada frame y movemos el
+// boton seleccionado a mano.
+
+disable hud
+
+var botones = []   // lista con los 12 botones
+var n = 12         // cuantos botones
+var cols = 4       // columnas de la rejilla
+var sel = -1       // boton que se arrastra (-1 = ninguno)
+var offX = 0       // distancia cursor->boton en X
+var offY = 0       // distancia cursor->boton en Y
+var b              // boton auxiliar para los bucles
+
+// --- Creacion: un solo bucle crea los 12 ---
+?loc.begin
+ ui.Clear()
+ botones.Clear()
+ sel = -1
+ for i = 0 .. n - 1
+  b = ui.AddButton()
+  b.anchor = top_left
+  b.dock = top_left
+  b.text = o
+  b.w = 5
+  b.h = 3
+  b.x = 2 + (i % cols) * 7
+  b.y = 2 + (i / cols) * 4
+  botones.Add(b)
+
+// --- Tomar: busca el boton bajo el cursor ---
+?key = primaryBegin
+ for i = 0 .. botones.Count() - 1
+  b = botones[i]
+  ?input.x >= b.x & input.x < b.x + b.w &
+  ^ input.y >= b.y & input.y < b.y + b.h
+   sel = i
+   offX = input.x - b.x
+   offY = input.y - b.y
+   ui.root.Add(b)   // lo dibuja por encima del resto
+
+// --- Arrastrar: el boton sigue al cursor ---
+?key = primary & sel >= 0
+ b = botones[sel]
+ b.x = input.x - offX
+ b.y = input.y - offY
+
+// --- Soltar ---
+?key = primaryEnd
+ sel = -1
