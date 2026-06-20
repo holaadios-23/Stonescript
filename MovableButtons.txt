@@ -37,12 +37,9 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice",  "staff_fire", "staff_poison"]
-// equip-search names: how the item is detected
-// (item.right/left). Tweak any that don't match.
-var names  = ["",       "mask", "blade", "shovel", "heavy hammer", "bardiche", "skeleton",     "ice staff", "fire staff", "poison staff"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",         "R",          "R"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",         "R",          "R",            "R",           "R",           "R"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -71,7 +68,7 @@ func OnTap(btn)
   activate R
  :
   // RL: activate whichever hand holds it
-  ?item.left = names[i]
+  ?item.left = ids[i]
    activate L
   :
    activate R
@@ -126,10 +123,12 @@ for i = 0 .. ids.Count() - 1
   ?item.potion ! empty
    eq = true
  :
-  // equipped? detect by equip-name (instant,
-  // and hides as soon as you switch weapons).
-  // CanActivate(id) is only a backup.
-  ?item.right = names[i] | item.left = names[i] |
+  // equipped? match by Appendix ID. Staffs need
+  // armor to cast, so they appear via
+  // CanActivate (which requires armor). No
+  // cooldown check, so the button hides the
+  // instant you switch weapons.
+  ?item.right = ids[i] | item.left = ids[i] |
   ^ item.CanActivate(ids[i])
    eq = true
  buttons[i].visible = eq
