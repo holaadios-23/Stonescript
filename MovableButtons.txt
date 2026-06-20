@@ -37,9 +37,9 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice", "staff_fire", "staff_poison"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",         "R",          "R"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",   "PSNSTAFF"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -62,10 +62,16 @@ func OnTap(btn)
   return
  ?sides[i] = P
   activate potion
- :?item.right = ids[i]
+ :?sides[i] = L
+  activate L
+ :?sides[i] = R
   activate R
  :
-  activate L
+  // RL: activate whichever hand holds it
+  ?item.left = ids[i]
+   activate L
+  :
+   activate R
 
 // --- Default positions (run once, then kept) ---
 ?posX.Count() = 0
@@ -117,12 +123,12 @@ for i = 0 .. ids.Count() - 1
   ?item.potion ! empty
    eq = true
  :
-  ?sides[i] = R | sides[i] = RL
-   ?item.right = ids[i]
-    eq = true
-  ?sides[i] = L | sides[i] = RL
-   ?item.left = ids[i]
-    eq = true
+  // equipped? match by name OR by ability ID
+  // (staffs don't match item.right by their ID)
+  ?item.right = ids[i] | item.left = ids[i] |
+  ^ item.CanActivate(ids[i]) |
+  ^ item.GetCooldown(ids[i]) > 0
+   eq = true
  buttons[i].visible = eq
  handles[i].visible = eq
 
