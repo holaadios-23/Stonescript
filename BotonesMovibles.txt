@@ -1,0 +1,130 @@
+// ·:·:· Botones de habilidad movibles ·:·:· //
+//
+// Cada habilidad tiene un boton con una "o"
+// que es su AGARRADOR: arrastras la "o" y el
+// boton se mueve; pulsas el cuerpo del boton
+// y se activa la habilidad.
+//
+// La pocion siempre esta visible (salvo
+// cuando esta vacia/usada). Las habilidades
+// estan ocultas y solo aparecen al equipar
+// el objeto correspondiente.
+//
+// Listas para reducir codigo. Hay UNA sola
+// funcion (OnTap): es obligatoria porque un
+// Button se "come" el toque y la unica forma
+// soportada de reaccionar a la pulsacion es
+// el callback SetPressed. El arrastre de la
+// "o" (un Text) si funciona sin funciones.
+//
+// Para anadir habilidades: agrega entradas a
+// 'ids', 'lados' y 'etis'.
+//   lado = R, L, RL  (donde se equipa)
+//   lado = P         (pocion, siempre visible)
+
+disable hud
+
+// --- Datos de los botones (listas) ---
+// La Blade of the Fallen God es de dos manos
+// (se equipa con "equip blade", no equipR/L),
+// pero su habilidad se activa con R, asi que
+// entra como lado "R" igual que la mascara.
+var ids   = ["potion", "mask", "blade", "shovel"]
+var lados = ["P",      "R",    "R",     "R"]
+var etis  = ["POCION", "MASK", "BLADE", "SHOVEL"]
+
+// --- Estado interno ---
+var botones = []   // un boton por entrada
+var tiradores = [] // una "o" (agarrador) por entrada
+var sel = -1       // boton que se arrastra (-1 = ninguno)
+var offX = 0
+var offY = 0
+var o              // auxiliares de los bucles
+var bt
+var eq = false
+
+// --- Unica funcion: activar al pulsar ---
+func OnTap(btn)
+ var i = botones.IndexOf(btn)
+ ?i < 0
+  return
+ ?lados[i] = P
+  activate potion
+ :?item.right = ids[i]
+  activate R
+ :
+  activate L
+
+// --- Creacion: un solo bucle crea todo ---
+?loc.begin | loc.loop
+ ui.Clear()
+ botones.Clear()
+ tiradores.Clear()
+ sel = -1
+ for i = 0 .. ids.Count() - 1
+  // el agarrador "o"
+  o = ui.AddText()
+  o.anchor = top_left
+  o.dock = top_left
+  o.text = "o"
+  o.w = 3
+  o.h = 1
+  o.x = 2 + i * 9
+  o.y = 2
+  o.visible = false
+  tiradores.Add(o)
+  // el boton, justo debajo de su "o"
+  bt = ui.AddButton()
+  bt.anchor = top_left
+  bt.dock = top_left
+  bt.text = etis[i]
+  bt.w = 7
+  bt.h = 3
+  bt.x = o.x
+  bt.y = o.y + 1
+  bt.visible = false
+  bt.SetPressed(OnTap)
+  botones.Add(bt)
+
+// --- Mostrar/ocultar cada frame ---
+for i = 0 .. ids.Count() - 1
+ eq = false
+ ?lados[i] = P
+  // pocion: visible salvo cuando esta vacia
+  ?item.potion ! empty
+   eq = true
+ :
+  ?lados[i] = R | lados[i] = RL
+   ?item.right = ids[i]
+    eq = true
+  ?lados[i] = L | lados[i] = RL
+   ?item.left = ids[i]
+    eq = true
+ botones[i].visible = eq
+ tiradores[i].visible = eq
+
+// --- Tomar: arrastrar por la "o" (solo visibles) ---
+?key = primaryBegin
+ for i = 0 .. tiradores.Count() - 1
+  o = tiradores[i]
+  ?o.visible = true & input.x >= o.x &
+  ^ input.x < o.x + o.w & input.y >= o.y &
+  ^ input.y < o.y + o.h
+   sel = i
+   offX = input.x - o.x
+   offY = input.y - o.y
+   ui.root.Add(botones[sel])
+   ui.root.Add(o)
+
+// --- Arrastrar: la "o" sigue al cursor ---
+?key = primary & sel >= 0
+ o = tiradores[sel]
+ bt = botones[sel]
+ o.x = input.x - offX
+ o.y = input.y - offY
+ bt.x = o.x
+ bt.y = o.y + 1
+
+// --- Soltar ---
+?key = primaryEnd
+ sel = -1
