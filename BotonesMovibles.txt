@@ -1,61 +1,83 @@
 // ·:·:· Botones movibles ·:·:· //
 //
-// 12 botones con una "o" que se pueden
-// arrastrar por la pantalla con el
-// mouse/dedo.
+// 12 botones, cada uno con un "o" que es
+// su AGARRADOR: arrastras la "o" y el boton
+// se mueve con ella por la pantalla.
 //
 // Para reducir codigo NO se usan funciones
 // (func). Toda la repeticion se resuelve
-// con una lista (array) y un bucle for.
+// con listas (arrays) y bucles for.
 //
-// Idea: en vez de usar los callbacks del
-// boton (SetPressed/SetDown, que necesitan
-// funciones) leemos la entrada global con
-// ?key y ?input cada frame y movemos el
-// boton seleccionado a mano.
+// En vez de los callbacks del boton
+// (SetPressed, que necesitan funciones)
+// leemos la entrada global con ?key y
+// ?input cada frame y movemos a mano.
 
 disable hud
 
-var botones = []   // lista con los 12 botones
-var n = 12         // cuantos botones
+var botones = []   // lista de los 12 botones
+var tiradores = [] // lista de las 12 "o" (agarradores)
+var n = 12         // cuantos
 var cols = 4       // columnas de la rejilla
-var sel = -1       // boton que se arrastra (-1 = ninguno)
-var offX = 0       // distancia cursor->boton en X
-var offY = 0       // distancia cursor->boton en Y
-var b              // boton auxiliar para los bucles
+var sel = -1       // cual se arrastra (-1 = ninguno)
+var offX = 0       // distancia cursor->"o" en X
+var offY = 0       // distancia cursor->"o" en Y
+var o              // "o" auxiliar para los bucles
+var bt             // boton auxiliar para los bucles
+var col = 0
+var row = 0
 
 // --- Creacion: un solo bucle crea los 12 ---
 ?loc.begin
  ui.Clear()
  botones.Clear()
+ tiradores.Clear()
  sel = -1
  for i = 0 .. n - 1
-  b = ui.AddButton()
-  b.anchor = top_left
-  b.dock = top_left
-  b.text = o
-  b.w = 5
-  b.h = 3
-  b.x = 2 + (i % cols) * 7
-  b.y = 2 + (i / cols) * 4
-  botones.Add(b)
+  col = i % cols
+  row = i / cols
+  // el agarrador "o"
+  o = ui.AddText()
+  o.anchor = top_left
+  o.dock = top_left
+  o.text = o
+  o.w = 3
+  o.h = 1
+  o.x = 2 + col * 9
+  o.y = 2 + row * 5
+  tiradores.Add(o)
+  // el boton, justo debajo de su "o"
+  bt = ui.AddButton()
+  bt.anchor = top_left
+  bt.dock = top_left
+  bt.text = btn
+  bt.w = 7
+  bt.h = 3
+  bt.x = o.x
+  bt.y = o.y + 1
+  botones.Add(bt)
 
-// --- Tomar: busca el boton bajo el cursor ---
+// --- Tomar: busca la "o" bajo el cursor ---
 ?key = primaryBegin
- for i = 0 .. botones.Count() - 1
-  b = botones[i]
-  ?input.x >= b.x & input.x < b.x + b.w &
-  ^ input.y >= b.y & input.y < b.y + b.h
+ for i = 0 .. tiradores.Count() - 1
+  o = tiradores[i]
+  ?input.x >= o.x & input.x < o.x + o.w &
+  ^ input.y >= o.y & input.y < o.y + o.h
    sel = i
-   offX = input.x - b.x
-   offY = input.y - b.y
-   ui.root.Add(b)   // lo dibuja por encima del resto
+   offX = input.x - o.x
+   offY = input.y - o.y
+   ui.root.Add(botones[sel])  // el par seleccionado
+   ui.root.Add(o)             // se dibuja por encima
 
-// --- Arrastrar: el boton sigue al cursor ---
+// --- Arrastrar: la "o" sigue al cursor y
+//     el boton viaja pegado debajo de ella ---
 ?key = primary & sel >= 0
- b = botones[sel]
- b.x = input.x - offX
- b.y = input.y - offY
+ o = tiradores[sel]
+ bt = botones[sel]
+ o.x = input.x - offX
+ o.y = input.y - offY
+ bt.x = o.x
+ bt.y = o.y + 1
 
 // --- Soltar ---
 ?key = primaryEnd
