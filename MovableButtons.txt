@@ -37,9 +37,12 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice", "staff_fire", "staff_poison"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice",  "staff_fire", "staff_poison"]
+// equip-search names: how the item is detected
+// (item.right/left). Tweak any that don't match.
+var names  = ["",       "mask", "blade", "shovel", "heavy hammer", "bardiche", "skeleton",     "ice staff", "fire staff", "poison staff"]
 var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",         "R",          "R"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",   "PSNSTAFF"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -68,7 +71,7 @@ func OnTap(btn)
   activate R
  :
   // RL: activate whichever hand holds it
-  ?item.left = ids[i]
+  ?item.left = names[i]
    activate L
   :
    activate R
@@ -123,11 +126,11 @@ for i = 0 .. ids.Count() - 1
   ?item.potion ! empty
    eq = true
  :
-  // equipped? match by name OR by ability ID
-  // (staffs don't match item.right by their ID)
-  ?item.right = ids[i] | item.left = ids[i] |
-  ^ item.CanActivate(ids[i]) |
-  ^ item.GetCooldown(ids[i]) > 0
+  // equipped? detect by equip-name (instant,
+  // and hides as soon as you switch weapons).
+  // CanActivate(id) is only a backup.
+  ?item.right = names[i] | item.left = names[i] |
+  ^ item.CanActivate(ids[i])
    eq = true
  buttons[i].visible = eq
  handles[i].visible = eq
