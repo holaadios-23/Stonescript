@@ -37,9 +37,9 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",         "R",          "R",            "R",           "R",           "R"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",         "R",          "R",            "R",           "R",           "R"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
