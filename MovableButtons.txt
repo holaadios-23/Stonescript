@@ -1,0 +1,130 @@
+// ·:·:· Movable ability buttons ·:·:· //
+//
+// Each ability has a button with an "o" that
+// is its HANDLE: drag the "o" to move the
+// button; tap the button body to activate the
+// ability.
+//
+// The potion button is always visible (except
+// when empty/used). Ability buttons are hidden
+// and only appear when the matching item is
+// equipped.
+//
+// Lists keep the code short. There is ONE
+// function (OnTap): it is required because a
+// Button swallows the tap and the only
+// supported way to react to a press is the
+// SetPressed callback. Dragging the "o" (a
+// Text) works without functions.
+//
+// To add abilities: add entries to 'ids',
+// 'sides' and 'labels'.
+//   side = R, L, RL  (where it is equipped)
+//   side = P         (potion, always visible)
+
+disable hud
+
+// --- Button data (lists) ---
+// Blade, Shovel, Heavy Hammer and Bardiche are
+// equipped with "equip" only (not equipR/L),
+// but their ability activates with R, so they
+// use side "R" just like the mask.
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE"]
+
+// --- Internal state ---
+var buttons = []   // one button per entry
+var handles = []   // one "o" (handle) per entry
+var sel = -1       // button being dragged (-1 = none)
+var offX = 0
+var offY = 0
+var o              // loop helpers
+var bt
+var eq = false
+
+// --- The only function: activate on tap ---
+func OnTap(btn)
+ var i = buttons.IndexOf(btn)
+ ?i < 0
+  return
+ ?sides[i] = P
+  activate potion
+ :?item.right = ids[i]
+  activate R
+ :
+  activate L
+
+// --- Build everything in a single loop ---
+?loc.begin | loc.loop
+ ui.Clear()
+ buttons.Clear()
+ handles.Clear()
+ sel = -1
+ for i = 0 .. ids.Count() - 1
+  // the "o" handle
+  o = ui.AddText()
+  o.anchor = top_left
+  o.dock = top_left
+  o.text = "o"
+  o.w = 3
+  o.h = 1
+  o.x = 2 + i * 9
+  o.y = 2
+  o.visible = false
+  handles.Add(o)
+  // the button, right below its "o"
+  bt = ui.AddButton()
+  bt.anchor = top_left
+  bt.dock = top_left
+  bt.text = labels[i]
+  bt.w = 7
+  bt.h = 3
+  bt.x = o.x
+  bt.y = o.y + 1
+  bt.visible = false
+  bt.SetPressed(OnTap)
+  buttons.Add(bt)
+
+// --- Show/hide every frame ---
+for i = 0 .. ids.Count() - 1
+ eq = false
+ ?sides[i] = P
+  // potion: visible unless empty
+  ?item.potion ! empty
+   eq = true
+ :
+  ?sides[i] = R | sides[i] = RL
+   ?item.right = ids[i]
+    eq = true
+  ?sides[i] = L | sides[i] = RL
+   ?item.left = ids[i]
+    eq = true
+ buttons[i].visible = eq
+ handles[i].visible = eq
+
+// --- Grab: drag by the "o" (visible only) ---
+?key = primaryBegin
+ for i = 0 .. handles.Count() - 1
+  o = handles[i]
+  ?o.visible = true & input.x >= o.x &
+  ^ input.x < o.x + o.w & input.y >= o.y &
+  ^ input.y < o.y + o.h
+   sel = i
+   offX = input.x - o.x
+   offY = input.y - o.y
+   ui.root.Add(buttons[sel])
+   ui.root.Add(o)
+
+// --- Drag: the "o" follows the cursor ---
+?key = primary & sel >= 0
+ o = handles[sel]
+ bt = buttons[sel]
+ o.x = input.x - offX
+ o.y = input.y - offY
+ bt.x = o.x
+ bt.y = o.y + 1
+
+// --- Release ---
+?key = primaryEnd
+ sel = -1
