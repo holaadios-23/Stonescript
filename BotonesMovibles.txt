@@ -1,76 +1,108 @@
-// ·:·:· Botones movibles ·:·:· //
+// ·:·:· Botones de habilidad movibles ·:·:· //
 //
-// 12 botones, cada uno con un "o" que es
-// su AGARRADOR: arrastras la "o" y el boton
-// se mueve con ella por la pantalla.
+// Cada habilidad tiene un boton con una "o"
+// que es su AGARRADOR: arrastras la "o" y el
+// boton se mueve; pulsas el cuerpo del boton
+// y se activa la habilidad.
 //
-// Para reducir codigo NO se usan funciones
-// (func). Toda la repeticion se resuelve
-// con listas (arrays) y bucles for.
+// Los botones estan OCULTOS y solo aparecen
+// cuando el objeto correspondiente esta
+// equipado.
 //
-// En vez de los callbacks del boton
-// (SetPressed, que necesitan funciones)
-// leemos la entrada global con ?key y
-// ?input cada frame y movemos a mano.
+// Reglas pedidas:
+//  - reducir codigo con listas (arrays)
+//  - sin funciones (func)
+//
+// Paso 1: solo la Cultist Mask ("mask"),
+// que se equipa unicamente en R.
+// (Appendix A - Ability Cooldown IDs)
+//
+// Para anadir mas habilidades luego, basta
+// con agregarlas a las listas 'ids', 'lados'
+// y 'etis' de abajo.
 
 disable hud
 
-var botones = []   // lista de los 12 botones
-var tiradores = [] // lista de las 12 "o" (agarradores)
-var n = 12         // cuantos
-var cols = 4       // columnas de la rejilla
-var sel = -1       // cual se arrastra (-1 = ninguno)
-var offX = 0       // distancia cursor->"o" en X
-var offY = 0       // distancia cursor->"o" en Y
-var o              // "o" auxiliar para los bucles
-var bt             // boton auxiliar para los bucles
-var col = 0
-var row = 0
+// --- Datos de las habilidades (listas) ---
+var ids   = ["mask"]   // ID de cooldown / habilidad
+var lados = ["R"]      // donde se equipa: R, L o RL
+var etis  = ["MASK"]   // texto que muestra el boton
 
-// --- Creacion: un solo bucle crea los 12 ---
+// --- Estado interno ---
+var botones = []   // un boton por habilidad
+var tiradores = [] // una "o" (agarrador) por habilidad
+var sel = -1       // boton que se arrastra (-1 = ninguno)
+var offX = 0
+var offY = 0
+var o              // auxiliares de los bucles
+var bt
+var eq = false
+
+// --- Creacion: un solo bucle crea todo ---
 ?loc.begin
  ui.Clear()
  botones.Clear()
  tiradores.Clear()
  sel = -1
- for i = 0 .. n - 1
-  col = i % cols
-  row = i / cols
+ for i = 0 .. ids.Count() - 1
   // el agarrador "o"
   o = ui.AddText()
   o.anchor = top_left
   o.dock = top_left
-  o.text = o
+  o.text = "o"
   o.w = 3
   o.h = 1
-  o.x = 2 + col * 9
-  o.y = 2 + row * 5
+  o.x = 2 + i * 9
+  o.y = 2
+  o.visible = false
   tiradores.Add(o)
   // el boton, justo debajo de su "o"
   bt = ui.AddButton()
   bt.anchor = top_left
   bt.dock = top_left
-  bt.text = btn
+  bt.text = etis[i]
   bt.w = 7
   bt.h = 3
   bt.x = o.x
   bt.y = o.y + 1
+  bt.visible = false
   botones.Add(bt)
 
-// --- Tomar: busca la "o" bajo el cursor ---
+// --- Mostrar/ocultar segun lo equipado ---
+for i = 0 .. ids.Count() - 1
+ eq = false
+ ?lados[i] = R | lados[i] = RL
+  ?item.right = ids[i]
+   eq = true
+ ?lados[i] = L | lados[i] = RL
+  ?item.left = ids[i]
+   eq = true
+ botones[i].visible = eq
+ tiradores[i].visible = eq
+
+// --- Tomar: arrastrar por la "o" (solo visibles) ---
 ?key = primaryBegin
  for i = 0 .. tiradores.Count() - 1
   o = tiradores[i]
-  ?input.x >= o.x & input.x < o.x + o.w &
-  ^ input.y >= o.y & input.y < o.y + o.h
+  ?o.visible = true & input.x >= o.x &
+  ^ input.x < o.x + o.w & input.y >= o.y &
+  ^ input.y < o.y + o.h
    sel = i
    offX = input.x - o.x
    offY = input.y - o.y
-   ui.root.Add(botones[sel])  // el par seleccionado
-   ui.root.Add(o)             // se dibuja por encima
+   ui.root.Add(botones[sel])
+   ui.root.Add(o)
 
-// --- Arrastrar: la "o" sigue al cursor y
-//     el boton viaja pegado debajo de ella ---
+// --- Pulsar el cuerpo del boton = activar ---
+?key = primaryBegin & sel < 0
+ for i = 0 .. botones.Count() - 1
+  bt = botones[i]
+  ?bt.visible = true & input.x >= bt.x &
+  ^ input.x < bt.x + bt.w & input.y >= bt.y &
+  ^ input.y < bt.y + bt.h & item.CanActivate(ids[i])
+   activate @ids[i]@
+
+// --- Arrastrar: la "o" sigue al cursor ---
 ?key = primary & sel >= 0
  o = tiradores[sel]
  bt = botones[sel]
