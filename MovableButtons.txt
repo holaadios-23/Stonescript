@@ -67,11 +67,11 @@ func OnTap(btn)
  :?sides[i] = R
   activate R
  :
-  // RL: activate whichever hand holds it
-  ?item.left = ids[i]
-   activate L
-  :
-   activate R
+  // RL talismans: activate by ability ID so the
+  // tapped one always fires, regardless of hand
+  // or which summon is currently out (activate
+  // L/R would re-trigger the active summon).
+  activate @ids[i]@
 
 // --- Default positions (run once, then kept) ---
 // RL talismans are positioned by hand every frame
