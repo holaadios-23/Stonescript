@@ -43,10 +43,10 @@ disable hud
 //   RL  talisman (either hand) SUM summon (devour)
 // 'names' = the equip name used to re-equip a
 // talisman before activating it (manual method).
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman", "voidweaver"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",              "SUM"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI",       "VOIDWVR"]
-var names  = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire talisman", "aether talisman", "voidweaver"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman", "lollipop_wand", "voidweaver"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",              "RL",            "SUM"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI",       "LOLLIPOP",      "VOIDWVR"]
+var names  = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire talisman", "aether talisman", "lollipop wand", "voidweaver"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
