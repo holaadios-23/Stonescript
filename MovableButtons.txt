@@ -37,9 +37,16 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI"]
+// 'side' = where it is used:
+//   P   potion (always visible)
+//   R   activate right        L   activate left
+//   RL  talisman (either hand) SUM summon (devour)
+// 'names' = the equip name used to re-equip a
+// talisman before activating it (manual method).
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman", "voidweaver"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",              "SUM"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI",       "VOIDWVR"]
+var names  = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire talisman", "aether talisman", "voidweaver"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -62,21 +69,24 @@ func OnTap(btn)
   return
  ?sides[i] = P
   activate potion
+ :?sides[i] = SUM
+  // summon devour (cinderwisp/voidweaver)
+  activate @ids[i]@
  :?sides[i] = L
   activate L
  :?sides[i] = R
   activate R
  :
   // RL talismans: re-equip the tapped talisman to
-  // its hand, then activate that hand. This is the
-  // canonical summon method (manual): plain
-  // activate L/R would re-trigger the active summon
-  // (cinderwisp/voidweaver) instead of the talisman.
+  // its hand (by name), then activate that hand.
+  // This is the canonical summon method (manual):
+  // plain activate L/R re-triggers the active
+  // summon instead of casting the talisman.
   ?item.left = ids[i]
-   equipL @ids[i]@
+   equipL @names[i]@
    activate L
   :
-   equipR @ids[i]@
+   equipR @names[i]@
    activate R
 
 // --- Default positions (run once, then kept) ---
@@ -93,6 +103,8 @@ func OnTap(btn)
    posX.Add(20)   // L column
   :?sides[i] = R
    posX.Add(11)   // R column (mask spot)
+  :?sides[i] = SUM
+   posX.Add(47)   // summon column
   :
    posX.Add(38)   // RL default (overridden by hand)
 
@@ -133,6 +145,10 @@ for i = 0 .. ids.Count() - 1
  ?sides[i] = P
   // potion: visible unless empty
   ?item.potion ! empty
+   eq = true
+ :?sides[i] = SUM
+  // summon button: visible while it is summoned
+  ?summon.GetId() = ids[i]
    eq = true
  :
   // equipped? match by Appendix ID. Staffs need
