@@ -40,11 +40,24 @@ disable hud
 // 'side' = where it is used:
 //   P   potion (always visible)
 //   R   activate right        L   activate left
-//   RL  either hand (wands/talismans)
+//   RL  either hand (wands)
 //   SUM summon (devour)
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman", "lollipop_wand", "wand_ice", "wand_fire", "wand_poison", "wand_vigor", "wand_stone", "wand_aether", "voidweaver"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",              "RL",            "RL",       "RL",        "RL",          "RL",         "RL",         "RL",          "SUM"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI",       "LOLLIPOP",      "FROST",    "EXPLOSIV",  "PLAGUE",      "RESET",      "GRAVITY",    "CALAMITY",    "VOIDWVR"]
+//
+// DISABLED for now (had activation issues, the
+// summon/devour mechanic needs more work):
+//   fire_talisman   (RL)  -> FIRETALI
+//   aether_talisman (RL)  -> AETHRTALI
+//   voidweaver      (SUM) -> VOIDWVR
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "lollipop_wand", "wand_ice", "wand_fire", "wand_poison", "wand_vigor", "wand_stone", "wand_aether"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",       "RL",        "RL",          "RL",         "RL",         "RL"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "LOLLIPOP",      "FROST",    "EXPLOSIV",  "PLAGUE",      "RESET",      "GRAVITY",    "CALAMITY"]
+
+// --- ASCII art (test: potion only for now) ---
+// 'ascii'/'asciiend' blocks hold multi-line art.
+var potionArt = ascii
+  )(
+ (P)
+asciiend
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -123,6 +136,9 @@ func OnTap(btn)
   bt.anchor = top_left
   bt.dock = top_left
   bt.text = labels[i]
+  // ASCII art test: the potion shows art, not text
+  ?sides[i] = P
+   bt.text = potionArt
   bt.w = 7
   bt.h = 3
   bt.x = posX[i]
