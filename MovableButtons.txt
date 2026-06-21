@@ -37,9 +37,9 @@ disable hud
 // equipped with "equip" only (not equipR/L),
 // but their ability activates with R, so they
 // all use side "R" just like the mask.
-var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether"]
-var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R"]
-var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF"]
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "fire_talisman", "aether_talisman"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "FIRETALI",      "AETHRTALI"]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -74,6 +74,10 @@ func OnTap(btn)
    activate R
 
 // --- Default positions (run once, then kept) ---
+// Talismans (RL) can be equipped two at a time,
+// so each RL item gets its own column to avoid
+// overlap; P/L/R share their column.
+var rlx = 29
 ?posX.Count() = 0
  for i = 0 .. ids.Count() - 1
   posY.Add(2)
@@ -81,8 +85,11 @@ func OnTap(btn)
    posX.Add(2)    // potion column
   :?sides[i] = L
    posX.Add(20)   // L column
-  :
+  :?sides[i] = R
    posX.Add(11)   // R column (mask spot)
+  :
+   posX.Add(rlx)  // RL: own column each
+   rlx = rlx + 9
 
 // --- Build everything in a single loop ---
 ?loc.begin | loc.loop
