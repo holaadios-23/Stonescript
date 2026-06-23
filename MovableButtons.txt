@@ -280,11 +280,11 @@ for i = 0 .. ids.Count() - 1
   ?item.left = ids[i]
    handles[i].x = 29
    buttons[i].x = 29
-   artels[i].x = 29
+   artels[i].x = 30
   :
    handles[i].x = 38
    buttons[i].x = 38
-   artels[i].x = 38
+   artels[i].x = 39
  buttons[i].visible = eq
  handles[i].visible = eq
  artels[i].visible = eq
@@ -312,8 +312,8 @@ for i = 0 .. ids.Count() - 1
  o.y = input.y - offY
  bt.x = o.x
  bt.y = o.y + 1
- art.x = o.x
- art.y = o.y + 1
+ art.x = o.x + 1
+ art.y = o.y + 2
  posX.Emplace(sel, o.x)   // remember position
  posY.Emplace(sel, o.y)
 
