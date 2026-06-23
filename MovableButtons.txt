@@ -55,12 +55,68 @@ var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "
 var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",       "RL",        "RL",          "RL",         "RL",         "RL",         "RLT",          "RLT",            "SUM",       "SUM"]
 var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "LOLLIPOP",      "FROST",    "EXPLOSIV",  "PLAGUE",      "RESET",      "GRAVITY",    "CALAMITY",   "FIRETALI",     "AETHRTALI",      "CINDER",    "VOIDWVR"]
 
-// --- ASCII art (test: potion only for now) ---
+// --- ASCII art per button ---
 // 'ascii'/'asciiend' blocks hold multi-line art.
+// '#' = transparent. In 'arts' (parallel to ids)
+// an entry of "" means "no art yet": that button
+// keeps showing its text label.
 var potionArt = ascii
 #)(
 (  )
 asciiend
+
+var maskArt = ascii
+,((}-,
+\`-´/
+asciiend
+
+var bladeArt = ascii
+──(·===-
+asciiend
+
+var hammerArt = ascii
+[¯¯¯]
+#¯T¯
+asciiend
+
+var skelArt = ascii
+ ___,=
+'   `-
+asciiend
+
+var quarterArt = ascii
+#,
+/
+asciiend
+
+var iceStaffArt = ascii
+───❄
+asciiend
+
+var fireStaffArt = ascii
+───φ
+asciiend
+
+var poisonStaffArt = ascii
+───∞
+asciiend
+
+var vigorStaffArt = ascii
+───❤
+asciiend
+
+var stoneStaffArt = ascii
+───o
+asciiend
+
+var aetherStaffArt = ascii
+───*
+asciiend
+
+// Parallel to 'ids' (26 entries). "" = no art yet
+// (shovel, bardiche, hatchet, wands, talismans,
+// summons still pending).
+var arts = [potionArt, maskArt, bladeArt, "", hammerArt, "", skelArt, quarterArt, "", iceStaffArt, fireStaffArt, poisonStaffArt, vigorStaffArt, stoneStaffArt, aetherStaffArt, "", "", "", "", "", "", "", "", "", "", ""]
 
 // --- Persistent positions (survive loops) ---
 var posX = []
@@ -161,9 +217,8 @@ func OnTap(btn)
   // ascii-art overlay, drawn on top of the button.
   // A Button can't render multi-line art, so the
   // art lives in a Text on top; the button keeps
-  // catching the tap. Only the potion has art for
-  // now; the rest show their label until we add
-  // art for every button.
+  // catching the tap. Items with art hide their
+  // label; items with "" in 'arts' keep it.
   art = ui.AddText()
   art.anchor = top_left
   art.dock = top_left
@@ -173,8 +228,8 @@ func OnTap(btn)
   art.x = posX[i] + 1
   art.y = posY[i] + 2
   art.visible = false
-  ?sides[i] = P
-   art.text = potionArt
+  art.text = arts[i]
+  ?arts[i] ! ""
    bt.text = ""
   artels.Add(art)
 
