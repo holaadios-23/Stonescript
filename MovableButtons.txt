@@ -58,8 +58,8 @@ var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "
 // --- ASCII art (test: potion only for now) ---
 // 'ascii'/'asciiend' blocks hold multi-line art.
 var potionArt = ascii
-  )(
- (P)
+#)(
+(  )
 asciiend
 
 // --- Persistent positions (survive loops) ---
@@ -151,8 +151,8 @@ func OnTap(btn)
   bt.anchor = top_left
   bt.dock = top_left
   bt.text = labels[i]
-  bt.w = 7
-  bt.h = 3
+  bt.w = 6
+  bt.h = 4
   bt.x = posX[i]
   bt.y = posY[i] + 1
   bt.visible = false
@@ -170,8 +170,8 @@ func OnTap(btn)
   art.align = left
   art.w = 7
   art.h = 3
-  art.x = posX[i]
-  art.y = posY[i] + 1
+  art.x = posX[i] + 1
+  art.y = posY[i] + 2
   art.visible = false
   ?sides[i] = P
    art.text = potionArt
