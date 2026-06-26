@@ -1,0 +1,322 @@
+// ·:·:· Movable ability buttons ·:·:· //
+//
+// Each ability has a button with an "o" that
+// is its HANDLE: drag the "o" to move the
+// button; tap the button body to activate the
+// ability.
+//
+// The potion button is always visible (except
+// when empty/used). Ability buttons are hidden
+// and only appear when the matching item is
+// equipped.
+//
+// Positions are remembered (posX/posY persist
+// across Ouroboros loops). Default position is
+// shared per side, so every R ability stacks
+// on the same spot (the mask spot); potion and
+// L abilities get their own column, so a potion
+// + one R + one L can be seen at once.
+//
+// Lists keep the code short. There is ONE
+// function (OnTap): it is required because a
+// Button swallows the tap and the only
+// supported way to react to a press is the
+// SetPressed callback. Dragging the "o" (a
+// Text) works without functions.
+//
+// To add abilities: add entries to 'ids',
+// 'sides' and 'labels'.
+//   side = R, L, RL  (where it is equipped)
+//   side = P         (potion, always visible)
+
+disable hud
+
+// --- Button data (lists) ---
+// Blade, Shovel, Heavy Hammer, Bardiche,
+// Skeleton Arm and the Ice (Eternity) Staff are
+// equipped with "equip" only (not equipR/L),
+// but their ability activates with R, so they
+// all use side "R" just like the mask.
+// 'side' = where it is used:
+//   P   potion (always visible)
+//   R   activate right        L   activate left
+//   RL  either hand (wands): activate by hand
+//   RLT either hand (talismans): re-equip the
+//       hand, then activate, so the talisman is
+//       cast instead of re-triggering its summon
+//   SUM summon devour (cinderwisp/voidweaver):
+//       visible only while the summon is out
+//
+// Two-handed summons (talismans + their summon
+// buttons) are re-enabled below. Cinderwisp's
+// button only shows once it has attacked a foe
+// (its 'ignition' var > 0).
+var ids    = ["potion", "mask", "blade", "shovel", "heavy_hammer", "bardiche", "skeleton_arm", "quarterstaff", "hatchet", "staff_ice", "staff_fire", "staff_poison", "staff_vigor", "staff_stone", "staff_aether", "lollipop_wand", "wand_ice", "wand_fire", "wand_poison", "wand_vigor", "wand_stone", "wand_aether", "fire_talisman", "aether_talisman", "cinderwisp", "voidweaver"]
+var sides  = ["P",      "R",    "R",     "R",      "R",            "R",        "R",            "R",            "R",        "R",         "R",          "R",            "R",           "R",           "R",            "RL",            "RL",       "RL",        "RL",          "RL",         "RL",         "RL",         "RLT",          "RLT",            "SUM",       "SUM"]
+var labels = ["POTION", "MASK", "BLADE", "SHOVEL", "HAMMER",       "BARDICHE", "SKELARM",      "QUARTER",      "HATCHET",  "ICESTAFF",  "FIRESTAFF",  "PSNSTAFF",     "VIGORSTAFF",  "STONESTAFF",  "AETHRSTAFF",   "LOLLIPOP",      "FROST",    "EXPLOSIV",  "PLAGUE",      "RESET",      "GRAVITY",    "CALAMITY",   "FIRETALI",     "AETHRTALI",      "CINDER",    "VOIDWVR"]
+
+// --- ASCII art per button ---
+// 'ascii'/'asciiend' blocks hold multi-line art.
+// '#' = transparent. In 'arts' (parallel to ids)
+// an entry of "" means "no art yet": that button
+// keeps showing its text label.
+var potionArt = ascii
+#)(
+(  )
+asciiend
+
+var maskArt = ascii
+,((}-,
+\`-´/
+asciiend
+
+var bladeArt = ascii
+──(·===-
+asciiend
+
+var hammerArt = ascii
+[¯¯¯]
+#¯T¯
+asciiend
+
+var skelArt = ascii
+ ___,=
+'   `-
+asciiend
+
+var quarterArt = ascii
+#,
+/
+asciiend
+
+var iceStaffArt = ascii
+───❄
+asciiend
+
+var fireStaffArt = ascii
+───φ
+asciiend
+
+var poisonStaffArt = ascii
+───∞
+asciiend
+
+var vigorStaffArt = ascii
+───❤
+asciiend
+
+var stoneStaffArt = ascii
+───o
+asciiend
+
+var aetherStaffArt = ascii
+───*
+asciiend
+
+var shovelArt = ascii
+#T
+ Ü
+asciiend
+
+var bardicheArt = ascii
+#/-
+/-´
+asciiend
+
+var hatchetArt = ascii
+<)
+|
+asciiend
+
+// Parallel to 'ids' (26 entries). "" = no art yet
+// (wands, talismans, summons still pending).
+var arts = [potionArt, maskArt, bladeArt, shovelArt, hammerArt, bardicheArt, skelArt, quarterArt, hatchetArt, iceStaffArt, fireStaffArt, poisonStaffArt, vigorStaffArt, stoneStaffArt, aetherStaffArt, "", "", "", "", "", "", "", "", "", "", ""]
+
+// --- Persistent positions (survive loops) ---
+var posX = []
+var posY = []
+
+// --- Internal state ---
+var buttons = []   // one button per entry
+var handles = []   // one "o" (handle) per entry
+var artels  = []   // one ascii-art overlay per entry
+var sel = -1       // button being dragged (-1 = none)
+var offX = 0
+var offY = 0
+var o              // loop helpers
+var bt
+var art
+var eq = false
+
+// --- The only function: activate on tap ---
+func OnTap(btn)
+ var i = buttons.IndexOf(btn)
+ ?i < 0
+  return
+ ?sides[i] = P
+  activate potion
+ :?sides[i] = SUM
+  // summon devour (cinderwisp/voidweaver)
+  activate @ids[i]@
+ :?sides[i] = L
+  activate L
+ :?sides[i] = R
+  activate R
+ :?sides[i] = RLT
+  // talisman: re-equip its hand, then activate, so
+  // the talisman is cast (not the active summon)
+  ?item.left = ids[i]
+   equipL @ids[i]@
+   activate L
+  :
+   equipR @ids[i]@
+   activate R
+ :
+  // RL (wands, etc.): activate the hand holding it
+  ?item.left = ids[i]
+   activate L
+  :
+   activate R
+
+// --- Default positions (run once, then kept) ---
+// RL talismans are positioned by hand every frame
+// (see show/hide): L hand -> left col (29),
+// R hand / equip-only -> right col (38). So two
+// talismans never overlap and follow their hand.
+?posX.Count() = 0
+ for i = 0 .. ids.Count() - 1
+  posY.Add(2)
+  ?sides[i] = P
+   posX.Add(2)    // potion column
+  :?sides[i] = L
+   posX.Add(20)   // L column
+  :?sides[i] = R
+   posX.Add(11)   // R column (mask spot)
+  :?sides[i] = SUM
+   posX.Add(47)   // summon column
+  :
+   posX.Add(38)   // RL/RLT default (overridden by hand)
+
+// --- Build everything in a single loop ---
+?loc.begin | loc.loop
+ ui.Clear()
+ buttons.Clear()
+ handles.Clear()
+ artels.Clear()
+ sel = -1
+ for i = 0 .. ids.Count() - 1
+  // the "o" handle
+  o = ui.AddText()
+  o.anchor = top_left
+  o.dock = top_left
+  o.text = "o"
+  o.w = 3
+  o.h = 1
+  o.x = posX[i]
+  o.y = posY[i]
+  o.visible = false
+  handles.Add(o)
+  // the button, right below its "o"
+  bt = ui.AddButton()
+  bt.anchor = top_left
+  bt.dock = top_left
+  // no label text: the ascii art alone identifies
+  // the ability (the button just catches the tap)
+  bt.text = ""
+  bt.w = 6
+  bt.h = 4
+  bt.x = posX[i]
+  bt.y = posY[i] + 1
+  bt.visible = false
+  bt.SetPressed(OnTap)
+  buttons.Add(bt)
+  // ascii-art overlay, drawn on top of the button.
+  // A Button can't render multi-line art, so the
+  // art lives in a Text on top; the button keeps
+  // catching the tap.
+  art = ui.AddText()
+  art.anchor = top_left
+  art.dock = top_left
+  art.align = left
+  art.w = 7
+  art.h = 3
+  art.x = posX[i] + 1
+  art.y = posY[i] + 2
+  art.visible = false
+  art.text = arts[i]
+  artels.Add(art)
+
+// --- Show/hide every frame ---
+for i = 0 .. ids.Count() - 1
+ eq = false
+ ?sides[i] = P
+  // potion: visible unless empty
+  ?item.potion ! empty
+   eq = true
+ :?sides[i] = SUM
+  // summon button: visible while it is summoned.
+  // Cinderwisp is special: its button only shows
+  // once it has attacked a foe (ignition var > 0).
+  ?summon.GetId() = ids[i]
+   ?ids[i] = "cinderwisp"
+    ?summon.GetVar("ignition") > 0
+     eq = true
+   :
+    eq = true
+ :
+  // equipped? match by Appendix ID. Staffs need
+  // armor to cast, so they appear via
+  // CanActivate (which requires armor). No
+  // cooldown check, so the button hides the
+  // instant you switch weapons.
+  ?item.right = ids[i] | item.left = ids[i] |
+  ^ item.CanActivate(ids[i])
+   eq = true
+ // RL/RLT (wands & talismans): the column follows
+ // the equipped hand (L hand -> 29 left,
+ // R hand / equip-only -> 38 right) so two of them
+ // never overlap and each stays under its hand.
+ ?(sides[i] = RL | sides[i] = RLT) & eq
+  ?item.left = ids[i]
+   handles[i].x = 29
+   buttons[i].x = 29
+   artels[i].x = 30
+  :
+   handles[i].x = 38
+   buttons[i].x = 38
+   artels[i].x = 39
+ buttons[i].visible = eq
+ handles[i].visible = eq
+ artels[i].visible = eq
+
+// --- Grab: drag by the "o" (visible only) ---
+?key = primaryBegin
+ for i = 0 .. handles.Count() - 1
+  o = handles[i]
+  ?o.visible = true & input.x >= o.x &
+  ^ input.x < o.x + o.w & input.y >= o.y &
+  ^ input.y < o.y + o.h
+   sel = i
+   offX = input.x - o.x
+   offY = input.y - o.y
+   ui.root.Add(buttons[sel])
+   ui.root.Add(artels[sel])
+   ui.root.Add(o)
+
+// --- Drag: the "o" follows the cursor ---
+?key = primary & sel >= 0
+ o = handles[sel]
+ bt = buttons[sel]
+ art = artels[sel]
+ o.x = input.x - offX
+ o.y = input.y - offY
+ bt.x = o.x
+ bt.y = o.y + 1
+ art.x = o.x + 1
+ art.y = o.y + 2
+ posX.Emplace(sel, o.x)   // remember position
+ posY.Emplace(sel, o.y)
+
+// --- Release ---
+?key = primaryEnd
+ sel = -1
