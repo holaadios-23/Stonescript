@@ -46,7 +46,7 @@ asciiend]
 var i = 0
 var c = 0
 
-?totaltime % 10 = 0// & ai.walking
+?totaltime % 10 = 0 & ai.walking
  i++
  c++
 
