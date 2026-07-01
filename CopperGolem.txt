@@ -1,0 +1,77 @@
+/*
+copper golem original
+.─. ▄ .─.
+│#.-┴-.#│
+¦#│###│#¦
+│#'───'#│
+'─|###|─'
+##.─.─.
+##'-┴-'
+*/
+
+var body = ascii
+####▄
+##.-┴-.
+##│###│
+##'───'
+##|###|
+asciiend
+
+var arms = [ascii
+#/ ####\
+(_/###|_)
+asciiend,
+^ascii
+#| ####|
+#(_)###)
+asciiend]
+
+
+var arms1 = ascii
+#/#####\
+(_#####_)
+asciiend
+
+var legs = [ascii
+##.─.─.
+##'┘¯\'
+asciiend,ascii
+##.─.─.
+##'/¯/'
+asciiend,ascii
+##.─.─.
+##'/¯'┘
+asciiend]
+
+var i = 0
+var c = 0
+
+?totaltime % 10 = 0// & ai.walking
+ i++
+ c++
+
+?i >= legs.Count()
+ i = 0
+
+?c >= arms.Count()
+ c = 0
+
+>o-20,-3,#CB6D51,@body@
+
+
+?ai.walking
+ >o-20,2,#CB6D51,@legs[i]@
+ >o-20,0,#CB6D51,@arms[c]@
+
+?time % 25
+ >o-17,-1,#4ec9b0,█#█
+:
+ >o-17,-1,#4ec9b0,▄#▄
+
+/*
+?!ai.walking
+ >o-20,2,#CB6D51,ascii
+##.─.─.
+##'-┴-'
+asciiend
+

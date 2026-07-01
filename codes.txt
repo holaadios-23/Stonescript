@@ -300,3 +300,30 @@ timer++
 // Mostrar información en pantalla (esquina superior izquierda)
 >`1,4,#00FF00,Velocidad Real: @current_speed@ u/s
 >`1,5,#FFFF00,Stat (Frames/Mov): @player.framesPerMove@
+/*dibujar linea*/
+var sky = ascii
+####*######+#####*########+#####.########*######
+asciiend
+
+var x = 0
+var y = 0
+var w = 100
+var h = screen.h
+var len = string.Size(sky)
+
+for i = 0 .. h - 1
+  var drawY = y + i
+  // Desplazamiento basado en la fila para variar el patrón
+  var offset = (drawY * 17) % len
+  
+  // Rotar la cadena
+  var s1 = string.Sub(sky, offset)
+  var s2 = string.Sub(sky, 0, offset)
+  var full = s1 + s2
+  
+  // Repetir y cortar al ancho deseado (w)
+  full = full + full
+  var line = string.Sub(full, 0, w)
+  
+  // Dibujar en pantalla
+  >`@x@,@drawY@,#505050,@line@
